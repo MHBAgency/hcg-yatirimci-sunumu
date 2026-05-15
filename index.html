@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hikmet Çetin Gold — Yatırımcı Sunumu</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+
+<div class="brand-watermark">
+  <strong>HİKMET ÇETİN GOLD</strong>
+</div>
+
+<div class="presentation" id="presentation">
+
+  <!-- ============ SLIDE 1: COVER ============ -->
+  <section class="slide cover active" data-slide="1">
+    <div class="gold-flecks"></div>
+    <div class="cover-content">
+      <div class="cover-emblem">SÜLFÜRLÜ ALTIN İŞLEME TESİSİ</div>
+      <h1 class="cover-title">HİKMET ÇETİN<br/>GOLD</h1>
+      <p class="cover-subtitle">Yatırımcı Sunumu · 2026</p>
+      <div class="cover-divider"></div>
+      <div class="cover-meta">
+        <div class="cover-meta-item">
+          <div class="cover-meta-label">Lokasyon</div>
+          <div class="cover-meta-value">Safadaşt, İran</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="cover-meta-label">Cevher Tipi</div>
+          <div class="cover-meta-value">Refrakter Sülfürlü Altın</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="cover-meta-label">Proses</div>
+          <div class="cover-meta-value">Kavurma + CIL + Electrowinning</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 2: GLOBAL MAP ============ -->
+  <section class="slide map-slide" data-slide="2">
+    <div class="slide-header">
+      <div class="slide-kicker">Küresel Konum · 01</div>
+      <h2 class="slide-title">Dünya Sülfürlü Altın Haritası</h2>
+      <p class="slide-subtitle">
+        Refrakter sülfürlü altın cevheri, dünyada sınırlı sayıda jeolojik kuşakta bulunur.
+        Sahamız Tethyan kuşağı üzerinde — dünyanın en zengin sülfürlü altın hattında.
+      </p>
+    </div>
+    <div class="map-container">
+      <div id="map"></div>
+      <div class="legend-card">
+        <h4>Lejant</h4>
+        <div class="legend-item">
+          <div class="legend-dot primary"></div>
+          <span>Hikmet Çetin Gold sahası</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot standard"></div>
+          <span>Dünya'nın aktif sülfürlü altın madenleri</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 3: 3D VIEWER ============ -->
+  <section class="slide viewer-slide" data-slide="3">
+    <div class="viewer-stage">
+      <canvas id="three-canvas"></canvas>
+      <div class="viewer-hint">
+        <span class="icon">◉</span> Fareyle Tutup Döndürün · Tekerlek Yakınlaştırır
+      </div>
+    </div>
+    <div class="viewer-info">
+      <div>
+        <div class="slide-kicker" style="margin-bottom:8px;">İnteraktif 3D · 02</div>
+        <h2 class="slide-title" style="font-size: 34px;">CIL Liç Tankı</h2>
+        <p class="slide-subtitle" style="font-size: 14px; margin-top: 10px;">
+          Karbon adsorpsiyon eşliğinde siyanür liçi. Altın çözünür, eş zamanlı olarak
+          aktif karbon üzerine adsorbe olur.
+        </p>
+      </div>
+
+      <div class="spec-card">
+        <h3>Teknik Özellikler</h3>
+        <div class="spec-row"><span>Tank çapı</span><span>3 – 8 m</span></div>
+        <div class="spec-row"><span>Tank yüksekliği</span><span>3 – 10 m</span></div>
+        <div class="spec-row"><span>Motor gücü</span><span>7.5 – 55 kW</span></div>
+        <div class="spec-row"><span>pH</span><span>10 – 11</span></div>
+        <div class="spec-row"><span>Siyanür</span><span>200 – 500 ppm</span></div>
+        <div class="spec-row"><span>Liç süresi</span><span>24 – 48 saat</span></div>
+        <div class="spec-row"><span>Tank sayısı</span><span>6 – 8 adet</span></div>
+      </div>
+
+      <div class="reaction-card">
+        <h3>Kimyasal Reaksiyon</h3>
+        <div class="reaction-eq">
+          4<span class="gold-text">Au</span> + 8NaCN + O₂ + 2H₂O<br/>
+          → 4Na[<span class="gold-text">Au</span>(CN)₂] + 4NaOH
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 4: CIL LİÇ TANKI — GÖRSEL VERSİYON (alternative to 3D) ============ -->
+  <section class="slide cil-image-slide" data-slide="4">
+    <div class="cil-image-stage">
+      <img class="cil-hero-img" src="assets/images/cil-tanks.jpeg" alt="CIL Liç Tankları" />
+
+      <!-- Animated callout dots over key tank parts -->
+      <div class="cil-callout" style="top: 22%; left: 7%;">
+        <span class="cil-dot"></span>
+        <span class="cil-label">Feed Inlet · Slurry Giriş</span>
+      </div>
+      <div class="cil-callout" style="top: 30%; left: 50%;">
+        <span class="cil-dot"></span>
+        <span class="cil-label">Agitator · Karıştırıcı Motor</span>
+      </div>
+      <div class="cil-callout" style="top: 60%; left: 78%;">
+        <span class="cil-dot"></span>
+        <span class="cil-label">Discharge · PLS Çıkış</span>
+      </div>
+      <div class="cil-callout" style="top: 76%; left: 38%;">
+        <span class="cil-dot"></span>
+        <span class="cil-label">Aktif Karbon Yatağı</span>
+      </div>
+
+      <!-- Bottom label badge -->
+      <div class="cil-image-caption">
+        <span class="caption-tag">CIL LEACH BATTERY · 10 t/tank</span>
+        <span class="caption-source">Hikmet Çetin Gold — Konsept Render</span>
+      </div>
+    </div>
+
+    <div class="viewer-info">
+      <div>
+        <div class="slide-kicker" style="margin-bottom:8px;">TEKNİK ŞEMA · 03</div>
+        <h2 class="slide-title" style="font-size: 34px;">CIL Liç Tankı</h2>
+        <p class="slide-subtitle" style="font-size: 14px; margin-top: 10px;">
+          Karbon adsorpsiyon eşliğinde siyanür liçi. Altın çözünür, eş zamanlı olarak
+          aktif karbon üzerine adsorbe olur. Yukarıda tesisimizin konsept render'ı.
+        </p>
+      </div>
+
+      <div class="spec-card">
+        <h3>Teknik Özellikler</h3>
+        <div class="spec-row"><span>Tank çapı</span><span>3 – 8 m</span></div>
+        <div class="spec-row"><span>Tank yüksekliği</span><span>3 – 10 m</span></div>
+        <div class="spec-row"><span>Motor gücü</span><span>7.5 – 55 kW</span></div>
+        <div class="spec-row"><span>pH</span><span>10 – 11</span></div>
+        <div class="spec-row"><span>Siyanür</span><span>200 – 500 ppm</span></div>
+        <div class="spec-row"><span>Liç süresi</span><span>24 – 48 saat</span></div>
+        <div class="spec-row"><span>Tank sayısı</span><span>6 – 8 adet</span></div>
+      </div>
+
+      <div class="reaction-card">
+        <h3>Kimyasal Reaksiyon</h3>
+        <div class="reaction-eq">
+          4<span class="gold-text">Au</span> + 8NaCN + O₂ + 2H₂O<br/>
+          → 4Na[<span class="gold-text">Au</span>(CN)₂] + 4NaOH
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 5: PROCESS FLOW (5-step plant overview) ============ -->
+  <section class="slide process-slide" data-slide="5">
+    <div class="slide-header">
+      <div class="slide-kicker">PROSES AKIŞI · 04</div>
+      <h2 class="slide-title">Tesis Ekipmanları & Akış Şeması</h2>
+      <p class="slide-subtitle">
+        Sülfürlü cevherden saf altına — entegre 5 aşamalı proses zinciri.
+        Her aşama dünya standardı ekipman ile.
+      </p>
+    </div>
+
+    <div class="process-flow-container">
+      <div class="process-flow">
+
+        <article class="process-station">
+          <div class="station-image">
+            <div class="station-number">01</div>
+            <img src="assets/images/roasting.jpeg" alt="Kavurma Fırını" loading="lazy"/>
+          </div>
+          <div class="station-content">
+            <div class="station-title">Kavurma Fırını</div>
+            <div class="station-desc">
+              Akışkan yataklı reaktör. Sülfürü oksitler, altını serbest bırakır.
+            </div>
+            <div class="station-specs">
+              <span class="station-spec-tag">500–650 °C</span>
+              <span class="station-spec-tag">30–90 dk</span>
+              <span class="station-spec-tag">FeS₂ → Fe₂O₃</span>
+            </div>
+          </div>
+        </article>
+
+        <div class="process-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </div>
+
+        <article class="process-station">
+          <div class="station-image">
+            <div class="station-number">02</div>
+            <img src="assets/images/cil-tanks.jpeg" alt="CIL Liç Tankları" loading="lazy"/>
+          </div>
+          <div class="station-content">
+            <div class="station-title">CIL Liç Tankları</div>
+            <div class="station-desc">
+              Siyanür ile altın çözünür, aynı anda aktif karbon üzerine adsorbe olur.
+            </div>
+            <div class="station-specs">
+              <span class="station-spec-tag">pH 10–11</span>
+              <span class="station-spec-tag">200–500 ppm CN⁻</span>
+              <span class="station-spec-tag">24–48 saat</span>
+            </div>
+          </div>
+        </article>
+
+        <div class="process-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </div>
+
+        <article class="process-station">
+          <div class="station-image">
+            <div class="station-number">03</div>
+            <img src="assets/images/adsorption.jpeg" alt="Karbon Adsorpsiyon Kolonları" loading="lazy"/>
+          </div>
+          <div class="station-content">
+            <div class="station-title">Karbon Adsorpsiyon</div>
+            <div class="station-desc">
+              Yüklü PLS aktif karbon kolonlarından geçer. Altın karbon yüzeyine konsantre olur.
+            </div>
+            <div class="station-specs">
+              <span class="station-spec-tag">4 kolon</span>
+              <span class="station-spec-tag">6–12 mesh</span>
+              <span class="station-spec-tag">%95+ kazanım</span>
+            </div>
+          </div>
+        </article>
+
+        <div class="process-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </div>
+
+        <article class="process-station">
+          <div class="station-image">
+            <div class="station-number">04</div>
+            <img src="assets/images/carbon-regen.jpeg" alt="Karbon Rejenerasyon" loading="lazy"/>
+          </div>
+          <div class="station-content">
+            <div class="station-title">Karbon Rejenerasyon</div>
+            <div class="station-desc">
+              Elution sonrası karbon 700°C'de yeniden aktive edilir — sürekli karbon döngüsü.
+            </div>
+            <div class="station-specs">
+              <span class="station-spec-tag">700 °C</span>
+              <span class="station-spec-tag">Sürekli akış</span>
+              <span class="station-spec-tag">%90+ aktivasyon</span>
+            </div>
+          </div>
+        </article>
+
+        <div class="process-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </div>
+
+        <article class="process-station">
+          <div class="station-image">
+            <div class="station-number">05</div>
+            <img src="assets/images/electrowinning.jpeg" alt="Electrowinning + Döküm" loading="lazy"/>
+          </div>
+          <div class="station-content">
+            <div class="station-title">Electrowinning + Döküm</div>
+            <div class="station-desc">
+              DC elektroliz hücresinde altın katoda çöker. Doré külçe olarak dökülür.
+            </div>
+            <div class="station-specs">
+              <span class="station-spec-tag">3V / 250A DC</span>
+              <span class="station-spec-tag">Au katot</span>
+              <span class="station-spec-tag">Doré külçe</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="process-kpis">
+      <div class="kpi">
+        <span class="kpi-value">%95–98</span>
+        <span class="kpi-label">Altın Kazanımı</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-value">100 t/gün</span>
+        <span class="kpi-label">Tasarım Kapasitesi</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-value">24–48 sa</span>
+        <span class="kpi-label">Liç Süresi</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-value">DORÉ</span>
+        <span class="kpi-label">Çıktı Formu</span>
+      </div>
+    </div>
+  </section>
+
+
+</div>
+
+<!-- Slide navigation -->
+<div class="nav-indicator" id="nav-indicator"></div>
+<div class="nav-hint">
+  <kbd>←</kbd> <kbd>→</kbd> ile gezin · <kbd>SPACE</kbd> ileri
+</div>
+
+<!-- Libraries -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script src="scripts/navigation.js"></script>
+<script src="scripts/map-world.js"></script>
+<script type="module" src="scripts/three-cil-tank.js"></script>
+
+</body>
+</html>
