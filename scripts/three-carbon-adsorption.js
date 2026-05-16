@@ -67,25 +67,26 @@ function init(targetCanvas) {
   renderer.setSize(width, height, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.06;
+  renderer.toneMappingExposure = 1.28;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
 
-  // Scene
+  // Scene — black studio backdrop
   scene = new THREE.Scene();
-  scene.background = null;
-  scene.fog = new THREE.FogExp2(0xeae3d0, 0.010);
+  scene.background = new THREE.Color(0x000000);
+  scene.fog = new THREE.FogExp2(0x000000, 0.0042);
 
   // PBR environment for stainless reflections
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
   // Camera — match the reference image's catalog-style front-three-quarter view.
-  // The reference is shot fairly head-on with only a slight elevation, so we
-  // pull the camera in closer, lower the elevation, and reduce the side angle.
-  camera = new THREE.PerspectiveCamera(34, width / height, 0.1, 220);
-  camera.position.set(11.5, 5.2, 20.5);
-  camera.lookAt(0, 3.0, 0);
+  // The reference is shot nearly head-on with a slight elevation. The previous
+  // (11.5, 5.2, 20.5) was strongly biased toward the right, which buried col A
+  // behind D. Move toward the centre so all four columns read evenly.
+  camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 220);
+  camera.position.set(2.5, 4.8, 24.0);
+  camera.lookAt(0, 3.6, 0);
 
   // Controls
   controls = new OrbitControls(camera, canvas);
@@ -95,7 +96,7 @@ function init(targetCanvas) {
   controls.maxDistance = 52;
   controls.minPolarAngle = Math.PI * 0.14;
   controls.maxPolarAngle = Math.PI * 0.50;
-  controls.target.set(0, 3.0, 0);
+  controls.target.set(0, 3.6, 0);
   controls.addEventListener('start', () => {
     lastUserInteraction = Date.now();
     autoRotateEnabled = false;
@@ -253,6 +254,96 @@ function buildGroundAndSkid() {
     }
   }
 
+  // ---- METAL GRATING WALKWAY across the deck top between columns ----
+  // Reference shows an expanded-metal grid surface walking surface on top of
+  // the concrete slab. Build it via a procedural canvas texture so we get the
+  // characteristic dark crosshatch without slow geometry.
+  const gratingCanvas = document.createElement('canvas');
+  gratingCanvas.width = 256;
+  gratingCanvas.height = 256;
+  const gctx = gratingCanvas.getContext('2d');
+  // Base — dark steel
+  gctx.fillStyle = '#3a3d44';
+  gctx.fillRect(0, 0, 256, 256);
+  // Grid: bright steel bars
+  gctx.strokeStyle = '#8a8d93';
+  gctx.lineWidth = 4;
+  for (let i = 0; i <= 256; i += 22) {
+    gctx.beginPath();
+    gctx.moveTo(i, 0); gctx.lineTo(i, 256);
+    gctx.stroke();
+  }
+  gctx.lineWidth = 2;
+  for (let j = 0; j <= 256; j += 22) {
+    gctx.beginPath();
+    gctx.moveTo(0, j); gctx.lineTo(256, j);
+    gctx.stroke();
+  }
+  // Soft AO at intersections — adds depth
+  gctx.fillStyle = 'rgba(0,0,0,0.35)';
+  for (let i = 0; i <= 256; i += 22) {
+    for (let j = 0; j <= 256; j += 22) {
+      gctx.beginPath();
+      gctx.arc(i, j, 3, 0, Math.PI * 2);
+      gctx.fill();
+    }
+  }
+  const gratingTex = new THREE.CanvasTexture(gratingCanvas);
+  gratingTex.colorSpace = THREE.SRGBColorSpace;
+  gratingTex.wrapS = THREE.RepeatWrapping;
+  gratingTex.wrapT = THREE.RepeatWrapping;
+  gratingTex.anisotropy = 8;
+  gratingTex.repeat.set(totalWidth / 1.0, 5.0 / 1.0);
+
+  const grating = new THREE.Mesh(
+    new THREE.PlaneGeometry(totalWidth - 0.4, 5.0),
+    new THREE.MeshStandardMaterial({
+      map: gratingTex, roughness: 0.7, metalness: 0.55,
+      transparent: true, alphaTest: 0.05,
+    })
+  );
+  grating.rotation.x = -Math.PI / 2;
+  grating.position.set(0, CONFIG.skidDeckY + 0.012, 0);
+  grating.receiveShadow = true;
+  scene.add(grating);
+
+  // ---- VERTICAL CONCRETE PIERS holding the elevated skid off the ground ----
+  // Without these, the deck reads as floating. Reference shows 5–6 visible
+  // piers down the front face of the skid.
+  const pierMat = new THREE.MeshStandardMaterial({
+    color: 0xb6b3aa, roughness: 0.95, metalness: 0.02,
+  });
+  const pierHeight = CONFIG.skidDeckY - 0.04;
+  const pierW = 0.42;
+  const pierD = 0.32;
+  const pierCount = 6;
+  // Span the full deck width with even spacing (front + back rows)
+  for (let i = 0; i < pierCount; i++) {
+    const t = pierCount === 1 ? 0.5 : i / (pierCount - 1);
+    const px = -totalWidth / 2 + 0.7 + t * (totalWidth - 1.4);
+    for (const pz of [-2.55, 2.55]) {
+      const pier = new THREE.Mesh(
+        new THREE.BoxGeometry(pierW, pierHeight, pierD),
+        pierMat
+      );
+      pier.position.set(px, pierHeight / 2, pz);
+      pier.castShadow = true;
+      pier.receiveShadow = true;
+      scene.add(pier);
+
+      // Small darker concrete footing where pier meets the ground
+      const footing = new THREE.Mesh(
+        new THREE.BoxGeometry(pierW * 1.35, 0.10, pierD * 1.35),
+        new THREE.MeshStandardMaterial({
+          color: 0x8c8a82, roughness: 0.96, metalness: 0.02,
+        })
+      );
+      footing.position.set(px, 0.05, pz);
+      footing.receiveShadow = true;
+      scene.add(footing);
+    }
+  }
+
   // Concrete riser blocks under the column area (the visible front "wall" of
   // the elevated skid in the reference). This thickens the front facade so
   // the maroon Pre/Drain/Bypas/Brinat labels read against concrete, not air.
@@ -296,32 +387,76 @@ function buildSingleColumn(letter, indexZeroBased) {
   const shellTopY = shellBottomY + H;
   const domeY = shellTopY;
 
-  /* ----- Stainless shell ----- */
-  const shellMat = new THREE.MeshStandardMaterial({
-    color: 0xb8bcc2,
-    roughness: 0.20,
-    metalness: 0.95,
-    envMapIntensity: 1.35,
+  /* ----- Stainless shell (now split into TOP-METAL + GLASS-WINDOW + BOTTOM-METAL
+   *        so the activated-carbon bed inside is visible — matches reference. ----- */
+  const shellMat = new THREE.MeshPhysicalMaterial({
+    color: 0xd2d6dc,
+    roughness: 0.18,
+    metalness: 0.96,
+    envMapIntensity: 1.55,
+    clearcoat: 0.35,
+    clearcoatRoughness: 0.20,
   });
-  const shell = new THREE.Mesh(
-    new THREE.CylinderGeometry(R, R, H, 40, 1, true),
+
+  // Top metal ring (~top 15% of barrel)
+  const topMetalH = H * 0.15;
+  const topMetal = new THREE.Mesh(
+    new THREE.CylinderGeometry(R, R, topMetalH, 40, 1, true),
     shellMat
   );
-  shell.position.y = (shellBottomY + shellTopY) / 2;
-  shell.castShadow = true;
-  shell.receiveShadow = true;
-  group.add(shell);
+  topMetal.position.y = shellTopY - topMetalH / 2;
+  topMetal.castShadow = true;
+  topMetal.receiveShadow = true;
+  group.add(topMetal);
 
-  // Horizontal seam rings
-  const seamMat = new THREE.MeshStandardMaterial({
-    color: 0x8a8d93, roughness: 0.35, metalness: 0.95,
+  // Bottom metal ring (~bottom 15% of barrel)
+  const botMetalH = H * 0.15;
+  const botMetal = new THREE.Mesh(
+    new THREE.CylinderGeometry(R, R, botMetalH, 40, 1, true),
+    shellMat
+  );
+  botMetal.position.y = shellBottomY + botMetalH / 2;
+  botMetal.castShadow = true;
+  botMetal.receiveShadow = true;
+  group.add(botMetal);
+
+  // Middle GLASS window (70% of barrel) — physical glass so light transmits & we see the bed
+  const glassH = H * 0.70;
+  const glassMat = new THREE.MeshPhysicalMaterial({
+    color: 0xeaf2fa,
+    roughness: 0.04,
+    metalness: 0.0,
+    transmission: 0.92,
+    thickness: 0.18,
+    ior: 1.45,
+    transparent: true,
+    opacity: 0.30,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.04,
+    side: THREE.DoubleSide,
+    envMapIntensity: 1.2,
   });
-  for (let s = 0; s < 3; s++) {
+  const glassWindow = new THREE.Mesh(
+    new THREE.CylinderGeometry(R, R, glassH, 56, 1, true),
+    glassMat
+  );
+  glassWindow.position.y = shellBottomY + botMetalH + glassH / 2;
+  glassWindow.renderOrder = 2;
+  group.add(glassWindow);
+
+  // Decorative steel bands at glass/metal joints (top + bottom seam of window)
+  const seamMat = new THREE.MeshStandardMaterial({
+    color: 0x8a8d93, roughness: 0.32, metalness: 0.96,
+  });
+  for (const sy of [
+    shellBottomY + botMetalH,
+    shellBottomY + botMetalH + glassH,
+  ]) {
     const seam = new THREE.Mesh(
-      new THREE.TorusGeometry(R + 0.012, 0.025, 8, 36),
+      new THREE.TorusGeometry(R + 0.018, 0.035, 10, 40),
       seamMat
     );
-    seam.position.y = shellBottomY + H * (0.25 + s * 0.25);
+    seam.position.y = sy;
     seam.rotation.x = Math.PI / 2;
     group.add(seam);
   }
@@ -344,6 +479,79 @@ function buildSingleColumn(letter, indexZeroBased) {
   );
   saddle.position.y = coneTipY + 0.05;
   group.add(saddle);
+
+  /* ----- Soft circular contact shadow under the column (sits just on the deck) ----- */
+  const contactShadowTex = (() => {
+    const cc = document.createElement('canvas');
+    cc.width = 128; cc.height = 128;
+    const cctx = cc.getContext('2d');
+    const grad = cctx.createRadialGradient(64, 64, 8, 64, 64, 60);
+    grad.addColorStop(0.0, 'rgba(0,0,0,0.55)');
+    grad.addColorStop(0.6, 'rgba(0,0,0,0.18)');
+    grad.addColorStop(1.0, 'rgba(0,0,0,0.0)');
+    cctx.fillStyle = grad;
+    cctx.fillRect(0, 0, 128, 128);
+    const tx = new THREE.CanvasTexture(cc);
+    tx.colorSpace = THREE.SRGBColorSpace;
+    return tx;
+  })();
+  const contactShadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(R * 2.5, R * 2.5),
+    new THREE.MeshBasicMaterial({
+      map: contactShadowTex,
+      transparent: true,
+      depthWrite: false,
+    })
+  );
+  contactShadow.rotation.x = -Math.PI / 2;
+  contactShadow.position.y = coneTipY - 0.04;
+  contactShadow.renderOrder = -1;
+  group.add(contactShadow);
+
+  /* ----- Cone-to-deck stainless flange ring + bolt circle -----
+   * Without this the cone visually plunges into the deck. The flange ring
+   * makes it read as a proper bolted vessel-to-skid interface (matches ref).
+   */
+  const flangeRingMat = new THREE.MeshStandardMaterial({
+    color: 0xb8bcc2, roughness: 0.30, metalness: 0.92,
+  });
+  const flangeRing = new THREE.Mesh(
+    new THREE.CylinderGeometry(R * 1.18, R * 1.18, 0.07, 32),
+    flangeRingMat
+  );
+  flangeRing.position.y = coneTipY - 0.005;
+  flangeRing.castShadow = true;
+  flangeRing.receiveShadow = true;
+  group.add(flangeRing);
+
+  // Inner ring (slightly darker) for visual depth
+  const flangeRingInner = new THREE.Mesh(
+    new THREE.TorusGeometry(R * 1.05, 0.025, 8, 32),
+    new THREE.MeshStandardMaterial({
+      color: 0x6a6d72, roughness: 0.4, metalness: 0.9,
+    })
+  );
+  flangeRingInner.rotation.x = Math.PI / 2;
+  flangeRingInner.position.y = coneTipY + 0.025;
+  group.add(flangeRingInner);
+
+  // 8 bolts around the flange ring perimeter
+  const flangeBoltMat = new THREE.MeshStandardMaterial({
+    color: 0x9a9d9f, roughness: 0.3, metalness: 0.9,
+  });
+  for (let b = 0; b < 8; b++) {
+    const ang = (b / 8) * Math.PI * 2;
+    const bolt = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.028, 0.028, 0.10, 8),
+      flangeBoltMat
+    );
+    bolt.position.set(
+      Math.cos(ang) * R * 1.12,
+      coneTipY + 0.045,
+      Math.sin(ang) * R * 1.12
+    );
+    group.add(bolt);
+  }
 
   /* ----- Top dome cap ----- */
   const dome = new THREE.Mesh(
@@ -431,11 +639,13 @@ function buildSingleColumn(letter, indexZeroBased) {
     emissive: new THREE.Color(0x140d05),
     emissiveIntensity: 0.10 - gradT * 0.02,
   });
+  // Visible bed sized to sit inside the glass window (H*0.15 → H*0.85).
+  // Slightly smaller radius so the glass tube reads as a separate sleeve around it.
   const carbonBed = new THREE.Mesh(
-    new THREE.CylinderGeometry(R - 0.06, R - 0.06, H * 0.86, 32),
+    new THREE.CylinderGeometry(R - 0.10, R - 0.10, H * 0.68, 32),
     carbonMat
   );
-  carbonBed.position.y = shellBottomY + H * 0.45;
+  carbonBed.position.y = shellBottomY + H * 0.49;
   group.add(carbonBed);
 
   // Carbon granule sprinkles (animated wobble)
@@ -487,10 +697,11 @@ function buildSingleColumn(letter, indexZeroBased) {
     side: THREE.DoubleSide,
   });
   const slurry = new THREE.Mesh(
-    new THREE.CylinderGeometry(R - 0.04, R - 0.04, 0.24, 32),
+    new THREE.CylinderGeometry(R - 0.08, R - 0.08, 0.22, 32),
     slurryMat
   );
-  slurry.position.y = shellBottomY + H * 0.90;
+  // Sit the wash-water layer JUST INSIDE the visible glass top so it reads through.
+  slurry.position.y = shellBottomY + H * 0.82;
   slurry.userData.basePhase = Math.random() * Math.PI * 2;
   slurry.userData.baseY = slurry.position.y;
   slurrySurfaces.push(slurry);
@@ -688,12 +899,13 @@ function buildSingleColumn(letter, indexZeroBased) {
   tag.position.set(0, shellBottomY + H * 0.78, R + 0.03);
   group.add(tag);
 
-  // "Activated Carbon Bed" sub-label — bright white in reference, smaller and centered
-  const subtag = makeStencilLabel('Activated\nCarbon Bed', {
-    color: '#ffffff', size: 32, width: 256, height: 128,
+  // "Activated Carbon Bed" sub-label — stacked vertically inside the glass window,
+  // larger so it reads clearly at default camera distance (matches reference style).
+  const subtag = makeStencilLabel('Activated\nCarbon\nBed', {
+    color: '#ffffff', size: 44, width: 256, height: 320,
   });
-  subtag.scale.set(0.75, 0.75, 0.75);
-  subtag.position.set(0, shellBottomY + H * 0.42, R + 0.20);
+  subtag.scale.set(0.85, 0.85, 0.85);
+  subtag.position.set(0, shellBottomY + H * 0.50, R + 0.22);
   group.add(subtag);
 
   return group;
@@ -1428,35 +1640,8 @@ function buildRaffinateTank() {
   outletBoss.position.set(tankX, deckY - 0.10, tankR * 0.3);
   scene.add(outletBoss);
 
-  // Small green pump motor in front-right of the raffinate tank (reference has one here)
-  const greenMotorMat = new THREE.MeshStandardMaterial({
-    color: 0x3e8b3e, roughness: 0.5, metalness: 0.55,
-  });
-  const greenMotor = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.18, 0.18, 0.50, 18),
-    greenMotorMat
-  );
-  greenMotor.rotation.z = Math.PI / 2;
-  greenMotor.position.set(tankX - 0.5, deckY + 0.30, tankR + 0.55);
-  greenMotor.castShadow = true;
-  scene.add(greenMotor);
-
-  // Pump volute on the green motor
-  const greenVolute = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.16, 0.16, 0.28, 16),
-    new THREE.MeshStandardMaterial({ color: 0x6a5a2a, roughness: 0.5, metalness: 0.75 })
-  );
-  greenVolute.rotation.z = Math.PI / 2;
-  greenVolute.position.set(tankX - 0.1, deckY + 0.30, tankR + 0.55);
-  scene.add(greenVolute);
-
-  // Pump baseplate
-  const greenBase = new THREE.Mesh(
-    new THREE.BoxGeometry(0.85, 0.08, 0.45),
-    new THREE.MeshStandardMaterial({ color: 0x35383d, roughness: 0.7, metalness: 0.5 })
-  );
-  greenBase.position.set(tankX - 0.25, deckY + 0.04, tankR + 0.55);
-  scene.add(greenBase);
+  // (Reference shows Raffinate Tank as a clean stainless tank — no green pump on this side.
+  //  The green agitator belongs to TK-101, the blue centrifugal pumps live in front of TK-101.)
 }
 
 /* ============================ TK-101 (ET-101) TANK ============================
@@ -1673,70 +1858,157 @@ function buildPumpSkid() {
     basePlate.castShadow = true;
     scene.add(basePlate);
 
-    // Motor (industrial green body — matches the reference pump-motor color)
+    // Motor (royal-blue industrial pump motor — matches reference's centrifugal pumps)
     const motorMat = new THREE.MeshStandardMaterial({
-      color: 0x2f9a3a, roughness: 0.45, metalness: 0.55,
-      emissive: 0x0e2e12, emissiveIntensity: 0.08,
+      color: 0x1d4ed8, roughness: 0.45, metalness: 0.55,
+      emissive: 0x0a1f5e, emissiveIntensity: 0.08,
     });
     const motor = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.20, 0.20, 0.55, 20),
+      new THREE.CylinderGeometry(0.22, 0.22, 0.62, 22),
       motorMat
     );
     motor.rotation.z = Math.PI / 2;
-    motor.position.set(px - 0.18, deckY + 0.35, baseZ);
+    motor.position.set(px - 0.18, deckY + 0.40, baseZ);
     motor.castShadow = true;
     scene.add(motor);
 
-    // Cooling fins
-    for (let f = 0; f < 8; f++) {
-      const ang = (f / 8) * Math.PI * 2;
+    // Cooling fins (vertical ribs around motor like a TEFC enclosure)
+    for (let f = 0; f < 10; f++) {
+      const ang = (f / 10) * Math.PI * 2;
       const fin = new THREE.Mesh(
-        new THREE.BoxGeometry(0.45, 0.02, 0.05),
-        motorMat
+        new THREE.BoxGeometry(0.55, 0.028, 0.04),
+        new THREE.MeshStandardMaterial({
+          color: 0x1538a8, roughness: 0.55, metalness: 0.5,
+        })
       );
       fin.position.set(
         px - 0.18,
-        deckY + 0.35 + Math.sin(ang) * 0.21,
-        baseZ + Math.cos(ang) * 0.21
+        deckY + 0.40 + Math.sin(ang) * 0.235,
+        baseZ + Math.cos(ang) * 0.235
       );
       fin.rotation.x = ang;
       scene.add(fin);
     }
 
-    // Motor cap
-    const cap = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 0.12, 14),
-      motorMat
+    // Motor cooling fan housing (dark) at the back of the motor
+    const fanHouse = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.20, 0.20, 0.14, 16),
+      new THREE.MeshStandardMaterial({ color: 0x141926, roughness: 0.7, metalness: 0.3 })
     );
-    cap.rotation.z = Math.PI / 2;
-    cap.position.set(px - 0.50, deckY + 0.35, baseZ);
-    scene.add(cap);
+    fanHouse.rotation.z = Math.PI / 2;
+    fanHouse.position.set(px - 0.55, deckY + 0.40, baseZ);
+    scene.add(fanHouse);
 
-    // Pump volute (gold/bronze cylindrical body)
+    // Pump volute (polished stainless cylindrical body)
+    const voluteMat = new THREE.MeshStandardMaterial({
+      color: 0xb8bcc2, roughness: 0.25, metalness: 0.92,
+    });
     const volute = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.18, 0.18, 0.32, 18),
-      new THREE.MeshStandardMaterial({ color: 0x6a5a2a, roughness: 0.5, metalness: 0.75 })
+      new THREE.CylinderGeometry(0.21, 0.21, 0.30, 22),
+      voluteMat
     );
     volute.rotation.z = Math.PI / 2;
-    volute.position.set(px + 0.20, deckY + 0.35, baseZ);
+    volute.position.set(px + 0.22, deckY + 0.40, baseZ);
     scene.add(volute);
 
-    // Suction pipe coming from TK-101 (small horizontal pipe stub)
+    // Coupling between motor and volute
+    const coupling = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.10, 0.10, 0.14, 14),
+      voluteMat
+    );
+    coupling.rotation.z = Math.PI / 2;
+    coupling.position.set(px + 0.04, deckY + 0.40, baseZ);
+    scene.add(coupling);
+
+    // Suction pipe (horizontal stub heading back toward TK-101)
     const suction = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.07, 0.07, 0.6, 12),
-      new THREE.MeshStandardMaterial({ color: 0x5a4a2a, roughness: 0.5, metalness: 0.7 })
+      new THREE.CylinderGeometry(0.08, 0.08, 0.7, 14),
+      voluteMat
     );
     suction.rotation.x = Math.PI / 2;
-    suction.position.set(px + 0.34, deckY + 0.35, baseZ - 0.30);
+    suction.position.set(px + 0.34, deckY + 0.40, baseZ - 0.35);
     scene.add(suction);
 
-    // Discharge stub going up
-    const disch = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.06, 0.06, 0.55, 12),
-      new THREE.MeshStandardMaterial({ color: 0x5a4a2a, roughness: 0.5, metalness: 0.7 })
+    // Discharge elbow + vertical riser
+    const dischElbow = new THREE.Mesh(
+      new THREE.TorusGeometry(0.10, 0.07, 10, 18, Math.PI / 2),
+      voluteMat
     );
-    disch.position.set(px + 0.34, deckY + 0.62, baseZ);
+    dischElbow.position.set(px + 0.34, deckY + 0.65, baseZ);
+    dischElbow.rotation.y = Math.PI / 2;
+    scene.add(dischElbow);
+
+    const disch = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.07, 0.07, 0.6, 14),
+      voluteMat
+    );
+    disch.position.set(px + 0.34, deckY + 0.95, baseZ);
     scene.add(disch);
+  }
+
+  // ---- COMMON SUCTION HEADER from TK-101 side outlet → both pumps ----
+  // The reference shows the pumps drawing from the mixing tank; without this
+  // line the pumps look like they're sitting in mid-air with no source.
+  const stainlessMat = new THREE.MeshStandardMaterial({
+    color: 0xb8bcc2, roughness: 0.25, metalness: 0.92,
+  });
+  const flangeMat = new THREE.MeshStandardMaterial({
+    color: 0x6a6d72, roughness: 0.4, metalness: 0.9,
+  });
+
+  const tkRightWallX = (startX - 4.0) + 1.05;   // TK-101 tankX + tankR
+  const sucZ = baseZ - 0.35;                      // pumps' suction-stub Z
+  const sucY = deckY + 0.40;                      // pumps' suction-stub Y
+
+  // 1) Side nozzle on TK-101 wall (short horizontal stub)
+  const tkNozzle = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.10, 0.10, 0.25, 16),
+    stainlessMat
+  );
+  tkNozzle.rotation.z = Math.PI / 2;
+  tkNozzle.position.set(tkRightWallX + 0.10, sucY, 0);
+  scene.add(tkNozzle);
+
+  const tkNozzleFlange = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.14, 0.14, 0.04, 16),
+    flangeMat
+  );
+  tkNozzleFlange.rotation.z = Math.PI / 2;
+  tkNozzleFlange.position.set(tkRightWallX + 0.24, sucY, 0);
+  scene.add(tkNozzleFlange);
+
+  // 2) Forward jog from z=0 (tank center plane) to z=sucZ (pump suction plane)
+  const fwdLen = sucZ;
+  const fwdJog = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.08, 0.08, fwdLen, 16),
+    stainlessMat
+  );
+  fwdJog.rotation.x = Math.PI / 2;
+  fwdJog.position.set(tkRightWallX + 0.30, sucY, sucZ / 2);
+  scene.add(fwdJog);
+
+  // 3) Horizontal header running across both pumps along z=sucZ
+  const headerStartX = tkRightWallX + 0.30;
+  const headerEndX = baseX + 0.5 * 1.1 + 0.34;      // beyond the right pump's stub
+  const headerLen = headerEndX - headerStartX;
+  const sucHeader = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.08, 0.08, headerLen, 16),
+    stainlessMat
+  );
+  sucHeader.rotation.z = Math.PI / 2;
+  sucHeader.position.set((headerStartX + headerEndX) / 2, sucY, sucZ);
+  sucHeader.castShadow = true;
+  scene.add(sucHeader);
+
+  // Tee fittings where each pump's suction stub joins the header
+  for (let i = 0; i < 2; i++) {
+    const px = baseX + (i - 0.5) * 1.1;
+    const tee = new THREE.Mesh(
+      new THREE.SphereGeometry(0.10, 12, 10),
+      flangeMat
+    );
+    tee.position.set(px + 0.34, sucY, sucZ);
+    scene.add(tee);
   }
 }
 
@@ -1747,20 +2019,59 @@ function buildPumpSkid() {
 function buildFrontSkidLabels() {
   const colsWidth = (CONFIG.columnCount - 1) * CONFIG.columnSpacing;
   const deckY = CONFIG.skidDeckY;
-  // Reference shows all four callouts in a uniform deep red/maroon stencil
-  // typeface along the front face of the concrete skid.
-  const MAROON = '#9a1d20';
-  const labels = ['Pre', 'Drain', 'Bypas', 'Brinat'];
+  // Reference: 4 painted-and-flagged process lines run the length of the skid
+  // (red / orange / green / blue), each tagged with a maroon stencil
+  // (Pre / Drain / Bypas / Brinat). Replace flat stickers with real piping.
+  const PROC = [
+    { name: 'Pre',    pipe: 0xb91c1c, label: '#9a1d20' },
+    { name: 'Drain',  pipe: 0xea580c, label: '#9a1d20' },
+    { name: 'Bypas',  pipe: 0x16a34a, label: '#9a1d20' },
+    { name: 'Brinat', pipe: 0x2563eb, label: '#9a1d20' },
+  ];
 
-  const startX = -colsWidth / 2;
-  for (let i = 0; i < labels.length; i++) {
-    const x = startX + i * (colsWidth / (labels.length - 1));
-    const lbl = makeStencilLabel(labels[i], {
-      color: MAROON, size: 42, width: 256, height: 64,
+  const startX = -colsWidth / 2 - 0.8;
+  const endX = colsWidth / 2 + 0.8;
+  const totalLen = endX - startX;
+  const frontZ = 2.93;
+
+  // 4 horizontal painted pipes stacked vertically just under the deck overhang
+  for (let i = 0; i < PROC.length; i++) {
+    const proc = PROC[i];
+    const py = deckY - 0.10 - i * 0.13;  // stacked from top to bottom
+
+    // Painted process pipe (real cylinder, not a sticker)
+    const pipe = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.055, 0.055, totalLen, 18),
+      new THREE.MeshStandardMaterial({
+        color: proc.pipe, roughness: 0.45, metalness: 0.3,
+      })
+    );
+    pipe.rotation.z = Math.PI / 2;
+    pipe.position.set((startX + endX) / 2, py, frontZ);
+    pipe.castShadow = true;
+    scene.add(pipe);
+
+    // End-cap flanges
+    for (const ex of [startX, endX]) {
+      const cap = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.08, 0.04, 14),
+        new THREE.MeshStandardMaterial({
+          color: 0x6a6d72, roughness: 0.4, metalness: 0.9,
+        })
+      );
+      cap.rotation.z = Math.PI / 2;
+      cap.position.set(ex, py, frontZ);
+      scene.add(cap);
+    }
+
+    // Painted ID tag on the pipe — bigger so it reads at default camera distance
+    const tagX = startX + (i * 2 + 1) * (totalLen / (PROC.length * 2));
+    const tag = makeStencilLabel(proc.name.toUpperCase(), {
+      color: '#ffffff', size: 84, width: 384, height: 128,
     });
-    lbl.scale.set(0.68, 0.68, 0.68);
-    lbl.position.set(x, deckY - 0.20, 2.96);
-    scene.add(lbl);
+    tag.scale.set(0.85, 0.85, 0.85);
+    tag.position.set(tagX, py, frontZ + 0.062);
+    scene.add(tag);
   }
 }
 
@@ -1949,17 +2260,10 @@ function buildSideStair(stairTopX, platformY, stairZ, deckY) {
  * Only on column D (right side) — provides access to the dome manhole.
  * ============================================================================ */
 function buildAccessLadders() {
-  const startX = -((CONFIG.columnCount - 1) * CONFIG.columnSpacing) / 2;
-  const colDx = startX + (CONFIG.columnCount - 1) * CONFIG.columnSpacing;
-  const cone = CONFIG.coneHeight;
-  const H = CONFIG.columnHeight;
-  const R = CONFIG.columnRadius;
-  const deckY = CONFIG.skidDeckY;
-
-  const ladderHeight = cone + H + R - 0.5;
-  const ladder = buildLadder(ladderHeight);
-  ladder.position.set(colDx + R + 0.15, deckY, R + 0.05);
-  scene.add(ladder);
+  // The reference image does not show a tall vertical access ladder between
+  // column D and the Raffinate Tank; that area is reserved for the handrailed
+  // walkway. Keeping a ladder there blocks the Raffinate Tank from camera.
+  // Walkway access stairs are built in buildHeaderWalkway().
 }
 
 function buildLadder(height) {
@@ -2011,18 +2315,19 @@ function buildOverheadLabel() {
 
   const headerY = deckY + cone + H + R * 0.35 + 0.18 + 1.3 + 1.4;
 
+  // Dark stencil over cream backdrop reads much better than gold-on-cream
   const title = makeStencilLabel('KARBON ADSORPSİYON', {
-    color: '#f5d76e', size: 68, monospace: false, width: 1024, height: 128,
+    color: '#1a2030', size: 96, monospace: false, width: 1280, height: 192,
   });
-  title.scale.set(2.0, 2.0, 2.0);
+  title.scale.set(2.2, 2.2, 2.2);
   title.position.set(0, headerY, 0);
   scene.add(title);
 
   const subtitle = makeStencilLabel('C-201 A / B / C / D', {
-    color: '#c8a342', size: 48, monospace: true, width: 1024, height: 128,
+    color: '#4a5266', size: 56, monospace: true, width: 1024, height: 128,
   });
-  subtitle.scale.set(1.3, 1.3, 1.3);
-  subtitle.position.set(0, headerY - 0.85, 0);
+  subtitle.scale.set(1.4, 1.4, 1.4);
+  subtitle.position.set(0, headerY - 0.95, 0);
   scene.add(subtitle);
 }
 
@@ -2131,15 +2436,15 @@ function makeColumnHeaderLabel(text) {
 /* "Backwash Water" overhead label — crisp dark text with a subtle off-white
  * backing plate, mirroring the catalog-style annotation in the reference. */
 function makeBackwashLabel(text) {
-  const w = 512, h = 96;
+  const w = 768, h = 160;
   const c = document.createElement('canvas');
   c.width = w; c.height = h;
   const ctx = c.getContext('2d');
 
-  // Soft cream backing plate (transparent at edges)
-  ctx.fillStyle = 'rgba(248, 244, 232, 0.88)';
-  const pad = 18;
-  const radius = 14;
+  // Soft cream backing plate
+  ctx.fillStyle = 'rgba(248, 244, 232, 0.94)';
+  const pad = 22;
+  const radius = 18;
   ctx.beginPath();
   ctx.moveTo(pad + radius, pad);
   ctx.lineTo(w - pad - radius, pad);
@@ -2152,19 +2457,28 @@ function makeBackwashLabel(text) {
   ctx.quadraticCurveTo(pad, pad, pad + radius, pad);
   ctx.fill();
 
+  // Down-arrow inside the plate so the reader sees direction of flow
+  ctx.fillStyle = '#1d4ed8';
+  ctx.beginPath();
+  ctx.moveTo(w / 2 - 40, h - 50);
+  ctx.lineTo(w / 2 + 40, h - 50);
+  ctx.lineTo(w / 2, h - 16);
+  ctx.closePath();
+  ctx.fill();
+
   // Dark text
   ctx.fillStyle = '#1a1410';
-  ctx.font = 'bold 42px Inter, sans-serif';
+  ctx.font = 'bold 64px Inter, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, w / 2, h / 2);
+  ctx.fillText(text, w / 2, h / 2 - 12);
 
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
 
   const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
-  const pw = 2.0;
+  const pw = 1.85;                        // narrower than column spacing (3.0) so no overlap
   const ph = pw * (h / w);
   return new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), mat);
 }
@@ -2387,9 +2701,19 @@ function onResize() {
 /* ============================ SLIDE INTEGRATION ============================ */
 window.addEventListener('slidechange', (e) => {
   if (e.detail.index === CONFIG.slideIndex) {
-    init();
-    setTimeout(onResize, 50);
-    startRendering();
+    // Slayt 8 atlasında küçük canvas'a mount edilmiş olabilir;
+    // büyük equipment canvas'ına geçişi mount() pattern'iyle güvenli yap.
+    const targetCanvas = document.getElementById('three-canvas-carbon-ads');
+    if (!targetCanvas) return;
+    if (initialized && canvas === targetCanvas) {
+      startRendering();
+      setTimeout(onResize, 50);
+    } else {
+      if (initialized) _disposeForMount();
+      init(targetCanvas);
+      setTimeout(onResize, 50);
+      startRendering();
+    }
   } else {
     stopRendering();
   }
@@ -2459,11 +2783,10 @@ window.threeCarbonAds = {
     startRendering();
   },
   unmount() {
-    if (!initialized) {
-      if (frameId !== null) { cancelAnimationFrame(frameId); frameId = null; }
-      return;
-    }
-    _disposeForMount();
+    // Sadece render döngüsünü durdur — renderer/context/canvas yaşar.
+    // Aynı canvas'a tekrar mount edildiğinde fast-path (initialized && canvas === canvasEl)
+    // devreye girer; aksi halde forceContextLoss canvas'ı kalıcı öldürür → beyaz ekran.
+    stopRendering();
   },
   get isMounted() { return initialized; },
   get currentCanvas() { return canvas; },

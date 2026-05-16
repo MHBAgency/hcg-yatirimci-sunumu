@@ -2028,9 +2028,19 @@ function onResize() {
 
 window.addEventListener('slidechange', (e) => {
   if (e.detail.index === 10) {  // Slide 11 (data-slide="11"), 0-based DOM index = 10
-    init();
-    setTimeout(onResize, 50);
-    startRendering();
+    // Slayt 8 atlasında küçük canvas'a mount edilmiş olabilir;
+    // büyük equipment canvas'ına geçişi mount() pattern'iyle güvenli yap.
+    const targetCanvas = document.getElementById('three-canvas');
+    if (!targetCanvas) return;
+    if (initialized && canvas === targetCanvas) {
+      startRendering();
+      setTimeout(onResize, 50);
+    } else {
+      if (initialized) _disposeForMount();
+      init(targetCanvas);
+      setTimeout(onResize, 50);
+      startRendering();
+    }
   } else {
     // User left CIL slide — pause render loop to free up CPU/GPU
     stopRendering();
@@ -2097,11 +2107,10 @@ window.threeCilTank = {
     startRendering();
   },
   unmount() {
-    if (!initialized) {
-      if (frameId !== null) { cancelAnimationFrame(frameId); frameId = null; }
-      return;
-    }
-    _disposeForMount();
+    // Sadece render döngüsünü durdur — renderer/context/canvas yaşar.
+    // Aynı canvas'a tekrar mount edildiğinde fast-path (initialized && canvas === canvasEl)
+    // devreye girer; aksi halde forceContextLoss canvas'ı kalıcı öldürür → beyaz ekran.
+    stopRendering();
   },
   get isMounted() { return initialized; },
   get currentCanvas() { return canvas; },

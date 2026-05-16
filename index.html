@@ -22,9 +22,8 @@
 <!-- ================ LOADING OVERLAY ================ -->
 <div id="app-loader" class="app-loader">
   <div class="loader-emblem">
-    <div class="loader-au">Au</div>
+    <img class="loader-logo" src="assets/images/nte-pars-logo.svg" alt="NTE Pars Metal" width="220" height="220" />
     <div class="loader-brand">HİKMET ÇETİN GOLD</div>
-    <div class="loader-sub">NTE PARS METAL</div>
   </div>
   <div class="loader-bar">
     <div class="loader-fill" id="loader-fill"></div>
@@ -2914,9 +2913,29 @@
 
       <span class="dna-closing__divider dna-anim-fade dna-delay-2"></span>
 
+      <div class="dna-install-block dna-anim-fade-up dna-delay-3" data-pwa-block>
+        <button type="button" class="dna-install" data-pwa-trigger aria-label="Sunumu bilgisayara kur">
+          <span class="dna-install__icon" aria-hidden="true">
+            <svg class="dna-install__icon-svg dna-install__icon-svg--default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v12"/>
+              <path d="m7 10 5 5 5-5"/>
+              <path d="M5 21h14"/>
+            </svg>
+            <svg class="dna-install__icon-svg dna-install__icon-svg--done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m5 12 5 5L20 7"/>
+            </svg>
+          </span>
+          <span class="dna-install__copy">
+            <span class="dna-install__label" data-pwa-label>Bilgisayara Kur</span>
+            <span class="dna-install__sub" data-pwa-sub>Tek tıkla · İnternet olmadan da açılır</span>
+          </span>
+        </button>
+        <p class="dna-install__status" data-pwa-status></p>
+      </div>
+
       <div class="dna-closing__brand dna-anim-fade-up dna-delay-3">
-        <span class="dna-closing__brand-main">NTE PARS METAL</span>
-        <span class="dna-closing__brand-sub">NTE Pars Metal projesi</span>
+        <img class="dna-closing__logo" src="assets/images/nte-pars-logo.svg" alt="NTE Pars Metal" width="320" height="320" />
+        <span class="dna-closing__brand-sub">Hikmet ÇETİN · NTE Pars Metal projesi</span>
       </div>
 
       <div class="dna-closing__contact dna-stagger dna-delay-4">
@@ -2974,6 +2993,7 @@
 <!-- App scripts -->
 <script src="scripts/loading-progress.js"></script>
 <script src="scripts/sw-register.js"></script>
+<script src="scripts/pwa-install.js?v=1" defer></script>
 <script src="scripts/slide2-reveal.js?v=2"></script>
 <script src="scripts/slide3-reveal.js?v=1"></script>
 <script src="scripts/slide4-reveal.js?v=1"></script>
@@ -2985,12 +3005,12 @@
 <script src="scripts/navigation.js?v=10"></script>
 <script src="scripts/equipment-toggle.js"></script>
 <script src="scripts/map-world.js"></script>
-<script type="module" src="scripts/three-cil-tank.js?v=2"></script>
-<script type="module" src="scripts/three-roaster.js?v=2"></script>
-<script type="module" src="scripts/three-oxygen.js?v=2"></script>
-<script type="module" src="scripts/three-carbon-adsorption.js?v=2"></script>
-<script type="module" src="scripts/three-carbon-regen.js?v=2"></script>
-<script type="module" src="scripts/three-electrowinning.js?v=2"></script>
+<script type="module" src="scripts/three-cil-tank.js?v=3"></script>
+<script type="module" src="scripts/three-roaster.js?v=3"></script>
+<script type="module" src="scripts/three-oxygen.js?v=4"></script>
+<script type="module" src="scripts/three-carbon-adsorption.js?v=8"></script>
+<script type="module" src="scripts/three-carbon-regen.js?v=8"></script>
+<script type="module" src="scripts/three-electrowinning.js?v=4"></script>
 
 </body>
 </html>

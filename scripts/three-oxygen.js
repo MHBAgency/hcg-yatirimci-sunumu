@@ -24,20 +24,20 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const CONFIG = {
   // Skid (the blue base)
-  skidWidth: 18.0,
+  skidWidth: 18.6,
   skidDepth: 6.0,
   skidHeight: 0.55,
 
   // X anchors (centered around 0), front-on view
   panelX:       -7.6,   // control cabinet
-  psaCenterX:   -3.4,   // midpoint between PSA A and B
-  psaSpacing:    2.0,   // distance between A and B (slimmer towers, closer together)
-  manifoldX:    -3.4,   // piping manifold sits between A and B
-  compressorX:   0.6,   // vertical AIR COMPRESSOR tank
-  boosterX:      2.8,   // small blue booster skid
-  oxyTank1X:     4.5,   // OXYGEN buffer #1
-  oxyTank2X:     6.1,   // OXYGEN buffer #2
-  cylindersX:    7.85,  // O2 cylinder rack
+  psaCenterX:   -3.8,   // midpoint between PSA A and B
+  psaSpacing:    2.6,   // distance between A and B (wider for visible manifold)
+  manifoldX:    -3.8,   // piping manifold sits between A and B
+  compressorX:   0.2,   // vertical AIR COMPRESSOR tank
+  boosterX:      1.6,   // small blue booster skid
+  oxyTank1X:     3.4,   // OXYGEN buffer #1
+  oxyTank2X:     4.9,   // OXYGEN buffer #2
+  cylindersX:    6.6,   // O2 cylinder rack
 
   // PSA columns — slimmer & taller to match reference
   psaRadius:     0.70,
@@ -86,30 +86,30 @@ function init(targetCanvas) {
   renderer.setSize(width, height, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.12;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x9cc4dc); // slightly bluer sky (matches reference)
-  scene.fog = new THREE.Fog(0xb6cfdc, 42, 100);
+  scene.background = new THREE.Color(0x000000);
+  scene.fog = new THREE.Fog(0x000000, 42, 100);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
-  // Camera — front-on, slight elevation, to match the reference photo composition
-  camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 200);
-  camera.position.set(0, 4.5, 20.5);
-  camera.lookAt(0, 2.9, 0);
+  // Camera — front-on, slight elevation, tighter framing to match the reference photo
+  camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 200);
+  camera.position.set(0, 3.6, 17.5);
+  camera.lookAt(0, 2.6, 0);
 
   controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.06;
-  controls.minDistance = 12;
-  controls.maxDistance = 38;
+  controls.minDistance = 11;
+  controls.maxDistance = 32;
   controls.minPolarAngle = Math.PI * 0.18;
   controls.maxPolarAngle = Math.PI * 0.52;
-  controls.target.set(0, 2.9, 0);
+  controls.target.set(0, 2.6, 0);
   controls.addEventListener('start', () => {
     lastUserInteraction = Date.now();
     autoRotateEnabled = false;
@@ -139,7 +139,7 @@ function setupLights() {
   const hemi = new THREE.HemisphereLight(0xfff4e2, 0x6b6052, 0.85);
   scene.add(hemi);
 
-  const key = new THREE.DirectionalLight(0xffffff, 2.0);
+  const key = new THREE.DirectionalLight(0xffffff, 1.7);
   key.position.set(8, 16, 12);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
@@ -152,7 +152,7 @@ function setupLights() {
   key.shadow.bias = -0.0005;
   scene.add(key);
 
-  const fill = new THREE.DirectionalLight(0xc9d8e8, 0.5);
+  const fill = new THREE.DirectionalLight(0xc9d8e8, 0.65);
   fill.position.set(-10, 8, 6);
   scene.add(fill);
 
@@ -161,106 +161,9 @@ function setupLights() {
   scene.add(back);
 }
 
-/* ============================ BACKDROP (sky, hills, mining elements) ============================ */
+/* ============================ BACKDROP ============================ */
 function buildBackdrop() {
-  // Distant blue mountain silhouette (jagged)
-  const mountainShape = new THREE.Shape();
-  mountainShape.moveTo(-90, 0);
-  const peaks = [
-    [-78, 4], [-66, 9], [-55, 6], [-42, 12], [-30, 8],
-    [-18, 14], [-6, 9], [6, 13], [20, 7], [34, 11],
-    [48, 6], [62, 10], [76, 5], [90, 8],
-  ];
-  for (const p of peaks) mountainShape.lineTo(p[0], p[1]);
-  mountainShape.lineTo(90, 0);
-  mountainShape.lineTo(-90, 0);
-  const mountainGeo = new THREE.ShapeGeometry(mountainShape);
-  const mountains = new THREE.Mesh(
-    mountainGeo,
-    new THREE.MeshBasicMaterial({ color: 0x5d6b78, fog: true })
-  );
-  mountains.position.set(0, 2, -44);
-  scene.add(mountains);
-
-  // Closer dark brown hill (mining-pad waste rock)
-  const wasteRockShape = new THREE.Shape();
-  wasteRockShape.moveTo(-60, 0);
-  const wPeaks = [
-    [-50, 3], [-38, 7], [-26, 4], [-14, 8], [-2, 5],
-    [10, 9], [22, 4], [34, 6], [46, 3], [60, 5],
-  ];
-  for (const p of wPeaks) wasteRockShape.lineTo(p[0], p[1]);
-  wasteRockShape.lineTo(60, 0);
-  wasteRockShape.lineTo(-60, 0);
-  const wasteRock = new THREE.Mesh(
-    new THREE.ShapeGeometry(wasteRockShape),
-    new THREE.MeshBasicMaterial({ color: 0x4a4030, fog: true })
-  );
-  wasteRock.position.set(0, 1, -32);
-  scene.add(wasteRock);
-
-  // ---- LEFT: suggestion of a conveyor (dark angled bar going up-left) ----
-  const conveyor = new THREE.Mesh(
-    new THREE.BoxGeometry(18, 1.2, 0.6),
-    new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.7, metalness: 0.2, fog: true })
-  );
-  conveyor.position.set(-22, 5, -22);
-  conveyor.rotation.z = 0.32;
-  scene.add(conveyor);
-
-  // Conveyor support legs
-  for (let i = 0; i < 3; i++) {
-    const leg = new THREE.Mesh(
-      new THREE.BoxGeometry(0.25, 5, 0.25),
-      new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.7, fog: true })
-    );
-    leg.position.set(-28 + i * 5, 2.5 + i * 1.2, -22);
-    scene.add(leg);
-  }
-
-  // Crushed ore pile near conveyor base (gray cone)
-  const orePile = new THREE.Mesh(
-    new THREE.ConeGeometry(6, 4, 24),
-    new THREE.MeshStandardMaterial({ color: 0x5a5550, roughness: 0.95, fog: true })
-  );
-  orePile.position.set(-18, 2, -24);
-  scene.add(orePile);
-
-  // ---- RIGHT: suggestion of fuel/process tank farm in distance ----
-  for (let i = 0; i < 4; i++) {
-    const tankFar = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.6, 1.6, 2.6, 20),
-      new THREE.MeshStandardMaterial({ color: 0xe2e6ea, roughness: 0.6, metalness: 0.2, fog: true })
-    );
-    tankFar.position.set(20 + i * 3.6, 1.3, -28);
-    scene.add(tankFar);
-  }
-
-  // White cloud streaks plane (subtle, very far)
-  const cloudsCanvas = document.createElement('canvas');
-  cloudsCanvas.width = 1024;
-  cloudsCanvas.height = 256;
-  const cctx = cloudsCanvas.getContext('2d');
-  cctx.fillStyle = 'rgba(255,255,255,0)';
-  cctx.fillRect(0, 0, 1024, 256);
-  cctx.fillStyle = 'rgba(255,255,255,0.55)';
-  for (let i = 0; i < 18; i++) {
-    const x = Math.random() * 1024;
-    const y = Math.random() * 180;
-    const w = 60 + Math.random() * 220;
-    const h = 18 + Math.random() * 30;
-    cctx.beginPath();
-    cctx.ellipse(x, y, w, h, 0, 0, Math.PI * 2);
-    cctx.fill();
-  }
-  const cloudTex = new THREE.CanvasTexture(cloudsCanvas);
-  cloudTex.colorSpace = THREE.SRGBColorSpace;
-  const clouds = new THREE.Mesh(
-    new THREE.PlaneGeometry(200, 50),
-    new THREE.MeshBasicMaterial({ map: cloudTex, transparent: true, fog: false })
-  );
-  clouds.position.set(0, 16, -55);
-  scene.add(clouds);
+  // Backdrop intentionally empty — pure black background behind the facility.
 }
 
 /* ============================ GROUND & SKID ============================ */
@@ -269,7 +172,7 @@ function buildGroundAndSkid() {
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(220, 220),
     new THREE.MeshStandardMaterial({
-      color: 0xa39684,
+      color: 0x9b8a72,
       roughness: 0.98,
       metalness: 0.02,
     })
@@ -322,6 +225,20 @@ function buildGroundAndSkid() {
     beam.position.set(0, 0.09, z);
     beam.castShadow = true;
     skidGroup.add(beam);
+
+    // Forklift pockets: dark rectangular openings on the front beam
+    if (z > 0) {
+      const pocketMat = new THREE.MeshStandardMaterial({ color: 0x0a1626, roughness: 0.9 });
+      for (const px of [-CONFIG.skidWidth * 0.30, -CONFIG.skidWidth * 0.10,
+                         CONFIG.skidWidth * 0.10, CONFIG.skidWidth * 0.30]) {
+        const pocket = new THREE.Mesh(
+          new THREE.BoxGeometry(0.50, 0.10, 0.05),
+          pocketMat
+        );
+        pocket.position.set(px, 0.09, z + 0.16);
+        skidGroup.add(pocket);
+      }
+    }
   }
 
   scene.add(skidGroup);
@@ -500,6 +417,30 @@ function buildControlCabinet() {
   handle.position.set(x + 0.7, deckY + 0.5, d / 2 + 0.022);
   g.add(handle);
 
+  // Cable ladder coming out of the cabinet right side, running down toward the deck
+  const ladderMat = new THREE.MeshStandardMaterial({
+    color: 0x9aa0a8, roughness: 0.5, metalness: 0.6,
+  });
+  const ladderRailLen = 1.6;
+  const ladderY = deckY + h * 0.5;
+  for (const zr of [-0.10, 0.10]) {  // two side-rails of the ladder
+    const rail = new THREE.Mesh(
+      new THREE.BoxGeometry(ladderRailLen, 0.05, 0.04),
+      ladderMat
+    );
+    rail.position.set(x + w / 2 + 0.05 + ladderRailLen / 2, ladderY, zr);
+    g.add(rail);
+  }
+  // Rungs / cable trays
+  for (let i = 0; i < 6; i++) {
+    const rung = new THREE.Mesh(
+      new THREE.BoxGeometry(0.04, 0.04, 0.24),
+      ladderMat
+    );
+    rung.position.set(x + w / 2 + 0.20 + i * 0.26, ladderY, 0);
+    g.add(rung);
+  }
+
   scene.add(g);
 }
 
@@ -600,71 +541,136 @@ function buildPSAUnit() {
     ring.userData = { phase: t.label === 'A' ? 0 : Math.PI };
     psaColumnLights.push(ring);
     g.add(ring);
-  }
 
-  // ---- Shared GREEN DOME silencer/manifold on top, bridging the two towers ----
-  // Connecting horizontal pipe at the very top
-  const topPipe = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.14, 0.14, CONFIG.psaSpacing + 0.4, 20),
-    new THREE.MeshStandardMaterial({
-      color: 0xb0b6bd, roughness: 0.4, metalness: 0.7,
-    })
-  );
-  topPipe.rotation.z = Math.PI / 2;
-  topPipe.position.set(cx, deckY + CONFIG.psaHeight + 0.50, 0);
-  g.add(topPipe);
+    // Pressure safety valve on tower body (just below the top dome, on +Z side)
+    const psvStem = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.06, 0.06, 0.20, 14),
+      new THREE.MeshStandardMaterial({ color: 0x8a909a, roughness: 0.4, metalness: 0.7 })
+    );
+    psvStem.rotation.x = Math.PI / 2;
+    psvStem.position.set(t.x, deckY + CONFIG.psaHeight - 0.30, CONFIG.psaRadius + 0.10);
+    g.add(psvStem);
 
-  // Small vertical risers from each column top into the green dome
-  for (const t of towers) {
-    const riser = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 0.55, 20),
+    const psvBody = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.09, 0.09, 0.22, 16),
+      new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.5, metalness: 0.3 })
+    );
+    psvBody.rotation.x = Math.PI / 2;
+    psvBody.position.set(t.x, deckY + CONFIG.psaHeight - 0.30, CONFIG.psaRadius + 0.30);
+    g.add(psvBody);
+
+    // PSV vent stack (short pipe pointing up)
+    const psvVent = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 0.30, 12),
       new THREE.MeshStandardMaterial({ color: 0xb0b6bd, roughness: 0.4, metalness: 0.7 })
     );
-    riser.position.set(t.x, deckY + CONFIG.psaHeight + 0.28, 0);
-    g.add(riser);
+    psvVent.position.set(t.x, deckY + CONFIG.psaHeight - 0.15, CONFIG.psaRadius + 0.30);
+    g.add(psvVent);
   }
 
-  // Green dome — wide, flat mushroom/onion shape (matches the reference silencer)
-  // Build with a wider base ring + a low spherical top
+  // ---- Top piping chain that physically links: tower top → riser → horizontal
+  //      distributor → vertical neck → green silencer dome ----
+  const topPipeMat = new THREE.MeshStandardMaterial({
+    color: 0xb0b6bd, roughness: 0.4, metalness: 0.7,
+  });
+  const topFlangeMat = new THREE.MeshStandardMaterial({
+    color: 0x8a909a, roughness: 0.4, metalness: 0.7,
+  });
+
+  // Short risers up from each tower top
+  const riserH = 0.32;
+  const distY = deckY + CONFIG.psaHeight + riserH + 0.28; // center Y of horizontal distributor
+
+  for (const t of towers) {
+    // Flange on tower head (riser-base coupling)
+    const flBot = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.20, 0.20, 0.06, 22),
+      topFlangeMat
+    );
+    flBot.position.set(t.x, deckY + CONFIG.psaHeight + 0.03, 0);
+    g.add(flBot);
+
+    // Riser itself
+    const riser = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.13, 0.13, riserH, 22),
+      topPipeMat
+    );
+    riser.position.set(t.x, deckY + CONFIG.psaHeight + riserH / 2, 0);
+    g.add(riser);
+
+    // Tee fitting where riser meets the horizontal distributor (slightly oversized)
+    const tee = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.20, 0.20, 0.22, 22),
+      topFlangeMat
+    );
+    tee.position.set(t.x, deckY + CONFIG.psaHeight + riserH + 0.05, 0);
+    g.add(tee);
+  }
+
+  // Horizontal distributor cylinder spanning the two towers
+  const distLen = CONFIG.psaSpacing + 0.50;
+  const distributor = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.22, 0.22, distLen, 28),
+    topPipeMat
+  );
+  distributor.rotation.z = Math.PI / 2;
+  distributor.position.set(cx, distY, 0);
+  distributor.castShadow = true;
+  g.add(distributor);
+
+  // End caps on distributor (hemispherical)
+  for (const sx of [-1, 1]) {
+    const cap = new THREE.Mesh(
+      new THREE.SphereGeometry(0.22, 22, 12, 0, Math.PI * 2, 0, Math.PI / 2),
+      topPipeMat
+    );
+    cap.rotation.z = sx === -1 ? -Math.PI / 2 : Math.PI / 2;
+    cap.position.set(cx + sx * (distLen / 2), distY, 0);
+    g.add(cap);
+  }
+
+  // Green silencer dome assembly — sits on a central neck risers from the distributor
   const domeMat = new THREE.MeshStandardMaterial({
     color: 0x355e3a, roughness: 0.5, metalness: 0.35,
   });
 
-  // Wider, low-profile dome top (scaled hemisphere)
-  const dome = new THREE.Mesh(
-    new THREE.SphereGeometry(0.85, 36, 20, 0, Math.PI * 2, 0, Math.PI / 2),
+  // Vertical neck riser from distributor TOP up to dome base
+  const neckRiserH = 0.30;
+  const neckRiser = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.20, 0.20, neckRiserH, 22),
+    topPipeMat
+  );
+  neckRiser.position.set(cx, distY + 0.22 + neckRiserH / 2, 0);
+  g.add(neckRiser);
+
+  // Cylindrical silencer body (the green "drum")
+  const domeBodyH = 0.22;
+  const domeBodyY = distY + 0.22 + neckRiserH + domeBodyH / 2;
+  const domeBody = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.72, 0.72, domeBodyH, 32),
     domeMat
   );
-  dome.scale.set(1.0, 0.62, 1.0); // flatten vertically
-  dome.position.set(cx, deckY + CONFIG.psaHeight + 0.70, 0);
+  domeBody.position.set(cx, domeBodyY, 0);
+  g.add(domeBody);
+
+  // Dome top (hemisphere, slightly flattened — the mushroom cap)
+  const dome = new THREE.Mesh(
+    new THREE.SphereGeometry(0.72, 36, 20, 0, Math.PI * 2, 0, Math.PI / 2),
+    domeMat
+  );
+  dome.scale.set(1.0, 0.72, 1.0);
+  dome.position.set(cx, domeBodyY + domeBodyH / 2, 0);
   dome.castShadow = true;
   g.add(dome);
 
-  // Cylindrical neck/rim under the dome (gives the "silencer" body)
-  const neck = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.85, 0.85, 0.20, 36),
-    domeMat
-  );
-  neck.position.set(cx, deckY + CONFIG.psaHeight + 0.60, 0);
-  g.add(neck);
-
-  // Small black vent opening on top of dome (matches the chimney-like protrusion)
+  // Small black vent chimney on top of dome
+  const domeTopY = domeBodyY + domeBodyH / 2 + 0.72 * 0.72; // base + flattened-hemi height
   const chim = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.10, 0.10, 0.18, 20),
+    new THREE.CylinderGeometry(0.09, 0.09, 0.18, 18),
     new THREE.MeshStandardMaterial({ color: 0x1c1c1c, roughness: 0.7 })
   );
-  chim.position.set(cx, deckY + CONFIG.psaHeight + 1.18, 0);
+  chim.position.set(cx, domeTopY + 0.09, 0);
   g.add(chim);
-
-  // Side mounting flanges where the risers attach to the dome
-  for (const t of towers) {
-    const flg = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.16, 0.16, 0.05, 20),
-      new THREE.MeshStandardMaterial({ color: 0x8a909a, roughness: 0.4, metalness: 0.7 })
-    );
-    flg.position.set(t.x, deckY + CONFIG.psaHeight + 0.58, 0);
-    g.add(flg);
-  }
 
   // ---- DENSE STAINLESS PIPING MANIFOLD between & in front of the columns ----
   buildPSAManifold(g, cx, deckY);
@@ -681,126 +687,268 @@ function buildPSAManifold(parent, cx, deckY) {
     color: 0x8a909a, roughness: 0.4, metalness: 0.7,
   });
 
-  // Horizontal stainless pipe sections at multiple heights between/in front of the towers
-  const heights = [deckY + 0.45, deckY + 1.05, deckY + 1.75, deckY + 2.55, deckY + 3.35, deckY + 4.10];
-  for (const y of heights) {
+  const half = CONFIG.psaSpacing / 2;
+
+  // ---- SCAFFOLD: 4 blue I-beam posts at corners of manifold + 2 horizontal cross-braces ----
+  // These visually carry the front-header rectangle and the manifold piping.
+  const scaffoldMat = new THREE.MeshStandardMaterial({
+    color: 0x1f4e8e, roughness: 0.5, metalness: 0.4,
+  });
+
+  const scaffH = 4.30;                     // post height (above deck)
+  const scaffZ = 0.62 + 0.10;              // posts sit just behind the front header (header z=0.62)
+  const headerLenForScaff = CONFIG.psaSpacing + 0.20;
+  const scaffXLeft = cx - headerLenForScaff / 2 - 0.05;
+  const scaffXRight = cx + headerLenForScaff / 2 + 0.05;
+
+  // 4 vertical posts (front-left, front-right, back-left, back-right)
+  for (const px of [scaffXLeft, scaffXRight]) {
+    for (const pz of [scaffZ, -0.05]) {   // front post + back post (back posts hug the towers' edge)
+      const post = new THREE.Mesh(
+        new THREE.BoxGeometry(0.10, scaffH, 0.10),
+        scaffoldMat
+      );
+      post.position.set(px, deckY + scaffH / 2, pz);
+      post.castShadow = true;
+      parent.add(post);
+    }
+
+    // Diagonal X-brace on the side panel (front-post to back-post)
+    const diagLen = Math.hypot(scaffZ + 0.05, scaffH * 0.55);
+    const diag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.05, diagLen, 0.05),
+      scaffoldMat
+    );
+    diag.position.set(px, deckY + scaffH * 0.40, (scaffZ - 0.05) / 2);
+    diag.rotation.x = Math.atan2(scaffH * 0.55, scaffZ + 0.05);
+    parent.add(diag);
+  }
+
+  // Horizontal cross-braces at top connecting the 4 posts (front + back rail at roof of scaffold)
+  for (const cz of [scaffZ, -0.05]) {
+    const crossTop = new THREE.Mesh(
+      new THREE.BoxGeometry(scaffXRight - scaffXLeft, 0.08, 0.08),
+      scaffoldMat
+    );
+    crossTop.position.set(cx, deckY + scaffH + 0.04, cz);
+    parent.add(crossTop);
+  }
+
+  // Lateral roof beams (front-to-back at each end)
+  for (const px of [scaffXLeft, scaffXRight]) {
+    const sideTop = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.08, scaffZ + 0.05),
+      scaffoldMat
+    );
+    sideTop.position.set(px, deckY + scaffH + 0.04, (scaffZ - 0.05) / 2);
+    parent.add(sideTop);
+  }
+
+  // ---- BACK CROSS-PIPES (z ≈ 0, between the two towers) ----
+  // Each one ends on a Tee/flange that visually penetrates each tower wall.
+  const backHeights = [
+    deckY + 0.55, deckY + 1.20, deckY + 2.00,
+    deckY + 2.80, deckY + 3.55, deckY + 4.20,
+  ];
+  const backLen = CONFIG.psaSpacing - 0.05; // slightly inside the towers
+  for (const y of backHeights) {
     const pipe = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.09, 0.09, CONFIG.psaSpacing + 0.3, 20),
+      new THREE.CylinderGeometry(0.085, 0.085, backLen, 20),
       pipeMat
     );
     pipe.rotation.z = Math.PI / 2;
-    pipe.position.set(cx, y, 0.05);
+    pipe.position.set(cx, y, 0);
     pipe.castShadow = true;
     parent.add(pipe);
 
-    // small flanges at each end
-    for (const dx of [-CONFIG.psaSpacing / 2, CONFIG.psaSpacing / 2]) {
-      const fl = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.13, 0.13, 0.06, 20),
+    // Penetration flanges on each tower wall
+    for (const sx of [-1, 1]) {
+      const flg = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.135, 0.135, 0.07, 20),
         flangeMat
       );
-      fl.rotation.z = Math.PI / 2;
-      fl.position.set(cx + dx, y, 0.05);
-      parent.add(fl);
+      flg.rotation.z = Math.PI / 2;
+      flg.position.set(cx + sx * half, y, 0);
+      parent.add(flg);
     }
   }
 
-  // Front-facing vertical drop pipes (dense, like reference)
-  const verticalXOffsets = [-0.55, -0.30, -0.10, 0.10, 0.30, 0.55];
-  for (const dx of verticalXOffsets) {
-    const len = 2.6 + Math.random() * 1.4;
-    const v = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.065, 0.065, len, 18),
+  // ---- FRONT HEADER RECTANGLE — every front pipe terminates on this frame ----
+  const frontZ = 0.62;
+  const headerLen = CONFIG.psaSpacing + 0.20;
+  const headerTopY = deckY + 3.90;
+  const headerBotY = deckY + 0.55;
+  const xLeft  = cx - headerLen / 2;
+  const xRight = cx + headerLen / 2;
+
+  // Top + bottom horizontal headers
+  for (const y of [headerTopY, headerBotY]) {
+    const h = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.085, 0.085, headerLen, 20),
       pipeMat
     );
-    v.position.set(cx + dx, deckY + 0.4 + len / 2, 0.55);
+    h.rotation.z = Math.PI / 2;
+    h.position.set(cx, y, frontZ);
+    h.castShadow = true;
+    parent.add(h);
+  }
+
+  // 4 vertical risers between top & bottom header
+  const vertX = [xLeft + 0.08, cx - 0.42, cx + 0.42, xRight - 0.08];
+  for (const x of vertX) {
+    const v = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.07, 0.07, headerTopY - headerBotY, 18),
+      pipeMat
+    );
+    v.position.set(x, (headerTopY + headerBotY) / 2, frontZ);
     v.castShadow = true;
     parent.add(v);
+
+    // Tee fittings at the two header intersections
+    for (const y of [headerTopY, headerBotY]) {
+      const tee = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.11, 0.11, 0.14, 18),
+        flangeMat
+      );
+      tee.position.set(x, y, frontZ);
+      parent.add(tee);
+    }
   }
 
-  // Extra connecting horizontal pipes in front (running between the verticals)
-  for (const y of [deckY + 1.20, deckY + 2.20, deckY + 3.10]) {
-    const fp = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.06, 0.06, 1.4, 16),
+  // 2 mid-height horizontal cross pipes connecting the inner verticals
+  for (const y of [deckY + 1.60, deckY + 2.80]) {
+    const cp = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.06, 0.06, vertX[2] - vertX[1], 16),
       pipeMat
     );
-    fp.rotation.z = Math.PI / 2;
-    fp.position.set(cx, y, 0.55);
-    parent.add(fp);
+    cp.rotation.z = Math.PI / 2;
+    cp.position.set((vertX[1] + vertX[2]) / 2, y, frontZ);
+    parent.add(cp);
   }
 
-  // Z-loop elbows (decorative bends)
-  for (let i = 0; i < 4; i++) {
-    const elbow = new THREE.Mesh(
-      new THREE.TorusGeometry(0.16, 0.06, 12, 24, Math.PI / 2),
-      pipeMat
-    );
-    elbow.rotation.set(Math.PI / 2, 0, i * Math.PI / 2);
-    elbow.position.set(cx - 0.6 + i * 0.4, deckY + 0.80, 0.55);
-    parent.add(elbow);
+  // Front-to-back cross-links so the front header is physically tied to the back cross-pipes
+  // (z-axis stubs at top corners)
+  for (const x of [xLeft + 0.08, xRight - 0.08]) {
+    for (const y of [headerTopY, headerBotY]) {
+      const link = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.075, 0.075, frontZ, 16),
+        pipeMat
+      );
+      link.rotation.x = Math.PI / 2;
+      link.position.set(x, y, frontZ / 2);
+      parent.add(link);
+    }
   }
 
-  // Bottom inlet/outlet pipes going down to the deck
-  for (const dx of [-0.7, 0.7]) {
+  // ---- BOTTOM DROP PIPES — outer header corners go down to deck ----
+  for (const x of [xLeft + 0.08, xRight - 0.08]) {
     const drop = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.10, 0.10, 0.5, 18),
+      new THREE.CylinderGeometry(0.085, 0.085, headerBotY - deckY, 18),
       pipeMat
     );
-    drop.position.set(cx + dx, deckY + 0.25, 0.55);
+    drop.position.set(x, deckY + (headerBotY - deckY) / 2, frontZ);
     parent.add(drop);
+
+    // Floor flange where it lands on the deck
+    const fl = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.13, 0.13, 0.05, 20),
+      flangeMat
+    );
+    fl.position.set(x, deckY + 0.025, frontZ);
+    parent.add(fl);
   }
 
-  // Pressure gauges — round white faces on the front of the manifold
-  const gaugePositions = [
-    { x: cx - 0.55, y: deckY + 2.10, r: 0.16 },
-    { x: cx + 0.55, y: deckY + 2.10, r: 0.16 },
-    { x: cx - 0.55, y: deckY + 1.30, r: 0.13 },
-    { x: cx + 0.55, y: deckY + 1.30, r: 0.13 },
-    { x: cx + 0.0,  y: deckY + 2.70, r: 0.18 },
-    { x: cx + 0.0,  y: deckY + 0.85, r: 0.13 },
-  ];
-  for (const gp of gaugePositions) {
-    parent.add(makeGauge(gp.x, gp.y, 0.55, gp.r));
-  }
-
-  // A few valves with red handwheels along the manifold
+  // ---- VALVES — built around an actual pass-through pipe segment ----
   const handleMat = new THREE.MeshStandardMaterial({
     color: 0xdc2626, roughness: 0.5, metalness: 0.2,
   });
-  const valvePositions = [
-    { x: cx - 0.85, y: deckY + 1.85, z: 0.55 },
-    { x: cx + 0.85, y: deckY + 1.85, z: 0.55 },
-    { x: cx - 0.85, y: deckY + 0.55, z: 0.55 },
-    { x: cx + 0.85, y: deckY + 0.55, z: 0.55 },
+
+  // Place 2 valves on the front lower-header pipe, 2 on inner verticals
+  const valves = [
+    { x: cx - 0.70, y: headerBotY, z: frontZ, axis: 'x' },
+    { x: cx + 0.70, y: headerBotY, z: frontZ, axis: 'x' },
+    { x: vertX[1], y: deckY + 2.20, z: frontZ, axis: 'y' },
+    { x: vertX[2], y: deckY + 2.20, z: frontZ, axis: 'y' },
   ];
-  for (const vp of valvePositions) {
-    // valve body
+  for (const vp of valves) {
+    // Valve body — short cylinder oriented along the pipe it sits on
     const body = new THREE.Mesh(
-      new THREE.BoxGeometry(0.18, 0.18, 0.18),
+      new THREE.CylinderGeometry(0.12, 0.12, 0.24, 22),
       flangeMat
     );
+    if (vp.axis === 'x') body.rotation.z = Math.PI / 2;
     body.position.set(vp.x, vp.y, vp.z);
     parent.add(body);
 
-    // handwheel
+    // Bonnet — short stem perpendicular to the pipe, pointing AWAY from the deck
+    const bonnetDir = vp.axis === 'x' ? [0, 1, 0] : [0, 0, 1];
+    const bonnet = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.05, 0.06, 0.16, 16),
+      flangeMat
+    );
+    if (vp.axis === 'y') bonnet.rotation.x = Math.PI / 2;
+    bonnet.position.set(
+      vp.x + bonnetDir[0] * 0.18,
+      vp.y + bonnetDir[1] * 0.18,
+      vp.z + bonnetDir[2] * 0.18
+    );
+    parent.add(bonnet);
+
+    // Handwheel + spokes at end of bonnet
+    const wheelPos = [
+      vp.x + bonnetDir[0] * 0.30,
+      vp.y + bonnetDir[1] * 0.30,
+      vp.z + bonnetDir[2] * 0.30,
+    ];
     const wheel = new THREE.Mesh(
-      new THREE.TorusGeometry(0.10, 0.025, 10, 20),
+      new THREE.TorusGeometry(0.11, 0.022, 10, 22),
       handleMat
     );
-    wheel.rotation.x = Math.PI / 2;
-    wheel.position.set(vp.x, vp.y, vp.z + 0.18);
+    if (vp.axis === 'x') wheel.rotation.y = 0; // wheel facing front
+    else { wheel.rotation.x = Math.PI / 2; }
+    wheel.position.set(wheelPos[0], wheelPos[1], wheelPos[2]);
     parent.add(wheel);
-    // wheel spokes
     for (let s = 0; s < 4; s++) {
       const spoke = new THREE.Mesh(
-        new THREE.BoxGeometry(0.18, 0.012, 0.012),
+        new THREE.BoxGeometry(0.20, 0.012, 0.012),
         handleMat
       );
-      spoke.rotation.x = Math.PI / 2;
+      if (vp.axis === 'y') spoke.rotation.x = Math.PI / 2;
       spoke.rotation.y = (s * Math.PI) / 4;
-      spoke.position.set(vp.x, vp.y, vp.z + 0.18);
+      spoke.position.set(wheelPos[0], wheelPos[1], wheelPos[2]);
       parent.add(spoke);
     }
+  }
+
+  // ---- PRESSURE GAUGES — each on a small backplate + short nipple coming out of a pipe ----
+  const gauges = [
+    { x: cx - 0.55, y: deckY + 2.10, r: 0.13 },
+    { x: cx + 0.55, y: deckY + 2.10, r: 0.13 },
+    { x: cx - 0.20, y: deckY + 3.30, r: 0.11 },
+    { x: cx + 0.20, y: deckY + 3.30, r: 0.11 },
+    { x: cx,        y: deckY + 1.05, r: 0.15 },
+  ];
+  for (const gp of gauges) {
+    // Nipple coming out of the nearest pipe (just behind the gauge)
+    const nipple = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.028, 0.028, 0.10, 12),
+      flangeMat
+    );
+    nipple.rotation.x = Math.PI / 2;
+    nipple.position.set(gp.x, gp.y, frontZ + 0.05);
+    parent.add(nipple);
+
+    // Backplate behind gauge
+    const back = new THREE.Mesh(
+      new THREE.CylinderGeometry(gp.r * 1.18, gp.r * 1.18, 0.02, 22),
+      flangeMat
+    );
+    back.rotation.x = Math.PI / 2;
+    back.position.set(gp.x, gp.y, frontZ + 0.095);
+    parent.add(back);
+
+    // Gauge face mounted on top of backplate
+    parent.add(makeGauge(gp.x, gp.y, frontZ + 0.11, gp.r));
   }
 }
 
@@ -810,10 +958,10 @@ function buildAirCompressorTank() {
   const deckY = CONFIG.skidHeight + 0.06;
   const x = CONFIG.compressorX;
 
-  // Reference: shorter, fatter vertical receiver behind the booster
+  // Reference: shorter, fatter vertical receiver, central and slightly forward
   const r = 0.95;
   const h = 2.6;
-  const zBack = -0.6;  // sits further back than the booster
+  const zBack = 0.1;   // central, just forward of PSA back-plane
 
   const whiteMat = new THREE.MeshStandardMaterial({
     color: 0xeef0f2, roughness: 0.45, metalness: 0.25,
@@ -860,17 +1008,105 @@ function buildAirCompressorTank() {
   nozzle.position.set(x, deckY + h + 0.45, zBack);
   g.add(nozzle);
 
-  // Side outlet pipe (curving toward manifold)
-  const outlet = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.08, 0.08, 0.6, 18),
-    new THREE.MeshStandardMaterial({ color: 0xb0b6bd, roughness: 0.4, metalness: 0.7 })
+  // Pop-up pressure safety valve on top of compressor
+  const compPsv = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.09, 0.09, 0.20, 16),
+    new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.5, metalness: 0.3 })
   );
-  outlet.rotation.z = Math.PI / 2;
-  outlet.position.set(x - 0.55, deckY + h * 0.30, zBack);
-  g.add(outlet);
+  compPsv.position.set(x + 0.30, deckY + h + 0.30, zBack);
+  g.add(compPsv);
+
+  const compPsvCap = new THREE.Mesh(
+    new THREE.SphereGeometry(0.07, 16, 10),
+    new THREE.MeshStandardMaterial({ color: 0x6b6f76, roughness: 0.4, metalness: 0.7 })
+  );
+  compPsvCap.position.set(x + 0.30, deckY + h + 0.45, zBack);
+  g.add(compPsvCap);
 
   // Side gauge
   g.add(makeGauge(x - 0.45, deckY + h * 0.80, zBack + r + 0.005, 0.12));
+
+  // ---- Outlet pipe routed: compressor side → forward → left into PSA manifold front-right ----
+  const stainlessMat = new THREE.MeshStandardMaterial({
+    color: 0xb0b6bd, roughness: 0.4, metalness: 0.7,
+  });
+  const flangeMat = new THREE.MeshStandardMaterial({
+    color: 0x8a909a, roughness: 0.4, metalness: 0.7,
+  });
+
+  // ---- Outlet route: compressor wall → flange → -X straight run → manifold front header ----
+  // With compressor now co-planar with the manifold (zBack ≈ 0.1, manifold front-Z ≈ 0.62),
+  // we use a short -Z dip via two 90° elbows so the pipe arrives ON the front header plane.
+  const stubY = deckY + h * 0.40;
+  const stubStartX = x - r;
+  const targetZ = 0.62;
+  const elbowR = 0.12;
+
+  // Flange on compressor wall
+  const flWall = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.13, 0.13, 0.06, 18),
+    flangeMat
+  );
+  flWall.rotation.z = Math.PI / 2;
+  flWall.position.set(stubStartX + 0.03, stubY, zBack);
+  g.add(flWall);
+
+  // Stub OUT of compressor wall (short -X segment)
+  const stubEndX = stubStartX - 0.40;
+  const stub = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.075, 0.075, 0.40, 18),
+    stainlessMat
+  );
+  stub.rotation.z = Math.PI / 2;
+  stub.position.set((stubStartX + stubEndX) / 2, stubY, zBack);
+  g.add(stub);
+
+  // 90° elbow at corner: -X → +Z
+  const elbow1 = new THREE.Mesh(
+    new THREE.TorusGeometry(elbowR, 0.075, 12, 22, Math.PI / 2),
+    stainlessMat
+  );
+  elbow1.rotation.y = Math.PI / 2;
+  elbow1.position.set(stubEndX, stubY, zBack + elbowR);
+  g.add(elbow1);
+
+  // +Z forward jog to reach front header plane
+  const jogStartZ = zBack + elbowR;
+  const jogEndZ = targetZ - elbowR;
+  const jogLen = jogEndZ - jogStartZ;
+  if (jogLen > 0) {
+    const jog = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.075, 0.075, jogLen, 18),
+      stainlessMat
+    );
+    jog.rotation.x = Math.PI / 2;
+    jog.position.set(stubEndX, stubY, (jogStartZ + jogEndZ) / 2);
+    g.add(jog);
+  }
+
+  // 90° elbow at corner: +Z → -X (toward PSA)
+  const elbow2 = new THREE.Mesh(
+    new THREE.TorusGeometry(elbowR, 0.075, 12, 22, Math.PI / 2),
+    stainlessMat
+  );
+  elbow2.rotation.x = Math.PI / 2;
+  elbow2.rotation.z = Math.PI;
+  elbow2.position.set(stubEndX - elbowR, stubY, jogEndZ + elbowR);
+  g.add(elbow2);
+
+  // Long horizontal run at frontZ toward PSA manifold's right header end
+  const manifoldRightX = CONFIG.psaCenterX + (CONFIG.psaSpacing + 0.20) / 2 - 0.08;
+  const longStart = stubEndX - elbowR;
+  const longEnd = manifoldRightX + 0.10;
+  const longLen = longStart - longEnd;
+  const longPipe = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.075, 0.075, longLen, 18),
+    stainlessMat
+  );
+  longPipe.rotation.z = Math.PI / 2;
+  longPipe.position.set((longStart + longEnd) / 2, stubY, targetZ);
+  longPipe.castShadow = true;
+  g.add(longPipe);
 
   scene.add(g);
 }
@@ -880,7 +1116,7 @@ function buildOxygenBooster() {
   const g = new THREE.Group();
   const deckY = CONFIG.skidHeight + 0.06;
   const x = CONFIG.boosterX;
-  const zFront = 0.7; // sits forward, in front of compressor
+  const zFront = 1.0; // sits forward, clearly in front of compressor
 
   const blueMat = new THREE.MeshStandardMaterial({
     color: 0x1d4ed8, roughness: 0.55, metalness: 0.3,
@@ -950,6 +1186,77 @@ function buildOxygenBooster() {
   );
   pump.position.set(x + 0.30, deckY + 0.32, zFront);
   g.add(pump);
+
+  // ---- Suction line from booster pump back to deck level (and compressor area) ----
+  const stainlessMat = new THREE.MeshStandardMaterial({
+    color: 0xb0b6bd, roughness: 0.4, metalness: 0.7,
+  });
+
+  // Vertical drop from pump to deck (booster suction inlet)
+  const sucDrop = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.05, 0.32, 16),
+    stainlessMat
+  );
+  sucDrop.position.set(x + 0.30, deckY + 0.16, zFront - 0.30);
+  g.add(sucDrop);
+
+  // Short horizontal segment going BACK toward compressor at deck level
+  const sucBack = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.05, 0.9, 16),
+    stainlessMat
+  );
+  sucBack.rotation.x = Math.PI / 2;
+  sucBack.position.set(x + 0.30, deckY + 0.10, zFront - 0.75);
+  g.add(sucBack);
+
+  // ---- Discharge line from booster pump → routed via a back-jog to oxygen tank #1 ----
+  // The line must end ON the tank surface (z ≈ tankRadius+pipe), not floating in air.
+
+  // Vertical riser from pump top
+  const discRiserY = deckY + 0.60;
+  const discRiser = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.05, 0.40, 16),
+    stainlessMat
+  );
+  discRiser.position.set(x + 0.45, discRiserY, zFront);
+  g.add(discRiser);
+
+  // -Z back-jog from booster discharge depth (zFront ≈ 1.0) to tank centerline (z=0)
+  // so the line enters tank #1's LEFT side wall, not its front-corner.
+  const tankSideZ = 0;
+  const jogLen = zFront - tankSideZ;
+  if (jogLen > 0) {
+    const discJog = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.05, 0.05, jogLen, 16),
+      stainlessMat
+    );
+    discJog.rotation.x = Math.PI / 2;
+    discJog.position.set(x + 0.45, deckY + 0.80, zFront - jogLen / 2);
+    g.add(discJog);
+  }
+
+  // Horizontal +X run from booster column to oxyTank #1 side nozzle
+  const discRunStart = x + 0.45;
+  const discRunEnd = CONFIG.oxyTank1X - CONFIG.oxyTankRadius - 0.05;
+  const discRunLen = discRunEnd - discRunStart;
+  if (discRunLen > 0) {
+    const discRun = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.05, 0.05, discRunLen, 16),
+      stainlessMat
+    );
+    discRun.rotation.z = Math.PI / 2;
+    discRun.position.set((discRunStart + discRunEnd) / 2, deckY + 0.80, tankSideZ);
+    g.add(discRun);
+
+    // Side-wall nozzle flange (axis along X, perpendicular to vertical tank wall)
+    const flNoz = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.095, 0.095, 0.06, 16),
+      new THREE.MeshStandardMaterial({ color: 0x8a909a, roughness: 0.4, metalness: 0.7 })
+    );
+    flNoz.rotation.z = Math.PI / 2;
+    flNoz.position.set(discRunEnd + 0.03, deckY + 0.80, tankSideZ);
+    g.add(flNoz);
+  }
 
   scene.add(g);
 }
@@ -1031,18 +1338,98 @@ function buildOxygenBufferTanks() {
     scene.add(g);
   }
 
-  // Horizontal pipe connecting tops of the two buffer tanks
+  // ---- Horizontal pipe connecting tops of the two buffer tanks (with risers & tees) ----
+  const stainlessMat = new THREE.MeshStandardMaterial({
+    color: 0xb0b6bd, roughness: 0.4, metalness: 0.7,
+  });
+  const flangeMat = new THREE.MeshStandardMaterial({
+    color: 0x8a909a, roughness: 0.4, metalness: 0.7,
+  });
+
+  const topY = deckY + CONFIG.oxyTankHeight + 0.30;
+
+  // Short vertical riser on each tank — from existing nozzle up to the cross-pipe
+  for (const tx of [CONFIG.oxyTank1X, CONFIG.oxyTank2X]) {
+    const riser = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.06, 0.06, 0.55, 16),
+      stainlessMat
+    );
+    riser.position.set(tx, deckY + CONFIG.oxyTankHeight + 0.30, 0);
+    scene.add(riser);
+
+    // Tee fitting where horizontal cross-pipe meets the riser
+    const tee = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.10, 0.10, 0.14, 16),
+      flangeMat
+    );
+    tee.position.set(tx, topY + 0.25, 0);
+    scene.add(tee);
+  }
+
+  // Horizontal cross-pipe lying ON TOP of the tees
   const topConnect = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.08, 0.08, CONFIG.oxyTank2X - CONFIG.oxyTank1X + 0.1, 20),
-    new THREE.MeshStandardMaterial({ color: 0xb0b6bd, roughness: 0.4, metalness: 0.7 })
+    new THREE.CylinderGeometry(0.07, 0.07, CONFIG.oxyTank2X - CONFIG.oxyTank1X + 0.30, 20),
+    stainlessMat
   );
   topConnect.rotation.z = Math.PI / 2;
   topConnect.position.set(
     (CONFIG.oxyTank1X + CONFIG.oxyTank2X) / 2,
-    deckY + CONFIG.oxyTankHeight + 0.55,
+    topY + 0.25,
     0
   );
   scene.add(topConnect);
+
+  // ---- O₂ FEEDER TRUNK: PSA manifold top header → buffer-tank cross-pipe ----
+  // Without this, the oxygen has no visible path from the PSA stage to storage.
+  const trunkY  = topY + 0.25;            // matches existing topConnect height
+  const psaOutX = CONFIG.psaCenterX + (CONFIG.psaSpacing + 0.20) / 2 - 0.08;
+  const psaOutY = deckY + 3.90;           // headerTopY in the PSA manifold
+  const psaOutZ = 0.62;                   // frontZ in the PSA manifold
+
+  // 1) Vertical riser from manifold top header up to trunk altitude
+  const trunkRiser = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.07, 0.07, trunkY - psaOutY, 18),
+    stainlessMat
+  );
+  trunkRiser.position.set(psaOutX, (psaOutY + trunkY) / 2, psaOutZ);
+  trunkRiser.castShadow = true;
+  scene.add(trunkRiser);
+
+  // Tee on top of the riser where the trunk turns horizontal
+  const trunkTeeTop = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.10, 0.10, 0.14, 16),
+    flangeMat
+  );
+  trunkTeeTop.position.set(psaOutX, trunkY, psaOutZ);
+  scene.add(trunkTeeTop);
+
+  // 2) -Z back-jog: frontZ → centerline (z=0)
+  const trunkJog = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.07, 0.07, psaOutZ, 18),
+    stainlessMat
+  );
+  trunkJog.rotation.x = Math.PI / 2;
+  trunkJog.position.set(psaOutX, trunkY, psaOutZ / 2);
+  scene.add(trunkJog);
+
+  // Elbow flange where jog meets the long horizontal trunk
+  const trunkTeeCorner = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.10, 0.10, 0.14, 16),
+    flangeMat
+  );
+  trunkTeeCorner.position.set(psaOutX, trunkY, 0);
+  scene.add(trunkTeeCorner);
+
+  // 3) Long +X horizontal trunk over the air-compressor & booster to tank #1
+  const trunkEndX = CONFIG.oxyTank1X;
+  const trunkRun = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.07, 0.07, trunkEndX - psaOutX, 20),
+    stainlessMat
+  );
+  trunkRun.rotation.z = Math.PI / 2;
+  trunkRun.position.set((psaOutX + trunkEndX) / 2, trunkY, 0);
+  trunkRun.castShadow = true;
+  scene.add(trunkRun);
 }
 
 /* ============================ O2 CYLINDER RACK ============================ */
@@ -1085,6 +1472,14 @@ function buildO2CylinderRack() {
     top.scale.y = 0.75;
     top.position.set(cx, deckY + cylH, 0);
     g.add(top);
+
+    // Red shoulder band (high-pressure O₂ marking)
+    const redBand = new THREE.Mesh(
+      new THREE.CylinderGeometry(cylR + 0.005, cylR + 0.005, 0.10, 24),
+      new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.55 })
+    );
+    redBand.position.set(cx, deckY + cylH - 0.08, 0);
+    g.add(redBand);
 
     // Valve neck (narrow)
     const valveNeck = new THREE.Mesh(
@@ -1138,6 +1533,72 @@ function buildO2CylinderRack() {
     }
   }
 
+  // ---- Fill manifold: a single horizontal pipe running above the cylinder valves
+  //      with short flexible drop-hoses into each cylinder's valve handle.
+  const stainlessMat = new THREE.MeshStandardMaterial({
+    color: 0xb0b6bd, roughness: 0.4, metalness: 0.7,
+  });
+  const hoseMat = new THREE.MeshStandardMaterial({
+    color: 0x6b6f76, roughness: 0.7, metalness: 0.3,
+  });
+
+  // Fill manifold runs from buffer-tank side (left) into the rack — slightly above valve necks
+  const fillY = deckY + cylH + 0.42;
+  const fillStartX = CONFIG.oxyTank2X + CONFIG.oxyTankRadius + 0.15; // begins near right buffer tank
+  const fillEndX = startX + 3 * spacing + 0.10; // ends past the last cylinder
+  const fillLen = fillEndX - fillStartX;
+
+  // ---- Anchor the fill manifold to buffer tank #2's right wall (was previously floating) ----
+  const flangeMatLocal = new THREE.MeshStandardMaterial({
+    color: 0x8a909a, roughness: 0.4, metalness: 0.7,
+  });
+  const tank2WallX = CONFIG.oxyTank2X + CONFIG.oxyTankRadius;
+
+  // Wall flange — penetrates tank #2 side wall at fillY
+  const fillWallFlange = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.095, 0.095, 0.06, 16),
+    flangeMatLocal
+  );
+  fillWallFlange.rotation.z = Math.PI / 2;
+  fillWallFlange.position.set(tank2WallX + 0.03, fillY, 0);
+  g.add(fillWallFlange);
+
+  // Short stub between wall flange and fill-manifold start
+  const fillStub = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.05, fillStartX - tank2WallX, 16),
+    stainlessMat
+  );
+  fillStub.rotation.z = Math.PI / 2;
+  fillStub.position.set((tank2WallX + fillStartX) / 2, fillY, 0);
+  g.add(fillStub);
+
+  // Tee at the wall → manifold junction
+  const fillJunctionTee = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.075, 0.075, 0.12, 16),
+    flangeMatLocal
+  );
+  fillJunctionTee.position.set(fillStartX, fillY, 0);
+  g.add(fillJunctionTee);
+
+  const fillPipe = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.05, fillLen, 16),
+    stainlessMat
+  );
+  fillPipe.rotation.z = Math.PI / 2;
+  fillPipe.position.set((fillStartX + fillEndX) / 2, fillY, 0);
+  g.add(fillPipe);
+
+  // Drop hose to each cylinder valve
+  for (let i = 0; i < 3; i++) {
+    const cxCyl = startX + i * spacing;
+    const hose = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.03, 0.03, 0.20, 12),
+      hoseMat
+    );
+    hose.position.set(cxCyl, fillY - 0.10, 0);
+    g.add(hose);
+  }
+
   scene.add(g);
 }
 
@@ -1147,26 +1608,61 @@ function buildFloorPipingFlow() {
   const pipeMat = new THREE.MeshStandardMaterial({
     color: 0xc6cbd1, roughness: 0.35, metalness: 0.8,
   });
+  const flangeMat = new THREE.MeshStandardMaterial({
+    color: 0x8a909a, roughness: 0.4, metalness: 0.7,
+  });
 
-  // A few low cross-skid pipes connecting equipment along the deck (just visual cues)
+  // ---- BACK floor pipe: spans from control cabinet (left) to oxygen tank base (right) ----
+  // Bounded between actual equipment so it visibly enters/exits something.
+  const backStart = CONFIG.panelX + 0.6;      // exits control cabinet base
+  const backEnd   = CONFIG.oxyTank2X - 0.40;  // enters last oxygen tank skirt
+  const backLen   = backEnd - backStart;
+  const backZ     = -CONFIG.skidDepth / 2 + 0.7;
+
   const longPipe = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.06, 0.06, CONFIG.skidWidth - 2, 18),
+    new THREE.CylinderGeometry(0.06, 0.06, backLen, 18),
     pipeMat
   );
   longPipe.rotation.z = Math.PI / 2;
-  longPipe.position.set(0, deckY + 0.18, -CONFIG.skidDepth / 2 + 0.6);
+  longPipe.position.set((backStart + backEnd) / 2, deckY + 0.18, backZ);
   scene.add(longPipe);
 
-  // A second floor pipe in front
+  // Floor flanges where it enters the cabinet & tank
+  for (const ex of [backStart, backEnd]) {
+    const fl = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.10, 0.10, 0.05, 16),
+      flangeMat
+    );
+    fl.rotation.z = Math.PI / 2;
+    fl.position.set(ex, deckY + 0.18, backZ);
+    scene.add(fl);
+  }
+
+  // ---- FRONT floor pipe: from PSA manifold's right floor flange to booster suction stub ----
+  const frontStart = CONFIG.psaCenterX + (CONFIG.psaSpacing + 0.20) / 2 - 0.08;
+  const frontEnd   = CONFIG.boosterX + 0.30; // matches booster suction inlet
+  const frontLen   = frontEnd - frontStart;
+  const frontZ     = CONFIG.skidDepth / 2 - 0.7;
+
   const longPipe2 = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.05, 0.05, CONFIG.skidWidth - 3, 18),
+    new THREE.CylinderGeometry(0.05, 0.05, frontLen, 18),
     pipeMat
   );
   longPipe2.rotation.z = Math.PI / 2;
-  longPipe2.position.set(0, deckY + 0.10, CONFIG.skidDepth / 2 - 0.7);
+  longPipe2.position.set((frontStart + frontEnd) / 2, deckY + 0.10, frontZ);
   scene.add(longPipe2);
 
-  // Flow markers (small glowing cyan spheres travelling along the rear pipe)
+  for (const ex of [frontStart, frontEnd]) {
+    const fl = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.09, 0.09, 0.05, 16),
+      flangeMat
+    );
+    fl.rotation.z = Math.PI / 2;
+    fl.position.set(ex, deckY + 0.10, frontZ);
+    scene.add(fl);
+  }
+
+  // ---- Flow markers travelling along the back pipe, bounded by the pipe's actual span ----
   for (let i = 0; i < 3; i++) {
     const marker = new THREE.Mesh(
       new THREE.SphereGeometry(0.07, 12, 12),
@@ -1174,11 +1670,11 @@ function buildFloorPipingFlow() {
         color: 0x22d3ee, emissive: 0x22d3ee, emissiveIntensity: 0.8,
       })
     );
-    const startX = -CONFIG.skidWidth / 2 + 1;
-    const endX = CONFIG.skidWidth / 2 - 1;
-    marker.position.set(startX, deckY + 0.18, -CONFIG.skidDepth / 2 + 0.6);
+    marker.position.set(backStart, deckY + 0.18, backZ);
     marker.userData = {
-      axis: 'x', startX, endX,
+      axis: 'x',
+      startX: backStart + 0.10,
+      endX: backEnd - 0.10,
       progress: i / 3,
       speed: 0.0035,
     };
@@ -1317,9 +1813,9 @@ function animate() {
 
   if (autoRotateEnabled && (Date.now() - lastUserInteraction) > 6000) {
     // Gentle sway around front-on view rather than full orbit
-    camera.position.x = Math.sin(t * 0.18) * 2.4;
-    camera.position.z = 20.5 - Math.cos(t * 0.18) * 0.4;
-    camera.position.y = 4.5 + Math.sin(t * 0.12) * 0.15;
+    camera.position.x = Math.sin(t * 0.18) * 2.0;
+    camera.position.z = 17.5 - Math.cos(t * 0.18) * 0.3;
+    camera.position.y = 3.6 + Math.sin(t * 0.12) * 0.12;
     camera.lookAt(controls.target);
   }
 
@@ -1343,9 +1839,19 @@ const OXYGEN_SLIDE_INDEX = 9;  // Slide 10 (data-slide="10"), 0-based DOM index 
 
 window.addEventListener('slidechange', (e) => {
   if (e.detail.index === OXYGEN_SLIDE_INDEX) {
-    init();
-    setTimeout(onResize, 50);
-    startRendering();
+    // Slayt 8 atlasında küçük canvas'a mount edilmiş olabilir;
+    // büyük equipment canvas'ına geçişi mount() pattern'iyle güvenli yap.
+    const targetCanvas = document.getElementById('three-canvas-oxygen');
+    if (!targetCanvas) return;
+    if (initialized && canvas === targetCanvas) {
+      startRendering();
+      setTimeout(onResize, 50);
+    } else {
+      if (initialized) _disposeForMount();
+      init(targetCanvas);
+      setTimeout(onResize, 50);
+      startRendering();
+    }
   } else {
     stopRendering();
   }
@@ -1413,11 +1919,10 @@ window.threeOxygen = {
     startRendering();
   },
   unmount() {
-    if (!initialized) {
-      if (frameId !== null) { cancelAnimationFrame(frameId); frameId = null; }
-      return;
-    }
-    _disposeForMount();
+    // Sadece render döngüsünü durdur — renderer/context/canvas yaşar.
+    // Aynı canvas'a tekrar mount edildiğinde fast-path (initialized && canvas === canvasEl)
+    // devreye girer; aksi halde forceContextLoss canvas'ı kalıcı öldürür → beyaz ekran.
+    stopRendering();
   },
   get isMounted() { return initialized; },
   get currentCanvas() { return canvas; },

@@ -116,10 +116,8 @@ function init(targetCanvas) {
   renderer.shadowMap.type = THREE.PCFShadowMap;
 
   scene = new THREE.Scene();
-  // Soft warm-beige sky matching the reference illustration (replaces the
-  // harsh black canvas background that made the smoke read as dark dots).
-  scene.background = new THREE.Color(0xe6dec7);
-  scene.fog = new THREE.FogExp2(0xdcd3bc, 0.010);
+  scene.background = new THREE.Color(0x000000);
+  scene.fog = new THREE.FogExp2(0x000000, 0.010);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -331,14 +329,19 @@ function buildPlatform() {
     plant.add(brace);
   }
 
-  // Yellow handrails along the deck front
-  addRailing(-7.2, 8.5, 3.45, 1.4);
+  // Yellow handrails along the deck front — split into two segments so the
+  // access staircase can break through the railing line at x≈[-0.7, 0.7].
+  addRailing(-7.2, -0.7, 3.45, 1.4);
+  addRailing( 0.7,  8.5, 3.45, 1.4);
   // Yellow handrails along the deck back
   addRailing(-7.2, 8.5, 3.45, -1.4);
 
-  // Main access staircase — rises from ground level up to deck top, in
-  // front of the deck (between cyclone and gas-cooler positions).
-  addStaircase(-3.6, 3.2, 0.45, 3.45, 3.6, 1);
+  // Main access staircase — rises from ground level up to deck top. Placed
+  // at z=2.4 so the top tread sits *just in front* of the deck face
+  // (deck front edge is z=2.2): you climb the stairs and step from the top
+  // tread (y≈3.32) onto the deck top (y≈3.325) — basically flush. The
+  // railing gap at x≈[-0.7, 0.7] lets you walk into the deck interior.
+  addStaircase(-3.6, 2.4, 0.45, 3.45, 3.6, 1);
 }
 
 function addRailing(x1, x2, baseY, z) {
@@ -1535,9 +1538,19 @@ function onResize() {
 /* ============================ SLIDE INTEGRATION ============================ */
 window.addEventListener('slidechange', (e) => {
   if (e.detail.index === CONFIG.slideIndex) {
-    init();
-    setTimeout(onResize, 50);
-    startRendering();
+    // Slayt 8 atlasında küçük canvas'a mount edilmiş olabilir;
+    // büyük equipment canvas'ına geçişi mount() pattern'iyle güvenli yap.
+    const targetCanvas = document.getElementById('three-canvas-roaster');
+    if (!targetCanvas) return;
+    if (initialized && canvas === targetCanvas) {
+      startRendering();
+      setTimeout(onResize, 50);
+    } else {
+      if (initialized) _disposeForMount();
+      init(targetCanvas);
+      setTimeout(onResize, 50);
+      startRendering();
+    }
   } else {
     stopRendering();
   }
@@ -1603,11 +1616,10 @@ window.threeRoaster = {
     startRendering();
   },
   unmount() {
-    if (!initialized) {
-      if (frameId !== null) { cancelAnimationFrame(frameId); frameId = null; }
-      return;
-    }
-    _disposeForMount();
+    // Sadece render döngüsünü durdur — renderer/context/canvas yaşar.
+    // Aynı canvas'a tekrar mount edildiğinde fast-path (initialized && canvas === canvasEl)
+    // devreye girer; aksi halde forceContextLoss canvas'ı kalıcı öldürür → beyaz ekran.
+    stopRendering();
   },
   get isMounted() { return initialized; },
   get currentCanvas() { return canvas; },

@@ -3,7 +3,7 @@
  * Tüm static asset'ler pre-cache edilir, HTML için network-first
  */
 
-const CACHE_VERSION = 'nte-v16-2026-05-16-sharp';
+const CACHE_VERSION = 'nte-v19-2026-05-16-3d-canvas-switch';
 const CACHE_NAME = `nte-presentation-${CACHE_VERSION}`;
 const CACHE_PREFIX = 'nte-presentation-';
 
@@ -27,6 +27,7 @@ const PRECACHE_URLS = [
   './scripts/equipment-toggle.js',
   './scripts/loading-progress.js',
   './scripts/sw-register.js',
+  './scripts/pwa-install.js',
 
   // Slide reveal scripts (slayt animasyonları — offline kritik)
   './scripts/slide2-reveal.js',
@@ -63,6 +64,9 @@ const PRECACHE_URLS = [
   // İkonlar
   './assets/icons/icon-192.svg',
   './assets/icons/icon-512.svg',
+
+  // Logo (loading ekranı + slayt 16)
+  './assets/images/nte-pars-logo.svg',
 ];
 
 self.addEventListener('install', (event) => {

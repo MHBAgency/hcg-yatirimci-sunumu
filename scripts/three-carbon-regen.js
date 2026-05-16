@@ -55,8 +55,7 @@ function init(targetCanvas) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xb8a98a);   // dusty sky / matches gravel haze
-  scene.fog = new THREE.FogExp2(0xb8a98a, 0.018);
+  scene.background = new THREE.Color(0x000000);   // clean black backdrop
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -86,15 +85,15 @@ function init(targetCanvas) {
   });
 
   setupLights();
-  buildGround();
-  buildBackgroundHills();
   buildBuilding();        // ELUTION & GOLDROOM building (right side / back)
   buildSkidPlatform();    // black skid base with yellow front-rail line
   buildKiln();            // main horizontal carbon regen kiln with label
+  buildKilnRollers();     // roller stands under each riding ring
   buildFeedFunnel();      // stainless top feed hopper
   buildMotorAssembly();   // blue motor + gearbox on front-left of kiln
   buildDischargeHead();   // back-right end head of kiln (with hose)
   buildYellowRailing();   // bright yellow safety railing wrapping platform
+  buildAccessStair();     // yellow stair from ground up to skid platform
   buildElutionColumnTower(); // vertical grey column on far left with sign
   buildPipework();        // black hoses + small grey pipes around base
 
@@ -202,8 +201,8 @@ function buildBackgroundHills() {
     new THREE.SphereGeometry(22, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2),
     hillMat
   );
-  hill1.position.set(-6, -2, -20);
-  hill1.scale.set(1.4, 0.45, 0.8);
+  hill1.position.set(-6, -3, -26);
+  hill1.scale.set(1.4, 0.22, 0.8);   // flattened — lets the daylight sky breathe
   scene.add(hill1);
 
   const hill2 = new THREE.Mesh(
@@ -212,8 +211,8 @@ function buildBackgroundHills() {
       color: 0x8a7a60, roughness: 1.0,
     })
   );
-  hill2.position.set(10, -2, -22);
-  hill2.scale.set(1.6, 0.4, 0.7);
+  hill2.position.set(10, -3, -28);
+  hill2.scale.set(1.6, 0.20, 0.7);
   scene.add(hill2);
 }
 
@@ -224,8 +223,9 @@ function buildBackgroundHills() {
  * =================================================================== */
 function buildBuilding() {
   const g = new THREE.Group();
-  // Moved slightly closer/forward; building sits behind discharge end per reference
-  g.position.set(9.5, 0, -3.0);
+  // Position: behind discharge end but pulled forward and outward so it
+  // doesn't get hidden by the kiln from the default three-quarter camera angle.
+  g.position.set(10.5, 0, -1.0);
 
   // Main building body
   const bodyMat = new THREE.MeshStandardMaterial({
@@ -277,75 +277,124 @@ function buildBuilding() {
   sign.position.set(-0.6, 3.5, 2.53);
   g.add(sign);
 
-  // Yellow exterior stair on the right side
+  // Yellow exterior stair on the right side — geometrically consistent
   const stairMat = new THREE.MeshStandardMaterial({
     color: 0xefc41f, roughness: 0.55, metalness: 0.25,
     emissive: 0xefc41f, emissiveIntensity: 0.04,
   });
   const stairGroup = new THREE.Group();
   stairGroup.position.set(3.6, 0, 1.6);
-  // stringers
-  for (let s = -1; s <= 1; s += 2) {
-    const stringer = new THREE.Mesh(
-      new THREE.BoxGeometry(0.08, 4.2, 0.18),
-      stairMat
-    );
-    stringer.position.set(s * 0.5, 2.1, 0);
-    stringer.rotation.z = 0; // vertical posts
-    stairGroup.add(stringer);
-  }
-  // diagonal stringer
-  for (let s = -1; s <= 1; s += 2) {
-    const diag = new THREE.Mesh(
-      new THREE.BoxGeometry(0.1, 4.6, 0.08),
-      stairMat
-    );
-    diag.position.set(s * 0.5, 2.0, 0.6);
-    diag.rotation.x = -Math.PI * 0.18;
-    stairGroup.add(diag);
-  }
-  // steps
-  for (let i = 0; i < 9; i++) {
+
+  // Single source of truth for stair geometry
+  const N = 9;                 // step count
+  const rise = 0.34;           // per-step rise
+  const going = 0.30;          // per-step run (tread spacing)
+  const stepW = 1.10;
+  const sxSide = 0.55;         // stringer/handrail half-width
+  const zBot = 1.40;           // bottom step z (forward)
+  const zTop = zBot - (N - 1) * going;  // top step z (back, into building side)
+  const yTop = N * rise;       // top step y
+  const slope = Math.atan2(rise, going); // step slope from horizontal
+
+  // Steps
+  for (let i = 0; i < N; i++) {
     const step = new THREE.Mesh(
-      new THREE.BoxGeometry(1.0, 0.05, 0.32),
+      new THREE.BoxGeometry(stepW, 0.05, going + 0.08),
       stairMat
     );
-    step.position.set(0, 0.5 + i * 0.42, 1.2 - i * 0.22);
+    step.position.set(0, (i + 1) * rise, zBot - i * going);
+    step.castShadow = true;
     stairGroup.add(step);
   }
-  // top handrail
-  for (let s = -1; s <= 1; s += 2) {
-    const hr = new THREE.Mesh(
-      new THREE.BoxGeometry(0.06, 0.06, 2.6),
+
+  // Diagonal stringers under each side, aligned with step slope
+  const sStartZ = zBot + going / 2;
+  const sEndZ   = zTop - going / 2;
+  const sStartY = 0;
+  const sEndY   = yTop + rise * 0.5;
+  const stringerLen = Math.hypot(sEndZ - sStartZ, sEndY - sStartY);
+  for (const sx of [-sxSide, sxSide]) {
+    const stringer = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.20, stringerLen),
       stairMat
     );
-    hr.position.set(s * 0.5, 4.0, 0.6);
-    hr.rotation.x = -Math.PI * 0.18;
-    stairGroup.add(hr);
+    stringer.position.set(sx, (sStartY + sEndY) / 2, (sStartZ + sEndZ) / 2);
+    stringer.rotation.x = Math.atan2(sEndY - sStartY, sStartZ - sEndZ);
+    stairGroup.add(stringer);
   }
-  // top platform
+
+  // Diagonal handrails ~1.0 m above the steps, parallel to step slope
+  const handLift = 1.0;
+  const handYBot = rise + handLift;
+  const handYTop = yTop + handLift;
+  const handLen = Math.hypot(zBot - zTop, handYTop - handYBot);
+  for (const sx of [-sxSide, sxSide]) {
+    const hand = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 0.06, handLen),
+      stairMat
+    );
+    hand.position.set(sx, (handYBot + handYTop) / 2, (zBot + zTop) / 2);
+    hand.rotation.x = Math.atan2(handYTop - handYBot, zBot - zTop);
+    stairGroup.add(hand);
+  }
+
+  // Short vertical posts at top + bottom connecting steps to handrail
+  for (const sx of [-sxSide, sxSide]) {
+    const botPost = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, handYBot, 0.07),
+      stairMat
+    );
+    botPost.position.set(sx, handYBot / 2, zBot);
+    stairGroup.add(botPost);
+
+    const topPost = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, handLift, 0.07),
+      stairMat
+    );
+    topPost.position.set(sx, yTop + handLift / 2, zTop);
+    stairGroup.add(topPost);
+  }
+
+  // Top landing platform — sits just BEHIND the top step, level with it
+  const platDepth = 1.0;
+  const platZ = zTop - platDepth / 2 - 0.05;
   const platform = new THREE.Mesh(
-    new THREE.BoxGeometry(1.1, 0.08, 1.0),
+    new THREE.BoxGeometry(1.20, 0.08, platDepth),
     stairMat
   );
-  platform.position.set(0, 4.3, 0);
+  platform.position.set(0, yTop + 0.04, platZ);
   stairGroup.add(platform);
 
-  // platform railing
-  for (let s = -1; s <= 1; s += 2) {
-    const r = new THREE.Mesh(
-      new THREE.BoxGeometry(0.05, 1.0, 1.1),
+  // Platform side railings (2 posts + top bar per side)
+  for (const sx of [-sxSide, sxSide]) {
+    const p1 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, handLift, 0.06),
       stairMat
     );
-    r.position.set(s * 0.5, 4.85, 0);
-    stairGroup.add(r);
+    p1.position.set(sx, yTop + handLift / 2, zTop);
+    stairGroup.add(p1);
+
+    const p2 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, handLift, 0.06),
+      stairMat
+    );
+    p2.position.set(sx, yTop + handLift / 2, platZ - platDepth / 2);
+    stairGroup.add(p2);
+
+    const sideTop = new THREE.Mesh(
+      new THREE.BoxGeometry(0.05, 0.05, Math.abs(zTop - (platZ - platDepth / 2))),
+      stairMat
+    );
+    sideTop.position.set(sx, yTop + handLift, (zTop + platZ - platDepth / 2) / 2);
+    stairGroup.add(sideTop);
   }
-  const topRail = new THREE.Mesh(
-    new THREE.BoxGeometry(1.1, 0.06, 0.06),
+  // Back rail (against building wall)
+  const backRail = new THREE.Mesh(
+    new THREE.BoxGeometry(1.20, 0.06, 0.06),
     stairMat
   );
-  topRail.position.set(0, 5.3, 0.5);
-  stairGroup.add(topRail);
+  backRail.position.set(0, yTop + handLift, platZ - platDepth / 2);
+  stairGroup.add(backRail);
 
   g.add(stairGroup);
 
@@ -451,23 +500,26 @@ function buildKiln() {
     color: 0x9aa0a6, roughness: 0.32, metalness: 0.92,
   });
 
-  // The whole kiln rotates around X — but for the static label panel
-  // we want a non-rotating sleeve. We layer: rotating body underneath,
-  // static label "wrap" mesh on top (same radius + 0.001).
   const bodyLength = 8.4;
   const bodyRadius = 0.92;
+
+  // Everything bolted/welded to the kiln body must rotate WITH the body:
+  // riding rings, girth gear, teeth, trunnion sleeve, collars, discharge
+  // collar, end caps and bolt circles. Only the label panels stay static
+  // (so the text remains readable to the viewer).
+  const rotatingGroup = new THREE.Group();
+  rotatingGroup.position.set(0, 2.4, 0);
 
   const body = new THREE.Mesh(
     new THREE.CylinderGeometry(bodyRadius, bodyRadius, bodyLength, 64, 1, false),
     bodyMat
   );
   body.rotation.z = Math.PI / 2;
-  body.position.set(0, 2.4, 0);
   body.castShadow = true;
   body.receiveShadow = true;
-  group.add(body);
+  rotatingGroup.add(body);
 
-  // Riding rings (raised bands) — non-rotating visual, multiple bands per reference
+  // Riding rings (raised bands) — bolted to the body, rotate together with it
   const ringMat = new THREE.MeshStandardMaterial({ color: 0x26282c, roughness: 0.38, metalness: 0.92 });
   for (const xRel of [-3.0, -1.5, 1.4, 2.9]) {
     const ring = new THREE.Mesh(
@@ -475,10 +527,31 @@ function buildKiln() {
       ringMat
     );
     ring.rotation.z = Math.PI / 2;
-    ring.position.set(xRel, 2.4, 0);
+    ring.position.set(xRel, 0, 0);
     ring.castShadow = true;
-    group.add(ring);
+    rotatingGroup.add(ring);
   }
+
+  // ---- Girth gear (large drive ring around kiln) ----
+  // Placed between the front trunnion and the first riding ring so it lines up
+  // with the motor/gearbox pinion underneath.
+  const girth = new THREE.Mesh(
+    new THREE.CylinderGeometry(bodyRadius + 0.20, bodyRadius + 0.20, 0.30, 80),
+    new THREE.MeshStandardMaterial({ color: 0x3a3c40, roughness: 0.5, metalness: 0.92 })
+  );
+  girth.rotation.z = Math.PI / 2;
+  girth.position.set(-3.7, 0, 0);
+  girth.castShadow = true;
+  rotatingGroup.add(girth);
+
+  // Thin polished tooth ring suggesting gear teeth
+  const teeth = new THREE.Mesh(
+    new THREE.CylinderGeometry(bodyRadius + 0.24, bodyRadius + 0.24, 0.07, 96),
+    new THREE.MeshStandardMaterial({ color: 0x55585d, roughness: 0.45, metalness: 0.95 })
+  );
+  teeth.rotation.z = Math.PI / 2;
+  teeth.position.set(-3.7, 0, 0);
+  rotatingGroup.add(teeth);
 
   // Front-end brushed-stainless trunnion housing (left end, before motor)
   // Reference shows a stepped silvery collar where the body meets the drive end.
@@ -487,9 +560,9 @@ function buildKiln() {
     brushedMat
   );
   trunnionLeft.rotation.z = Math.PI / 2;
-  trunnionLeft.position.set(-bodyLength / 2 - 0.30, 2.4, 0);
+  trunnionLeft.position.set(-bodyLength / 2 - 0.30, 0, 0);
   trunnionLeft.castShadow = true;
-  group.add(trunnionLeft);
+  rotatingGroup.add(trunnionLeft);
 
   // Stepped collar ring on the brushed section
   for (const xCol of [-bodyLength / 2 - 0.05, -bodyLength / 2 - 0.55]) {
@@ -498,8 +571,8 @@ function buildKiln() {
       new THREE.MeshStandardMaterial({ color: 0x7a8088, roughness: 0.35, metalness: 0.9 })
     );
     col.rotation.z = Math.PI / 2;
-    col.position.set(xCol, 2.4, 0);
-    group.add(col);
+    col.position.set(xCol, 0, 0);
+    rotatingGroup.add(col);
   }
 
   // Right-end housing — darker boxy discharge collar (matches reference)
@@ -508,9 +581,9 @@ function buildKiln() {
     new THREE.MeshStandardMaterial({ color: 0x2e3135, roughness: 0.45, metalness: 0.86 })
   );
   dischargeCollar.rotation.z = Math.PI / 2;
-  dischargeCollar.position.set(bodyLength / 2 + 0.30, 2.4, 0);
+  dischargeCollar.position.set(bodyLength / 2 + 0.30, 0, 0);
   dischargeCollar.castShadow = true;
-  group.add(dischargeCollar);
+  rotatingGroup.add(dischargeCollar);
 
   // Bolt-flange caps at each true end with bolt circles
   for (const sign of [-1, 1]) {
@@ -520,8 +593,8 @@ function buildKiln() {
       new THREE.MeshStandardMaterial({ color: 0x24262a, roughness: 0.5, metalness: 0.88 })
     );
     cap.rotation.z = Math.PI / 2;
-    cap.position.set(xCap, 2.4, 0);
-    group.add(cap);
+    cap.position.set(xCap, 0, 0);
+    rotatingGroup.add(cap);
 
     // Bolt circle
     for (let i = 0; i < 20; i++) {
@@ -533,32 +606,42 @@ function buildKiln() {
       bolt.rotation.z = Math.PI / 2;
       bolt.position.set(
         xCap + sign * 0.06,
-        2.4 + Math.cos(a) * (bodyRadius + 0.10),
+        Math.cos(a) * (bodyRadius + 0.10),
         Math.sin(a) * (bodyRadius + 0.10)
       );
-      group.add(bolt);
+      rotatingGroup.add(bolt);
     }
   }
 
-  // Static label decal on the front face of the kiln body
-  // Placed slightly in front of the kiln (along +Z) so we always see it
-  const labelTex = makeKilnLabelTexture();
-  const label = new THREE.Mesh(
-    new THREE.PlaneGeometry(5.4, 1.2),
-    new THREE.MeshBasicMaterial({
-      map: labelTex,
-      transparent: true,
-      side: THREE.DoubleSide,
-    })
-  );
-  label.position.set(0.4, 2.55, bodyRadius + 0.012);
-  group.add(label);
+  group.add(rotatingGroup);
 
-  // Also wrap a curved label by tilting a plane against the cylinder surface — simple, robust:
-  // (skipping curved cylinder wrap; the planar label reads cleanly from the camera angle.)
+  // Label — uses two slightly-tilted planes meeting at the kiln's front edge so
+  // the text follows the curvature better than a single flat billboard would,
+  // without the UV-rotation complexity of a true cylindrical sleeve.
+  const labelTex = makeKilnLabelTexture();
+  const labelMat = new THREE.MeshBasicMaterial({
+    map: labelTex, transparent: true, side: THREE.DoubleSide,
+  });
+
+  // Front-facing label (primary) — static, sits just outside the spinning body
+  const labelFront = new THREE.Mesh(
+    new THREE.PlaneGeometry(5.4, 1.2),
+    labelMat
+  );
+  labelFront.position.set(0.4, 2.55, bodyRadius + 0.012);
+  group.add(labelFront);
+
+  // Upper tilted band — gives the impression of the label wrapping toward the top
+  const labelTop = new THREE.Mesh(
+    new THREE.PlaneGeometry(5.4, 0.55),
+    labelMat
+  );
+  labelTop.position.set(0.4, 2.95, bodyRadius * 0.85);
+  labelTop.rotation.x = -Math.PI * 0.30;
+  group.add(labelTop);
 
   scene.add(group);
-  animatedKilns.push({ mesh: body, speed: 0.006 });
+  animatedKilns.push({ mesh: rotatingGroup, axis: 'x', speed: 0.006 });
 }
 
 function makeKilnLabelTexture() {
@@ -593,6 +676,88 @@ function makeKilnLabelTexture() {
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 16;
   return tex;
+}
+
+/* ============================ KILN ROLLER STANDS ============================ */
+/* Each riding ring on a real rotary kiln rests on two trunnion rollers.
+ * Without these the kiln visually "floats" above the skid. We add a pair of
+ * rollers per ring (rotated 30° off vertical-down) plus dark pedestals down
+ * to the skid top, plus a transverse base beam. */
+function buildKilnRollers() {
+  const g = new THREE.Group();
+
+  const bodyRadius = 0.92;
+  const ringOuter  = bodyRadius + 0.07;  // 0.99
+  const rollerR    = 0.18;
+  const rollerL    = 0.34;
+  const kilnY      = 2.4;
+  const skidTopY   = 0.91;
+
+  // Geometric tangency: distance between ring center and roller center =
+  // ringOuter + rollerR. We place each roller at ±30° off straight-down.
+  const d     = ringOuter + rollerR;     // 1.17
+  const theta = Math.PI / 6;             // 30°
+  const yOff  = -d * Math.cos(theta);    // -1.013
+  const zOff  =  d * Math.sin(theta);    //  0.585
+
+  const rollerMat = new THREE.MeshStandardMaterial({
+    color: 0x55585d, roughness: 0.35, metalness: 0.92,
+  });
+  const shaftMat = new THREE.MeshStandardMaterial({
+    color: 0x40434a, roughness: 0.4, metalness: 0.9,
+  });
+  const standMat = new THREE.MeshStandardMaterial({
+    color: 0x2a2c30, roughness: 0.6, metalness: 0.5,
+  });
+
+  // Aligns with buildKiln's riding ring positions
+  const ringXs = [-3.0, -1.5, 1.4, 2.9];
+
+  for (const xr of ringXs) {
+    for (const sz of [-1, 1]) {
+      // Roller (axis along X, supporting kiln from below)
+      const roller = new THREE.Mesh(
+        new THREE.CylinderGeometry(rollerR, rollerR, rollerL, 24),
+        rollerMat
+      );
+      roller.rotation.z = Math.PI / 2;
+      roller.position.set(xr, kilnY + yOff, sz * zOff);
+      roller.castShadow = true;
+      g.add(roller);
+
+      // Shaft sticking out either end
+      const shaft = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.05, 0.05, rollerL + 0.20, 12),
+        shaftMat
+      );
+      shaft.rotation.z = Math.PI / 2;
+      shaft.position.set(xr, kilnY + yOff, sz * zOff);
+      g.add(shaft);
+
+      // Pedestal supporting the roller down to skid top
+      const pedH = kilnY + yOff - skidTopY - rollerR;
+      if (pedH > 0.04) {
+        const pedestal = new THREE.Mesh(
+          new THREE.BoxGeometry(0.40, pedH, 0.34),
+          standMat
+        );
+        pedestal.position.set(xr, skidTopY + pedH / 2, sz * zOff);
+        pedestal.castShadow = true;
+        pedestal.receiveShadow = true;
+        g.add(pedestal);
+      }
+    }
+
+    // Transverse base beam tying the two pedestals together
+    const beam = new THREE.Mesh(
+      new THREE.BoxGeometry(0.42, 0.12, zOff * 2 + 0.34),
+      standMat
+    );
+    beam.position.set(xr, skidTopY + 0.06, 0);
+    g.add(beam);
+  }
+
+  scene.add(g);
 }
 
 /* ============================ FEED FUNNEL (top of kiln) ============================ */
@@ -766,13 +931,24 @@ function buildMotorAssembly() {
   jbox.position.set(-0.6, 0.78, 0);
   g.add(jbox);
 
-  // Cable conduit coming out of junction box
+  // Cable conduit coming out of junction box — short vertical leg ending in a
+  // sealed cable gland, suggesting the cable exits frame to a control panel.
+  const conduitMat = new THREE.MeshStandardMaterial({ color: 0x18191c, roughness: 0.85, metalness: 0.1 });
+
   const conduit = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.035, 0.035, 0.50, 10),
-    new THREE.MeshStandardMaterial({ color: 0x18191c, roughness: 0.85, metalness: 0.1 })
+    new THREE.CylinderGeometry(0.035, 0.035, 0.32, 10),
+    conduitMat
   );
-  conduit.position.set(-0.6, 1.08, 0.05);
+  conduit.position.set(-0.6, 1.03, 0.05);
   g.add(conduit);
+
+  // Sealed cable-gland cap on top of the conduit
+  const conduitCap = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.06, 0.06, 0.08, 12),
+    new THREE.MeshStandardMaterial({ color: 0x2a2c30, roughness: 0.55, metalness: 0.6 })
+  );
+  conduitCap.position.set(-0.6, 1.23, 0.05);
+  g.add(conduitCap);
 
   // Motor shaft visible between motor and gearbox
   const motorShaft = new THREE.Mesh(
@@ -782,6 +958,34 @@ function buildMotorAssembly() {
   motorShaft.rotation.z = Math.PI / 2;
   motorShaft.position.set(0.05, 0.4, 0);
   g.add(motorShaft);
+
+  // ---- Pinion + chain shroud reaching the girth gear on the kiln ----
+  // Motor group is at world (-4.2, 1.0, 1.55); gearbox output shaft already
+  // ends near world y=2.4. We add a small pinion on top, then a chain guard
+  // box running back to the kiln-mounted girth gear at world (-3.7, 2.4, 0).
+  const pinion = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.22, 0.22, 0.10, 28),
+    new THREE.MeshStandardMaterial({ color: 0x3a3c40, roughness: 0.45, metalness: 0.92 })
+  );
+  pinion.position.set(0.35, 1.42, 0);
+  g.add(pinion);
+
+  // Chain guard housing — bridges pinion (local z=0) to girth gear (local z=-1.55)
+  const chainGuard = new THREE.Mesh(
+    new THREE.BoxGeometry(0.20, 0.40, 1.55),
+    new THREE.MeshStandardMaterial({ color: 0x18191c, roughness: 0.75, metalness: 0.4 })
+  );
+  chainGuard.position.set(0.43, 1.40, -0.78);
+  chainGuard.castShadow = true;
+  g.add(chainGuard);
+
+  // Guard end flange against the girth gear
+  const guardEnd = new THREE.Mesh(
+    new THREE.BoxGeometry(0.26, 0.46, 0.06),
+    new THREE.MeshStandardMaterial({ color: 0x2a2c30, roughness: 0.6, metalness: 0.55 })
+  );
+  guardEnd.position.set(0.43, 1.40, -1.55);
+  g.add(guardEnd);
 
   scene.add(g);
   animatedMotors.push({ mesh: motor, speed: 0.18 });
@@ -833,22 +1037,53 @@ function buildDischargeHead() {
     g.add(bolt);
   }
 
-  // Output discharge stub going down/right toward the valve cluster
-  const stub = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.16, 0.16, 0.8, 20),
-    new THREE.MeshStandardMaterial({ color: 0x6a6d72, roughness: 0.45, metalness: 0.85 })
+  // Output discharge stub — drops straight DOWN from the housing bottom,
+  // then a short horizontal jog forward toward the valve cluster on the skid.
+  const stubMat = new THREE.MeshStandardMaterial({ color: 0x6a6d72, roughness: 0.45, metalness: 0.85 });
+
+  // Top flange where stub meets the housing underside
+  const stubTopFl = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.20, 0.20, 0.06, 20),
+    new THREE.MeshStandardMaterial({ color: 0x40434a, roughness: 0.5, metalness: 0.85 })
   );
-  stub.rotation.z = Math.PI * 0.35;
-  stub.position.set(0.55, -0.95, 0.55);
+  stubTopFl.position.set(0.55, -0.75, 0);
+  g.add(stubTopFl);
+
+  // Vertical drop
+  const stub = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.16, 0.16, 0.85, 20),
+    stubMat
+  );
+  stub.position.set(0.55, -1.2, 0);
   g.add(stub);
 
-  // Discharge outlet cylinder at the bottom (under valve)
-  const outlet = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.18, 0.18, 0.42, 24),
-    new THREE.MeshStandardMaterial({ color: 0x3a3c40, roughness: 0.4, metalness: 0.85 })
+  // 90° elbow flange at bottom of drop
+  const stubElbow = new THREE.Mesh(
+    new THREE.SphereGeometry(0.18, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2),
+    stubMat
   );
-  outlet.position.set(0.85, -1.4, 0.65);
-  g.add(outlet);
+  stubElbow.rotation.x = Math.PI;
+  stubElbow.position.set(0.55, -1.62, 0);
+  g.add(stubElbow);
+
+  // Horizontal +Z jog forward to the valve cluster (valves live at world x ≈ 5.4, z ≈ 1.15)
+  // Discharge group is at world (5.1, 2.4, 0); local +Z = world +Z
+  const stubJog = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.16, 0.16, 1.15, 20),
+    stubMat
+  );
+  stubJog.rotation.x = Math.PI / 2;
+  stubJog.position.set(0.55, -1.65, 0.55);
+  g.add(stubJog);
+
+  // Terminating flange where the jog meets the valve cluster inlet
+  const stubEndFl = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.20, 0.20, 0.06, 20),
+    new THREE.MeshStandardMaterial({ color: 0x40434a, roughness: 0.5, metalness: 0.85 })
+  );
+  stubEndFl.rotation.x = Math.PI / 2;
+  stubEndFl.position.set(0.55, -1.65, 1.12);
+  g.add(stubEndFl);
 
   scene.add(g);
 }
@@ -866,37 +1101,45 @@ function buildYellowRailing() {
   const skidTopY = 0.91;
 
   // Front (camera-facing) rail — long horizontal yellow bar plus posts plus mid-rail
-  // spans the full length of the skid front
+  // spans the front of the skid, with an opening for the access stair at x ≈ 3.0.
   const frontZ = 2.15;
   const xMin = -6.5;
   const xMax = 6.5;
+  // Stair entry gap — keeps railing in step with buildAccessStair (centered at x=3.0)
+  const gapL = 2.45;
+  const gapR = 3.55;
 
-  // top rail — slightly rounded square bar
-  const topRail = new THREE.Mesh(
-    new THREE.BoxGeometry(xMax - xMin, 0.09, 0.09),
-    yellow
-  );
-  topRail.position.set((xMin + xMax) / 2, skidTopY + railHeight, frontZ);
-  g.add(topRail);
+  // Helper: build the top/mid/kick rails as TWO segments (left + right of gap)
+  const addRailSegment = (xA, xB, h, y) => {
+    const len = xB - xA;
+    if (len <= 0.001) return;
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(len, h, h), yellow);
+    bar.position.set((xA + xB) / 2, y, frontZ);
+    g.add(bar);
+  };
+  addRailSegment(xMin, gapL, 0.09, skidTopY + railHeight);
+  addRailSegment(gapR, xMax, 0.09, skidTopY + railHeight);
+  addRailSegment(xMin, gapL, 0.07, skidTopY + railHeight * 0.55);
+  addRailSegment(gapR, xMax, 0.07, skidTopY + railHeight * 0.55);
 
-  // mid rail
-  const midRail = new THREE.Mesh(
-    new THREE.BoxGeometry(xMax - xMin, 0.07, 0.07),
-    yellow
-  );
-  midRail.position.set((xMin + xMax) / 2, skidTopY + railHeight * 0.55, frontZ);
-  g.add(midRail);
+  // Kick plate segments (taller cross-section)
+  const addKickSegment = (xA, xB) => {
+    const len = xB - xA;
+    if (len <= 0.001) return;
+    const k = new THREE.Mesh(new THREE.BoxGeometry(len, 0.28, 0.04), yellow);
+    k.position.set((xA + xB) / 2, skidTopY + 0.16, frontZ);
+    g.add(k);
+  };
+  addKickSegment(xMin, gapL);
+  addKickSegment(gapR, xMax);
 
-  // bottom kick plate — solid yellow panel (matches reference flat bar look)
-  const kick = new THREE.Mesh(
-    new THREE.BoxGeometry(xMax - xMin, 0.28, 0.04),
-    yellow
-  );
-  kick.position.set((xMin + xMax) / 2, skidTopY + 0.16, frontZ);
-  g.add(kick);
-
-  // posts — closer spacing per reference
+  // Posts — skip any that fall inside the stair gap; force posts at the gap edges.
+  const postXs = new Set([gapL, gapR]);
   for (let x = xMin; x <= xMax + 0.01; x += 1.25) {
+    if (x > gapL - 0.05 && x < gapR + 0.05) continue;
+    postXs.add(Math.round(x * 1000) / 1000);
+  }
+  for (const x of postXs) {
     const post = new THREE.Mesh(
       new THREE.BoxGeometry(0.11, railHeight, 0.11),
       yellow
@@ -965,15 +1208,105 @@ function buildYellowRailing() {
   scene.add(g);
 }
 
+/* ============================ ACCESS STAIR (ground → skid platform) ============================ */
+/* Operator access stair on the front of the skid. Top step lands flush with
+ * the skid front edge; railings open up around the stair head. */
+function buildAccessStair() {
+  const g = new THREE.Group();
+  // Centered on the front face of the skid, between the funnel and discharge end.
+  // World z = 2.10 (= skid front edge) so the top step is on the skid edge.
+  g.position.set(3.0, 0, 2.10);
+
+  const yellowMat = new THREE.MeshStandardMaterial({
+    color: 0xf2c318, roughness: 0.5, metalness: 0.3,
+    emissive: 0xf2c318, emissiveIntensity: 0.04,
+  });
+
+  // 4 steps × 0.225 rise = 0.90 ≈ skidTopY (0.91). Angle ≈ 36.9° (industrial-realistic).
+  const N = 4;
+  const stepRise  = 0.225;
+  const stepDepth = 0.30;
+  const stepWidth = 0.95;
+  const skidTopY  = 0.91;
+
+  // Treads — step i at height (i+1)*rise and z offset (N-1-i)*depth (positive z = forward, away from skid)
+  for (let i = 0; i < N; i++) {
+    const step = new THREE.Mesh(
+      new THREE.BoxGeometry(stepWidth, 0.05, stepDepth),
+      yellowMat
+    );
+    step.position.set(0, (i + 1) * stepRise, (N - 1 - i) * stepDepth);
+    step.castShadow = true;
+    g.add(step);
+  }
+
+  // Diagonal stringers under each side
+  const stringerLen = Math.hypot(N * stepRise, N * stepDepth);
+  const stringerAngle = Math.atan2(N * stepRise, N * stepDepth);
+  for (const sx of [-(stepWidth / 2 + 0.04), stepWidth / 2 + 0.04]) {
+    const stringer = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, 0.08, stringerLen),
+      yellowMat
+    );
+    stringer.position.set(sx, (N * stepRise) / 2, ((N - 1) * stepDepth) / 2);
+    // +Z end of the bar must land at the FRONT-LOW corner (z=(N-1)*depth, y=0).
+    // Rotation tilts +Z downward, so use +stringerAngle (not negated).
+    stringer.rotation.x = stringerAngle;
+    g.add(stringer);
+  }
+
+  // Vertical handrail posts (one at bottom of stair, one at the platform end)
+  // Bottom post: tall, planted at the lowest tread; top post: shorter, sits on skid edge.
+  const botPostH = 1.10;                  // post height at the bottom (down to ground)
+  const topPostH = 0.55;                  // post height at the top (above skid)
+  const botPostY = botPostH / 2;          // centered so top of post = botPostH
+  const topPostY = skidTopY + topPostH / 2; // centered so it stands on skid surface
+  const botPostTopY = botPostH;           // 1.10
+  const topPostTopY = skidTopY + topPostH; // 1.46
+
+  for (const sx of [-(stepWidth / 2 + 0.04), stepWidth / 2 + 0.04]) {
+    const postBot = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, botPostH, 0.07),
+      yellowMat
+    );
+    postBot.position.set(sx, botPostY, (N - 1) * stepDepth);
+    g.add(postBot);
+
+    const postTop = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, topPostH, 0.07),
+      yellowMat
+    );
+    postTop.position.set(sx, topPostY, 0);
+    g.add(postTop);
+
+    // Diagonal handrail connecting the tops of the two posts
+    const dy = topPostTopY - botPostTopY;          // vertical rise
+    const dz = (N - 1) * stepDepth;                // horizontal run
+    const handLen = Math.hypot(dy, dz);
+    const handAngle = Math.atan2(dy, dz);
+    const hand = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 0.06, handLen),
+      yellowMat
+    );
+    hand.position.set(sx, (topPostTopY + botPostTopY) / 2, dz / 2);
+    // +Z end must hit the FRONT-LOW post top (z=dz, y=botPostTopY).
+    // Tilt +Z downward → positive handAngle.
+    hand.rotation.x = handAngle;
+    g.add(hand);
+  }
+
+  scene.add(g);
+}
+
 /* ============================ ELUTION COLUMN (left side, vertical) ============================ */
 function buildElutionColumnTower() {
   const g = new THREE.Group();
   // Slightly closer to the kiln so hoses look attached, and tall enough to dominate left side
   g.position.set(-8.0, 0, 0.4);
 
-  // Vertical cylinder — light grey insulated concrete look
+  // Vertical cylinder — dark gunmetal concrete column (matches reference photo)
   const colMat = new THREE.MeshStandardMaterial({
-    color: 0xb6b3aa, roughness: 0.85, metalness: 0.05,
+    color: 0x4a4d52, roughness: 0.78, metalness: 0.18,
   });
   const col = new THREE.Mesh(
     new THREE.CylinderGeometry(0.85, 0.85, 6.2, 32),
@@ -1027,33 +1360,64 @@ function buildElutionColumnTower() {
   sign.position.set(0, 4.5, 0.87);
   g.add(sign);
 
-  // Connecting pipes going right toward the kiln (black insulated hoses)
-  // Long arcing curves rising from the column then dropping toward the kiln
+  // ---- Connecting hoses from column flange → kiln body anchor ----
+  // Each hose is a TubeGeometry along a QuadraticBezierCurve3 so both ends
+  // physically attach to clamps (no more floating arc into empty space).
   const hoseMat = new THREE.MeshStandardMaterial({
     color: 0x0a0b0d, roughness: 0.88, metalness: 0.08,
   });
-  for (let i = 0; i < 3; i++) {
-    const y = 1.4 + i * 0.55;
+  const clampMat = new THREE.MeshStandardMaterial({
+    color: 0x5a5d62, roughness: 0.45, metalness: 0.85,
+  });
+
+  // Local coords — group is positioned at world (-8.0, 0, 0.4).
+  // Kiln body center at world (0, 2.4, 0), radius 0.92, axis along world X.
+  // Endpoints must satisfy (y_world - 2.4)^2 + z_world^2 = 0.92^2 so the
+  // kiln-side clamp lands ON the spinning cylinder surface (front-left arc,
+  // facing the camera). Local z = world z - 0.4.
+  // Surface points at world x = -4.0 (just inside the left trunnion):
+  //   φ=-30°: world (y=1.94, z= 0.797)  → local (4.0, 1.94, 0.397)
+  //   φ=  0°: world (y=2.40, z= 0.920)  → local (4.0, 2.40, 0.520)
+  //   φ=+30°: world (y=2.86, z= 0.797)  → local (4.0, 2.86, 0.397)
+  const hoseDefs = [
+    { y0: 1.6,  end: [4.0, 1.94, 0.397] },
+    { y0: 2.2,  end: [4.0, 2.40, 0.520] },
+    { y0: 2.8,  end: [4.0, 2.86, 0.397] },
+  ];
+
+  for (const def of hoseDefs) {
+    const start = new THREE.Vector3(0.95, def.y0, 0);
+    const end   = new THREE.Vector3(def.end[0], def.end[1], def.end[2]);
+    // Mid control point: nudge out (+X), up (+Y), forward (+Z) for a natural arc
+    const ctrl = new THREE.Vector3(
+      (start.x + end.x) / 2 + 0.2,
+      Math.max(start.y, end.y) + 0.35,
+      (start.z + end.z) / 2 + 0.6
+    );
+    const curve = new THREE.QuadraticBezierCurve3(start, ctrl, end);
     const hose = new THREE.Mesh(
-      new THREE.TorusGeometry(1.4 + i * 0.08, 0.085, 12, 36, Math.PI * 0.65),
+      new THREE.TubeGeometry(curve, 24, 0.085, 10, false),
       hoseMat
     );
-    hose.rotation.y = -Math.PI / 2;
-    hose.rotation.z = Math.PI / 2;
-    hose.position.set(1.8, y, 0);
+    hose.castShadow = true;
     g.add(hose);
-  }
 
-  // Hose flanges/clamps on column side
-  for (let i = 0; i < 3; i++) {
-    const y = 1.4 + i * 0.55;
-    const clamp = new THREE.Mesh(
+    // Column-side clamp
+    const cClamp = new THREE.Mesh(
       new THREE.CylinderGeometry(0.11, 0.11, 0.10, 16),
-      new THREE.MeshStandardMaterial({ color: 0x5a5d62, roughness: 0.45, metalness: 0.85 })
+      clampMat
     );
-    clamp.rotation.z = Math.PI / 2;
-    clamp.position.set(0.95, y, 0);
-    g.add(clamp);
+    cClamp.rotation.z = Math.PI / 2;
+    cClamp.position.copy(start);
+    g.add(cClamp);
+
+    // Kiln-side clamp where the hose now physically terminates
+    const kClamp = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.10, 0.10, 0.10, 16),
+      clampMat
+    );
+    kClamp.position.copy(end);
+    g.add(kClamp);
   }
 
   // Vertical pipe stack on side
@@ -1179,6 +1543,94 @@ function buildPipework() {
   conn.position.set(5.675, 1.10, 1.15);
   g.add(conn);
 
+  // ---- FIX 5: terminating flanges on both ends of the 2 long lower pipes ----
+  // The pipes span x = -5.5 … 4.5 at z=1.65, y ∈ {1.05, 1.23}. Without flanges
+  // the bare ends look like open straws.
+  const flangeMat = new THREE.MeshStandardMaterial({
+    color: 0x5a5d62, roughness: 0.5, metalness: 0.85,
+  });
+  for (const px of [-5.5, 4.5]) {
+    for (const py of [1.05, 1.23]) {
+      const fl = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.10, 0.10, 0.06, 16),
+        flangeMat
+      );
+      fl.rotation.z = Math.PI / 2;
+      fl.position.set(px, py, 1.65);
+      g.add(fl);
+    }
+  }
+
+  // ---- FIX 7: clamps anchoring both ends of the drooping black hoses ----
+  // hoseArc is centered at (-2.6, 1.2, 1.4), torus radius 0.45, arc π·0.9 →
+  // visual endpoints land roughly here:
+  for (const cp of [[-3.05, 1.10, 1.40], [-2.15, 1.10, 1.40]]) {
+    const clamp = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.08, 0.08, 0.08, 14),
+      flangeMat
+    );
+    clamp.position.set(cp[0], cp[1], cp[2]);
+    g.add(clamp);
+  }
+  // bigHose centered at (-3.5, 1.45, 1.5), radius 0.55, full π
+  for (const cp of [[-4.05, 1.45, 1.50], [-2.95, 1.45, 1.50]]) {
+    const clamp = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.09, 0.09, 0.08, 14),
+      flangeMat
+    );
+    clamp.position.set(cp[0], cp[1], cp[2]);
+    g.add(clamp);
+  }
+
+  // ---- FIX 4: valve cluster source + sink pipes ----
+  // SOURCE: connector from the discharge stub endpoint (world ≈ 5.65, 0.75, 1.12)
+  // up to the underside of the left valve body (5.4, 0.94, 1.15).
+  // Done in two short legs so it reads as a real plumbing route.
+  const inletRiser = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.075, 0.075, 0.20, 16),
+    pipeMat
+  );
+  inletRiser.position.set(5.65, 0.85, 1.13);
+  g.add(inletRiser);
+
+  const inletJog = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.075, 0.075, 0.30, 16),
+    pipeMat
+  );
+  inletJog.rotation.z = Math.PI / 2;
+  inletJog.position.set(5.50, 0.94, 1.13);
+  g.add(inletJog);
+
+  const inletElbow = new THREE.Mesh(
+    new THREE.SphereGeometry(0.09, 12, 10),
+    flangeMat
+  );
+  inletElbow.position.set(5.40, 0.94, 1.13);
+  g.add(inletElbow);
+
+  const inletUp = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.075, 0.075, 0.20, 16),
+    pipeMat
+  );
+  inletUp.position.set(5.40, 1.02, 1.15);
+  g.add(inletUp);
+
+  // SINK: drain from underneath the right valve down into the skid top
+  const outletDrain = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.075, 0.075, 0.30, 16),
+    pipeMat
+  );
+  outletDrain.position.set(5.95, 0.79, 1.15);
+  g.add(outletDrain);
+
+  // Floor flange where drain meets the skid
+  const drainFl = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.12, 0.12, 0.05, 16),
+    flangeMat
+  );
+  drainFl.position.set(5.95, 0.93, 1.15);
+  g.add(drainFl);
+
   scene.add(g);
 }
 
@@ -1199,7 +1651,7 @@ function animate() {
   frameId = requestAnimationFrame(animate);
 
   for (const k of animatedKilns) {
-    k.mesh.rotation.y += k.speed;   // because the kiln body is rotated, "y" here is along its true axis
+    k.mesh.rotation[k.axis || 'y'] += k.speed;
   }
   for (const m of animatedMotors) {
     m.mesh.rotation.y += m.speed;
@@ -1234,9 +1686,19 @@ function onResize() {
 /* ============================ SLIDE WIRING ============================ */
 window.addEventListener('slidechange', (e) => {
   if (e.detail.index === CONFIG.slideIndex) {
-    init();
-    setTimeout(onResize, 50);
-    startRendering();
+    // Slayt 8 atlasında küçük canvas'a mount edilmiş olabilir;
+    // büyük equipment canvas'ına geçişi mount() pattern'iyle güvenli yap.
+    const targetCanvas = document.getElementById('three-canvas-regen');
+    if (!targetCanvas) return;
+    if (initialized && canvas === targetCanvas) {
+      startRendering();
+      setTimeout(onResize, 50);
+    } else {
+      if (initialized) _disposeForMount();
+      init(targetCanvas);
+      setTimeout(onResize, 50);
+      startRendering();
+    }
   } else {
     stopRendering();
   }
@@ -1303,11 +1765,10 @@ window.threeCarbonRegen = {
     startRendering();
   },
   unmount() {
-    if (!initialized) {
-      if (frameId !== null) { cancelAnimationFrame(frameId); frameId = null; }
-      return;
-    }
-    _disposeForMount();
+    // Sadece render döngüsünü durdur — renderer/context/canvas yaşar.
+    // Aynı canvas'a tekrar mount edildiğinde fast-path (initialized && canvas === canvasEl)
+    // devreye girer; aksi halde forceContextLoss canvas'ı kalıcı öldürür → beyaz ekran.
+    stopRendering();
   },
   get isMounted() { return initialized; },
   get currentCanvas() { return canvas; },

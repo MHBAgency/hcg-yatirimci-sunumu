@@ -2907,7 +2907,16 @@
 .dna-closing__brand {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 6px;
+}
+
+.dna-closing__logo {
+  display: block;
+  width: clamp(320px, 34vw, 480px);
+  height: auto;
+  margin: 0 auto 6px;
+  filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.25));
 }
 .dna-closing__brand-main {
   font-size: clamp(22px, 2.2vw, 32px);
@@ -2956,6 +2965,106 @@
   letter-spacing: var(--dna-track-mono);
   color: var(--dna-text-4);
   margin-top: 12px;
+}
+
+/* ---- Install / PWA bloğu — slayt 16 kapanış CTA'sı (logonun üstünde) ---- */
+.dna-install-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 2px;
+}
+.dna-install-block[hidden] { display: none; }
+
+.dna-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 22px 12px 14px;
+  background: linear-gradient(180deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04));
+  border: 1px solid var(--dna-line-gold);
+  border-radius: var(--dna-r-2);
+  color: var(--dna-text);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--dna-t-base) var(--dna-ease-out);
+  position: relative;
+  overflow: hidden;
+}
+.dna-install::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.18), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s var(--dna-ease-out);
+  pointer-events: none;
+}
+.dna-install:hover:not(:disabled) {
+  border-color: var(--dna-gold-bright);
+  background: linear-gradient(180deg, rgba(212,175,55,0.20), rgba(212,175,55,0.06));
+  transform: translateY(-1px);
+}
+.dna-install:hover:not(:disabled)::before { transform: translateX(100%); }
+.dna-install:active:not(:disabled) { transform: translateY(0); }
+.dna-install:disabled { cursor: default; opacity: 0.85; }
+
+.dna-install__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(212,175,55,0.14);
+  color: var(--dna-gold-bright);
+  flex-shrink: 0;
+  border: 1px solid rgba(212,175,55,0.25);
+}
+.dna-install__icon svg { width: 16px; height: 16px; }
+.dna-install__icon-svg--done { display: none; }
+
+[data-pwa-state="installed"] .dna-install__icon-svg--default { display: none; }
+[data-pwa-state="installed"] .dna-install__icon-svg--done { display: inline-block; }
+[data-pwa-state="installed"] .dna-install__icon {
+  background: rgba(212,175,55,0.20);
+  color: var(--dna-gold-bright);
+}
+
+.dna-install__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  line-height: 1.2;
+}
+.dna-install__label {
+  font-size: 14px;
+  font-weight: var(--dna-w-semi);
+  letter-spacing: 0.03em;
+  color: var(--dna-text);
+}
+.dna-install__sub {
+  font-family: var(--dna-font-mono);
+  font-size: 10px;
+  letter-spacing: var(--dna-track-mono);
+  color: var(--dna-text-3);
+  text-transform: uppercase;
+}
+
+.dna-install__status {
+  margin: 0;
+  font-family: var(--dna-font-mono);
+  font-size: 10px;
+  letter-spacing: var(--dna-track-mono);
+  color: var(--dna-text-4);
+  text-transform: uppercase;
+  min-height: 12px;
+}
+[data-pwa-state="installed"] .dna-install__status,
+[data-pwa-state="installable"] .dna-install__status {
+  color: var(--dna-gold-soft);
 }
 
 

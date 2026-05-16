@@ -61,6 +61,7 @@ function init(targetCanvas) {
 
   canvas = targetCanvas || document.getElementById('three-canvas-ew');
   const rect = canvas.getBoundingClientRect();
+  // Renderer resolution: prefer CSS dimensions, with sensible minimum to avoid pre-mount 0×0 issues
   const width = Math.max(rect.width, 800);
   const height = Math.max(rect.height, 600);
 
@@ -70,17 +71,17 @@ function init(targetCanvas) {
     alpha: true,
     powerPreference: 'high-performance',
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
   renderer.setSize(width, height, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.15;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  // White background like the reference photo
+  // Black background (matches other 3D scenes in the deck)
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xffffff);
+  scene.background = new THREE.Color(0x000000);
   scene.fog = null;
 
   // Environment for crisp PBR reflections on stainless
@@ -88,18 +89,19 @@ function init(targetCanvas) {
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
   // Camera framed to mimic the reference: slightly low 3/4 front view
-  camera = new THREE.PerspectiveCamera(30, width / height, 0.1, 200);
-  camera.position.set(7.5, 5.6, 18.5);
-  camera.lookAt(0, 1.6, 0);
+  // Wide cinematic 3/4 front view — fits the full scene (tank x=-9 → crucible x=+8) at typical aspects
+  camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 200);
+  camera.position.set(3.0, 7.5, 22.0);
+  camera.lookAt(0, 1.3, 0);
 
   controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.07;
-  controls.minDistance = 10;
-  controls.maxDistance = 40;
+  controls.minDistance = 12;
+  controls.maxDistance = 50;
   controls.minPolarAngle = Math.PI * 0.15;
   controls.maxPolarAngle = Math.PI * 0.50;
-  controls.target.set(0, 1.6, 0);
+  controls.target.set(0, 1.3, 0);
   controls.addEventListener('start', () => { lastUserInteraction = Date.now(); });
 
   buildLights();
@@ -111,18 +113,44 @@ function init(targetCanvas) {
   buildGoldMudTray();
   buildCrucible();
   buildCables();
+  buildPlumbing();
+}
+
+/* ============================== HELPERS ============================== */
+function makeCurvedPipe(points, radius, mat, segments = 64) {
+  const curve = new THREE.CatmullRomCurve3(points.map(p => p.clone ? p.clone() : new THREE.Vector3(p[0], p[1], p[2])));
+  const tube = new THREE.TubeGeometry(curve, segments, radius, 14, false);
+  const mesh = new THREE.Mesh(tube, mat);
+  mesh.castShadow = true;
+  return mesh;
+}
+
+function makePipeUnion(radius, mat) {
+  const grp = new THREE.Group();
+  const collar = new THREE.Mesh(
+    new THREE.CylinderGeometry(radius * 1.45, radius * 1.45, radius * 0.7, 18),
+    mat,
+  );
+  grp.add(collar);
+  const flange = new THREE.Mesh(
+    new THREE.CylinderGeometry(radius * 1.7, radius * 1.7, radius * 0.25, 18),
+    mat,
+  );
+  flange.position.y = radius * 0.45;
+  grp.add(flange);
+  return grp;
 }
 
 /* ============================== LIGHTS ============================== */
 function buildLights() {
-  const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+  const ambient = new THREE.AmbientLight(0xffffff, 0.72);
   scene.add(ambient);
 
   // Key light, front-top-right (matches highlights on stainless in photo)
-  const key = new THREE.DirectionalLight(0xffffff, 1.6);
+  const key = new THREE.DirectionalLight(0xffffff, 1.25);
   key.position.set(12, 18, 12);
   key.castShadow = true;
-  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.mapSize.set(2048, 2048);
   key.shadow.camera.left = -15;
   key.shadow.camera.right = 15;
   key.shadow.camera.top = 15;
@@ -231,39 +259,38 @@ function buildOverflowTank() {
   lip.position.y = 2.4;
   grp.add(lip);
 
-  // Brass valve fitting on the side (front face)
+  // Brass bulkhead drain valve on the side facing the pump (+X face → world right)
   const brass = new THREE.MeshStandardMaterial({ color: 0xc7a24a, metalness: 0.9, roughness: 0.3 });
-  const valve = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.4, 24), brass);
-  valve.rotation.z = Math.PI / 2;
-  valve.position.set(0.95, 0.9, 0);
-  grp.add(valve);
-  const valveHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.28, 12), darkMat);
-  valveHandle.position.set(1.15, 1.05, 0);
-  grp.add(valveHandle);
+  const valveBody = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.32, 22), brass);
+  valveBody.rotation.z = Math.PI / 2;
+  valveBody.position.set(0.95, 0.55, 0.55);
+  grp.add(valveBody);
+  // Flanged hose nipple where the suction pipe clamps on
+  const nipple = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.10, 0.18, 18), brass);
+  nipple.rotation.z = Math.PI / 2;
+  nipple.position.set(1.16, 0.55, 0.55);
+  grp.add(nipple);
+  // Bright yellow ball-valve lever sitting on top of the valve body (visible from camera)
+  const yellowLever = new THREE.MeshStandardMaterial({ color: 0xf0c628, metalness: 0.35, roughness: 0.45 });
+  const lever = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.06, 0.06), yellowLever);
+  lever.position.set(0.95, 0.85, 0.55);
+  grp.add(lever);
+  const leverPivot = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.22, 12), darkMat);
+  leverPivot.position.set(0.95, 0.74, 0.55);
+  grp.add(leverPivot);
 
-  // Black elbow pipe rising out the top
-  const elbow = makePipeElbow(0.18, darkMat);
-  elbow.position.set(-0.45, 2.5, 0);
-  grp.add(elbow);
+  // Top fill nozzle (return-line termination above the tank lip — open mouth)
+  const fillCollar = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.16, 0.16, 0.16, 18),
+    new THREE.MeshStandardMaterial({ color: 0x101215, metalness: 0.6, roughness: 0.55 }),
+  );
+  fillCollar.position.set(0.0, 2.48, 0.0);
+  grp.add(fillCollar);
+  // Tag the fill collar + tank suction port positions so plumbing function can read them
+  scene.userData.tankFillCollarWorld = new THREE.Vector3(CONFIG.tankX + 0.0, CONFIG.baseHeight + 2.48, 0.4 + 0.0);
+  scene.userData.tankSuctionPortWorld = new THREE.Vector3(CONFIG.tankX + 1.16 + 0.09, CONFIG.baseHeight + 0.55, 0.4 + 0.55);
 
   scene.add(grp);
-}
-
-function makePipeElbow(radius, mat) {
-  const grp = new THREE.Group();
-  const v = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, 1.2, 18), mat);
-  v.position.y = 0.6; grp.add(v);
-  // 90 deg curve
-  const curve = new THREE.TorusGeometry(0.35, radius, 14, 24, Math.PI / 2);
-  const torus = new THREE.Mesh(curve, mat);
-  torus.rotation.x = Math.PI / 2;
-  torus.position.set(0.35, 1.2, 0);
-  grp.add(torus);
-  const h = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, 1.0, 18), mat);
-  h.rotation.z = Math.PI / 2;
-  h.position.set(0.85, 1.55, 0);
-  grp.add(h);
-  return grp;
 }
 
 /* ============================== PUMP ============================== */
@@ -308,48 +335,132 @@ function buildPump() {
   volute.position.set(1.1, 0.55, 0);
   grp.add(volute);
 
-  // Yellow priming cap on top of volute
-  const yellowCap = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.14, 18), yellowMat);
-  yellowCap.position.set(1.1, 1.0, 0);
-  grp.add(yellowCap);
+  // Flange between motor and volute (square plate with 4 bolts)
+  const flange = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.25, 1.25), stainMat);
+  flange.position.set(0.82, 0.55, 0);
+  grp.add(flange);
+  const flangeBoltMat = new THREE.MeshStandardMaterial({ color: 0x6b7177, metalness: 0.95, roughness: 0.3 });
+  [[0.5, 0.5], [0.5, -0.5], [-0.5, 0.5], [-0.5, -0.5]].forEach(([dy, dz]) => {
+    const b = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.10, 8), flangeBoltMat);
+    b.rotation.z = Math.PI / 2;
+    b.position.set(0.82, 0.55 + dy, dz);
+    grp.add(b);
+  });
 
-  // Suction & discharge stubs (black PVC)
-  const suct = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 1.0, 18), blackMat);
-  suct.position.set(1.1, 0.55, 0.5);
-  suct.rotation.x = Math.PI / 2;
-  grp.add(suct);
-  const disch = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.7, 18), blackMat);
-  disch.position.set(1.6, 0.55, 0);
-  disch.rotation.z = Math.PI / 2;
-  grp.add(disch);
+  // Yellow priming cap on top of volute (visible from front camera)
+  const yellowCap = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.16, 18), yellowMat);
+  yellowCap.position.set(1.1, 1.04, 0);
+  grp.add(yellowCap);
+  const yellowCapTop = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.10, 0.06, 12), yellowMat);
+  yellowCapTop.position.set(1.1, 1.15, 0);
+  grp.add(yellowCapTop);
+
+  // Suction inlet on the FRONT face of the volute (where suction line from tank arrives)
+  const suctStub = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.35, 18), blackMat);
+  suctStub.position.set(1.1, 0.55, 0.50 + 0.175);  // front (+Z) of pump
+  suctStub.rotation.x = Math.PI / 2;
+  grp.add(suctStub);
+  // Suction flange ring
+  const suctFlange = new THREE.Mesh(new THREE.CylinderGeometry(0.20, 0.20, 0.05, 18), stainMat);
+  suctFlange.position.set(1.1, 0.55, 0.50);
+  suctFlange.rotation.x = Math.PI / 2;
+  grp.add(suctFlange);
+
+  // Discharge outlet on the RIGHT (+X) side of the volute (toward cell)
+  const dischStub = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.35, 18), blackMat);
+  dischStub.position.set(1.1 + 0.275 + 0.175, 0.55, 0);
+  dischStub.rotation.z = Math.PI / 2;
+  grp.add(dischStub);
+  const dischFlange = new THREE.Mesh(new THREE.CylinderGeometry(0.20, 0.20, 0.05, 18), stainMat);
+  dischFlange.position.set(1.1 + 0.275, 0.55, 0);
+  dischFlange.rotation.z = Math.PI / 2;
+  grp.add(dischFlange);
 
   // Base feet
   const foot = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.15, 0.7), blackMat);
   foot.position.set(-0.1, 0.08, 0);
   grp.add(foot);
 
-  // PVC plumbing leading toward the cell (a small zigzag of black pipes)
-  const pipeGrp = new THREE.Group();
-  pipeGrp.position.set(2.2, 0, -0.4);
-  const p1 = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 1.2, 16), blackMat);
-  p1.position.set(0, 0.55, 0);
-  p1.rotation.z = Math.PI / 2;
-  pipeGrp.add(p1);
-  const elbow1 = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.14, 12, 22, Math.PI / 2), blackMat);
-  elbow1.position.set(0.6, 0.55, 0);
-  elbow1.rotation.x = Math.PI / 2;
-  elbow1.rotation.z = Math.PI;
-  pipeGrp.add(elbow1);
-  const p2 = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.55, 16), blackMat);
-  p2.position.set(0.78, 0.85, 0);
-  pipeGrp.add(p2);
-  const p3 = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 1.6, 16), blackMat);
-  p3.position.set(1.95, 1.0, 0);
-  p3.rotation.z = Math.PI / 2;
-  pipeGrp.add(p3);
-  grp.add(pipeGrp);
+  // Expose pump's external port positions (world coords) for buildPlumbing()
+  scene.userData.pumpSuctionPortWorld = new THREE.Vector3(
+    CONFIG.pumpX + 1.1,
+    CONFIG.baseHeight + 0.05 + 0.55,
+    1.6 + 0.50 + 0.35,                 // front face + full stub length
+  );
+  scene.userData.pumpDischargePortWorld = new THREE.Vector3(
+    CONFIG.pumpX + 1.1 + 0.275 + 0.35, // right side + flange + stub
+    CONFIG.baseHeight + 0.05 + 0.55,
+    1.6,
+  );
 
   scene.add(grp);
+}
+
+/* ============================== PLUMBING NETWORK ============================== */
+/* Draws the three flow lines that complete the electrolyte loop:
+ *   1) Tank brass valve  →  Pump suction port    (low forward run)
+ *   2) Pump discharge    →  Cell left-wall inlet (rises up + over)
+ *   3) Cell right-wall overflow → Tank top fill collar (long return arc above the scene)
+ */
+function buildPlumbing() {
+  const blackMat = new THREE.MeshStandardMaterial({ color: 0x121417, metalness: 0.45, roughness: 0.55 });
+  const fittingMat = new THREE.MeshStandardMaterial({ color: 0x6c7277, metalness: 0.92, roughness: 0.32 });
+
+  const tankOut = scene.userData.tankSuctionPortWorld;       // (-7.75, 0.90, 0.95)
+  const tankFill = scene.userData.tankFillCollarWorld;       // (-9.00, 2.83, 0.40)
+  const pumpIn = scene.userData.pumpSuctionPortWorld;        // (-6.30, 1.00, 2.45)
+  const pumpOut = scene.userData.pumpDischargePortWorld;     // (-6.025, 1.00, 1.60)
+  const cellIn = scene.userData.cellInletPortWorld;          // (-5.66, 0.90, 0.40)
+  const cellOut = scene.userData.cellOverflowPortWorld;      // (2.43, 2.27, 0.70)
+  if (!tankOut || !pumpIn || !pumpOut || !cellIn || !tankFill || !cellOut) return;
+
+  // 1) SUCTION LINE: tank valve → forward curve → pump front intake
+  //    Drops from tank valve, runs forward + right along the base, swings up into pump suction.
+  const suctionPts = [
+    tankOut.clone(),
+    new THREE.Vector3(tankOut.x + 0.25, tankOut.y - 0.05, tankOut.z + 0.20),
+    new THREE.Vector3(tankOut.x + 0.65, tankOut.y - 0.30, tankOut.z + 0.70),
+    new THREE.Vector3(pumpIn.x - 0.40, pumpIn.y - 0.25, pumpIn.z - 0.10),
+    new THREE.Vector3(pumpIn.x - 0.10, pumpIn.y, pumpIn.z),
+    pumpIn.clone(),
+  ];
+  scene.add(makeCurvedPipe(suctionPts, 0.13, blackMat, 56));
+
+  // 2) DISCHARGE LINE: pump right-side outlet → up → curve right toward cell → down into cell-wall inlet
+  //    This is the visible "feed" pipe that the reference image shows running from pump up to cell.
+  const dischargePts = [
+    pumpOut.clone(),
+    new THREE.Vector3(pumpOut.x + 0.25, pumpOut.y + 0.40, pumpOut.z),
+    new THREE.Vector3(pumpOut.x + 0.55, pumpOut.y + 0.90, pumpOut.z - 0.30),
+    new THREE.Vector3((pumpOut.x + cellIn.x) / 2, pumpOut.y + 1.10, (pumpOut.z + cellIn.z) / 2 - 0.20),
+    new THREE.Vector3(cellIn.x - 0.30, cellIn.y + 0.80, cellIn.z + 0.10),
+    new THREE.Vector3(cellIn.x - 0.10, cellIn.y + 0.30, cellIn.z),
+    cellIn.clone(),
+  ];
+  scene.add(makeCurvedPipe(dischargePts, 0.13, blackMat, 72));
+
+  // 3) RETURN/OVERFLOW LINE: cell right-side overflow → arc back over the cabinet's rear → tank fill collar
+  //    Routes BEHIND the cabinet so it doesn't visually clutter the front of the cabinet.
+  const returnPts = [
+    cellOut.clone(),
+    new THREE.Vector3(cellOut.x + 0.35, cellOut.y + 0.30, cellOut.z + 0.10),
+    new THREE.Vector3(cellOut.x + 1.00, cellOut.y + 0.70, cellOut.z + 0.50),
+    new THREE.Vector3(CONFIG.cabinetX + 1.5, cellOut.y + 1.20, -2.20),                // arc up over cabinet rear
+    new THREE.Vector3(CONFIG.cabinetX - 2.0, cellOut.y + 1.40, -2.80),
+    new THREE.Vector3(CONFIG.cellX - 2.5, cellOut.y + 1.40, -2.80),
+    new THREE.Vector3(CONFIG.tankX + 1.8, cellOut.y + 1.20, -1.80),
+    new THREE.Vector3(tankFill.x + 0.6, tankFill.y + 0.80, tankFill.z - 0.80),
+    new THREE.Vector3(tankFill.x + 0.15, tankFill.y + 0.30, tankFill.z - 0.10),
+    new THREE.Vector3(tankFill.x, tankFill.y + 0.08, tankFill.z),                     // drop straight into collar
+  ];
+  scene.add(makeCurvedPipe(returnPts, 0.10, blackMat, 96));
+
+  // Small union sleeves at the four anchor points (where pipe meets nipple) - hide the seam
+  const seamA = makePipeUnion(0.14, fittingMat); seamA.position.copy(tankOut);  scene.add(seamA);
+  const seamB = makePipeUnion(0.14, fittingMat); seamB.position.copy(pumpIn);   seamB.rotation.x = Math.PI / 2; scene.add(seamB);
+  const seamC = makePipeUnion(0.14, fittingMat); seamC.position.copy(pumpOut);  seamC.rotation.z = Math.PI / 2; scene.add(seamC);
+  const seamD = makePipeUnion(0.14, fittingMat); seamD.position.copy(cellIn);   seamD.rotation.z = Math.PI / 2; scene.add(seamD);
+  const seamE = makePipeUnion(0.11, fittingMat); seamE.position.copy(cellOut);  seamE.rotation.z = Math.PI / 2; scene.add(seamE);
 }
 
 /* ====================== ELECTROWINNING CELL ====================== */
@@ -359,22 +470,24 @@ function buildElectrowinningCell() {
 
   const cw = CONFIG.cellWidth, cd = CONFIG.cellDepth, ch = CONFIG.cellHeight;
   const stain = new THREE.MeshStandardMaterial({ color: 0xb1b7bc, metalness: 0.9, roughness: 0.28 });
-  const darkStain = new THREE.MeshStandardMaterial({ color: 0x4f555a, metalness: 0.85, roughness: 0.45 });
 
-  // Glass walls - 4 transparent panes (crisp, museum-quality glass)
+  // Glass walls - museum-quality optical glass. Push transmission to nearly full and drop opacity so
+  // the cathodes/electrolyte inside are crisply visible. Front pane uses single-sided to avoid the
+  // muddy double-transmission artifact (rendering glass twice on back face).
   const glassMat = new THREE.MeshPhysicalMaterial({
-    color: 0xeefbf6,
+    color: 0xf7fefb,
     metalness: 0.0,
-    roughness: 0.02,
-    transmission: 0.95,
-    thickness: 0.25,
-    ior: 1.48,
+    roughness: 0.0,
+    transmission: 1.0,
+    thickness: 0.10,
+    ior: 1.5,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.02,
+    clearcoatRoughness: 0.0,
     transparent: true,
-    opacity: 0.35,
-    side: THREE.DoubleSide,
-    envMapIntensity: 1.2,
+    opacity: 0.18,
+    side: THREE.FrontSide,
+    envMapIntensity: 1.6,
+    specularIntensity: 1.0,
   });
 
   const wallT = 0.06;
@@ -435,20 +548,22 @@ function buildElectrowinningCell() {
     grp.add(bB);
   }
 
-  // Electrolyte (teal liquid) - fills ~78% of the interior, brighter saturated teal
+  // Electrolyte (teal liquid) - brilliant turquoise like the reference photo
   const elDepth = ch * 0.78;
   const elMat = new THREE.MeshPhysicalMaterial({
-    color: 0x1ec5b1,
+    color: 0x2ee0c4,
     metalness: 0.0,
-    roughness: 0.12,
-    transmission: 0.62,
-    thickness: 2.2,
-    ior: 1.34,
-    attenuationColor: 0x0a8a7a,
-    attenuationDistance: 1.8,
+    roughness: 0.04,
+    transmission: 0.85,
+    thickness: 0.8,
+    ior: 1.33,
+    attenuationColor: 0x35d4be,
+    attenuationDistance: 4.5,
     transparent: true,
-    opacity: 0.78,
+    opacity: 0.55,
     side: THREE.DoubleSide,
+    emissive: 0x0a5a4e,
+    emissiveIntensity: 0.18,
   });
   elMat.userData.baseEm = 0.05;
   const electrolyte = new THREE.Mesh(
@@ -478,6 +593,52 @@ function buildElectrowinningCell() {
   // Cathodes - hanging plates with steel-wool wraps
   buildCathodes(grp);
 
+  // Bulkhead fittings on cell walls (where plumbing connects)
+  // LEFT-WALL INLET: where pump discharge enters the cell near the bottom
+  const fittingMat = new THREE.MeshStandardMaterial({ color: 0x6c7277, metalness: 0.92, roughness: 0.32 });
+  const inletFlange = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.20, 0.20, 0.05, 22),
+    fittingMat,
+  );
+  inletFlange.rotation.z = Math.PI / 2;
+  inletFlange.position.set(-cw / 2 - 0.04, 0.55, 0.4);
+  grp.add(inletFlange);
+  const inletNipple = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.14, 0.14, 0.30, 18),
+    new THREE.MeshStandardMaterial({ color: 0x101215, metalness: 0.55, roughness: 0.55 }),
+  );
+  inletNipple.rotation.z = Math.PI / 2;
+  inletNipple.position.set(-cw / 2 - 0.21, 0.55, 0.4);
+  grp.add(inletNipple);
+
+  // RIGHT-WALL OVERFLOW: where return line exits the cell near the top
+  const overflowFlange = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.17, 0.17, 0.05, 22),
+    fittingMat,
+  );
+  overflowFlange.rotation.z = Math.PI / 2;
+  overflowFlange.position.set(cw / 2 + 0.04, ch * 0.74, 0.7);
+  grp.add(overflowFlange);
+  const overflowNipple = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.11, 0.11, 0.26, 18),
+    new THREE.MeshStandardMaterial({ color: 0x101215, metalness: 0.55, roughness: 0.55 }),
+  );
+  overflowNipple.rotation.z = Math.PI / 2;
+  overflowNipple.position.set(cw / 2 + 0.20, ch * 0.74, 0.7);
+  grp.add(overflowNipple);
+
+  // Expose plumbing connection points (world coordinates)
+  scene.userData.cellInletPortWorld = new THREE.Vector3(
+    CONFIG.cellX + (-cw / 2 - 0.36),
+    CONFIG.baseHeight + 0.55,
+    0 + 0.4,
+  );
+  scene.userData.cellOverflowPortWorld = new THREE.Vector3(
+    CONFIG.cellX + (cw / 2 + 0.33),
+    CONFIG.baseHeight + ch * 0.74,
+    0 + 0.7,
+  );
+
   scene.add(grp);
 }
 
@@ -485,104 +646,144 @@ function buildCathodes(parentGrp) {
   const cw = CONFIG.cellWidth, cd = CONFIG.cellDepth, ch = CONFIG.cellHeight;
   const N = CONFIG.cathodeCount;
   const span = cw - 0.9;
-  const plateMat = new THREE.MeshStandardMaterial({ color: 0xb8bec3, metalness: 0.95, roughness: 0.22 });
+  const plateMat = new THREE.MeshStandardMaterial({ color: 0xc8ccd0, metalness: 0.95, roughness: 0.20 });
   const anodeMat = new THREE.MeshStandardMaterial({ color: 0xa6acb1, metalness: 0.92, roughness: 0.30 });
-  // Steel-wool: pale grey, fibrous, very rough
+  // Steel-wool: bright silvery, moderately metallic so highlights pop against the teal electrolyte
   const woolMat = new THREE.MeshStandardMaterial({
-    color: 0x9ea4a9, metalness: 0.55, roughness: 0.95,
-    emissive: 0x141517, emissiveIntensity: 0.25,
+    color: 0xb8bec5,
+    metalness: 0.75,
+    roughness: 0.55,
+    emissive: 0x0e1012,
+    emissiveIntensity: 0.30,
   });
+
+  const woolH = ch * 0.78 - 0.10;        // wool length (extends slightly above electrolyte surface)
+  const woolBaseY = 0.12;                // bottom of wool just above cell floor
+  const woolRadius = 0.22;               // outer envelope radius
+  const FIBERS_PER_BUNDLE = 120;         // instanced fluffy particles per cathode
+  const STRANDS_PER_BUNDLE = 14;         // wrap-around helical fiber strands
+  const electrolyteTopY = ch * 0.78 + 0.05;
+
+  // Build one shared geometry for the fluffy fiber particles, then InstancedMesh per cathode
+  const fiberGeo = new THREE.IcosahedronGeometry(0.030, 0);
 
   for (let i = 0; i < N; i++) {
     const t = N === 1 ? 0.5 : i / (N - 1);
     const x = -span / 2 + t * span;
 
-    // Stainless hanger plate (visible above electrolyte) - flat anode-style sheet
+    // ---- Hanger plate (visible silver tab above electrolyte → busbar) ----
     const plate = new THREE.Mesh(
-      new THREE.BoxGeometry(0.05, 0.62, cd - 0.4),
+      new THREE.BoxGeometry(0.05, 0.72, cd - 0.4),
       plateMat,
     );
-    plate.position.set(x, ch - 0.08, 0);
+    plate.position.set(x, ch - 0.04, 0);
     plate.castShadow = true;
     parentGrp.add(plate);
 
-    // Small bolt on the top of each plate joining to busbar
+    // ---- Bolt fastening plate to busbar ----
     const bolt = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.045, 0.045, 0.18, 10),
+      new THREE.CylinderGeometry(0.048, 0.048, 0.22, 12),
       plateMat,
     );
-    bolt.position.set(x, ch + 0.28, 0);
+    bolt.position.set(x, ch + 0.32, 0);
     parentGrp.add(bolt);
 
-    // Steel-wool cathode body (fluffy fibrous bundle) hanging into electrolyte
-    const woolH = ch * 0.78 - 0.15;
-    // Use multiple concentric irregular cylinders + many lumps for a fluffy look
-    for (let layer = 0; layer < 3; layer++) {
-      const rad = 0.20 + layer * 0.035;
-      const wool = new THREE.Mesh(
-        new THREE.CylinderGeometry(rad * (0.95 + Math.random()*0.08), rad, woolH - layer * 0.05, 14, 1, false),
-        woolMat,
-      );
-      wool.position.set(x, woolH / 2 + 0.1, 0);
-      wool.castShadow = true;
-      parentGrp.add(wool);
-    }
-
-    // Tons of fibrous lumps to break up the silhouette
-    for (let k = 0; k < 32; k++) {
-      const lump = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(0.055 + Math.random() * 0.05, 0),
-        woolMat,
-      );
-      const ang = Math.random() * Math.PI * 2;
-      const r = 0.24 + Math.random() * 0.06;
-      lump.position.set(
-        x + Math.cos(ang) * r,
-        0.12 + Math.random() * (woolH - 0.15),
-        Math.sin(ang) * r,
-      );
-      lump.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
-      parentGrp.add(lump);
-    }
-
-    // Top "bouquet" of wool fibers above electrolyte (visible bushy crown)
-    for (let k = 0; k < 14; k++) {
-      const tuft = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(0.08 + Math.random()*0.04, 0),
-        woolMat,
-      );
-      const ang = Math.random() * Math.PI * 2;
-      const r = 0.18 + Math.random() * 0.12;
-      tuft.position.set(
-        x + Math.cos(ang) * r,
-        woolH + 0.10 + Math.random()*0.15,
-        Math.sin(ang) * r,
-      );
-      parentGrp.add(tuft);
-    }
-
-    // gentle bubble sprite above each cathode (subtle electrolysis feel)
-    const bub = new THREE.Mesh(
-      new THREE.SphereGeometry(0.04, 8, 6),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 }),
+    // ---- Central armature rod (thin stainless wire core of the wool bundle) ----
+    const armature = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, woolH + 0.18, 10),
+      plateMat,
     );
-    bub.position.set(x, ch * 0.7, (Math.random() - 0.5) * (cd - 0.8));
+    armature.position.set(x, woolBaseY + (woolH + 0.18) / 2, 0);
+    parentGrp.add(armature);
+
+    // ---- Instanced fiber fluff (cloud of tiny shiny chunks filling the bundle envelope) ----
+    const inst = new THREE.InstancedMesh(fiberGeo, woolMat, FIBERS_PER_BUNDLE);
+    const m4 = new THREE.Matrix4();
+    const q = new THREE.Quaternion();
+    const s = new THREE.Vector3();
+    const p = new THREE.Vector3();
+    for (let f = 0; f < FIBERS_PER_BUNDLE; f++) {
+      // distribute uniformly in a cylinder volume, weighted slightly toward the surface for fluff
+      const ang = Math.random() * Math.PI * 2;
+      const rad = woolRadius * (0.45 + Math.random() * 0.62);
+      const y = woolBaseY + Math.random() * woolH;
+      p.set(x + Math.cos(ang) * rad, y, Math.sin(ang) * rad);
+      q.setFromEuler(new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI));
+      const scale = 0.7 + Math.random() * 1.2;
+      s.set(scale, scale * (0.6 + Math.random() * 1.2), scale);
+      m4.compose(p, q, s);
+      inst.setMatrixAt(f, m4);
+    }
+    inst.instanceMatrix.needsUpdate = true;
+    inst.castShadow = true;
+    parentGrp.add(inst);
+
+    // ---- Helical fiber wrap strands (give the wool clear directional fiber lines) ----
+    for (let s2 = 0; s2 < STRANDS_PER_BUNDLE; s2++) {
+      const phase = (s2 / STRANDS_PER_BUNDLE) * Math.PI * 2 + Math.random() * 0.4;
+      const turns = 1.2 + Math.random() * 0.8;
+      const strandPts = [];
+      const segs = 22;
+      const rJitter = woolRadius * (0.85 + Math.random() * 0.15);
+      for (let k = 0; k <= segs; k++) {
+        const u = k / segs;
+        const ang = phase + u * turns * Math.PI * 2;
+        const radK = rJitter * (0.85 + 0.15 * Math.sin(u * Math.PI));   // pinch slightly at top/bottom
+        const yK = woolBaseY + u * woolH;
+        strandPts.push(new THREE.Vector3(
+          x + Math.cos(ang) * radK + (Math.random() - 0.5) * 0.015,
+          yK,
+          Math.sin(ang) * radK + (Math.random() - 0.5) * 0.015,
+        ));
+      }
+      const curve = new THREE.CatmullRomCurve3(strandPts);
+      const strand = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, 32, 0.011, 6, false),
+        woolMat,
+      );
+      strand.castShadow = false;
+      parentGrp.add(strand);
+    }
+
+    // ---- Top crown (bushy fibers extending slightly above electrolyte surface) ----
+    const crown = new THREE.InstancedMesh(fiberGeo, woolMat, 18);
+    for (let c = 0; c < 18; c++) {
+      const ang = Math.random() * Math.PI * 2;
+      const rad = (0.12 + Math.random() * 0.14);
+      const y = electrolyteTopY + Math.random() * 0.12;
+      p.set(x + Math.cos(ang) * rad, y, Math.sin(ang) * rad);
+      q.setFromEuler(new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI));
+      const scale = 0.9 + Math.random() * 0.8;
+      s.set(scale, scale * 1.4, scale);
+      m4.compose(p, q, s);
+      crown.setMatrixAt(c, m4);
+    }
+    crown.instanceMatrix.needsUpdate = true;
+    parentGrp.add(crown);
+
+    // ---- Bubble sprite (electrolysis bubble rising from the cathode top) ----
+    const bub = new THREE.Mesh(
+      new THREE.SphereGeometry(0.045, 8, 6),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
+    );
+    bub.position.set(x, electrolyteTopY - 0.08, (Math.random() - 0.5) * (cd - 0.8));
     bub.userData = { baseY: bub.position.y, basePhase: Math.random() * Math.PI * 2, speed: 0.3 + Math.random() * 0.2 };
     bubbleSprites.push(bub);
     parentGrp.add(bub);
   }
 
   // Anode plates BETWEEN cathodes (thin stainless sheets, alternate slots)
-  // In the reference: anodes appear as flat steel sheets behind the wool bundles
+  // Slightly thicker + with visible top edge above electrolyte for "stuck card" look
   for (let i = 0; i < N + 1; i++) {
     const t = N === 1 ? 0.5 : (i - 0.5) / (N - 1);
     const x = -span / 2 + t * span;
     if (Math.abs(x) > cw / 2 - 0.3) continue;
     const sheet = new THREE.Mesh(
-      new THREE.BoxGeometry(0.025, ch * 0.78 - 0.05, cd - 0.45),
+      new THREE.BoxGeometry(0.045, ch * 0.78 + 0.18, cd - 0.50),
       anodeMat,
     );
-    sheet.position.set(x, (ch * 0.78) / 2 + 0.05, 0);
+    sheet.position.set(x, (ch * 0.78 + 0.18) / 2 + 0.05, 0);
+    sheet.castShadow = true;
     parentGrp.add(sheet);
   }
 }
@@ -725,47 +926,52 @@ function makeDigitalDisplay(value, unit) {
 }
 
 function makeDigitDisplayTexture(value, unit, w, h) {
+  // Render at 2x for crispness then let MipMaps downsample. Layout: LED + SET on left, then "VALUE UNIT" centered in the right 75% of the screen.
+  const C = 2;
+  const cw = w * C, chh = h * C;
   const c = document.createElement('canvas');
-  c.width = w; c.height = h;
+  c.width = cw; c.height = chh;
   const ctx = c.getContext('2d');
-  // Black screen background with subtle bezel margin
-  ctx.fillStyle = '#080202';
-  ctx.fillRect(0, 0, w, h);
-  // Inner red glow background
-  const grad = ctx.createRadialGradient(w*0.55, h*0.5, 4, w*0.55, h*0.5, w*0.5);
-  grad.addColorStop(0, 'rgba(80,8,2,0.55)');
+  // Black screen background
+  ctx.fillStyle = '#0a0303';
+  ctx.fillRect(0, 0, cw, chh);
+  // Red glow background centered on the digit area
+  const grad = ctx.createRadialGradient(cw * 0.62, chh * 0.55, 4, cw * 0.62, chh * 0.55, cw * 0.55);
+  grad.addColorStop(0, 'rgba(70,8,2,0.55)');
   grad.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, w, h);
-  // Yellow status LED (left)
+  ctx.fillRect(0, 0, cw, chh);
+  // Status LED dot (top-left)
   ctx.fillStyle = '#f3c530';
   ctx.shadowColor = '#f3c530';
-  ctx.shadowBlur = 14;
+  ctx.shadowBlur = 16;
   ctx.beginPath();
-  ctx.arc(w * 0.10, h * 0.30, 6, 0, Math.PI * 2);
+  ctx.arc(cw * 0.10, chh * 0.25, 5.5 * C, 0, Math.PI * 2);
   ctx.fill();
   ctx.shadowBlur = 0;
-  // small label dot below LED
-  ctx.fillStyle = '#cccccc';
-  ctx.font = 'bold 14px Helvetica, Arial, sans-serif';
-  ctx.fillText('SET', w * 0.06, h * 0.55);
-  // 7-segment-style digits
-  ctx.fillStyle = '#ff2e15';
+  // SET label below LED
+  ctx.fillStyle = '#bbbbbb';
+  ctx.font = `bold ${16 * C}px Helvetica, Arial, sans-serif`;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('SET', cw * 0.04, chh * 0.65);
+  // Compose "VALUE UNIT" as ONE STRING — guarantees both are drawn within bounds
+  const composite = `${value} ${unit}`;
+  ctx.fillStyle = '#ff3a1c';
   ctx.shadowColor = '#ff3b22';
   ctx.shadowBlur = 18;
-  ctx.font = 'bold 86px "DS-Digital","Courier New", monospace';
+  ctx.font = `bold ${64 * C}px "Courier New", monospace`;
   ctx.textBaseline = 'middle';
-  ctx.textAlign = 'right';
-  ctx.fillText(value, w * 0.80, h * 0.52);
+  ctx.textAlign = 'center';
+  // Center the composite in the right portion (from ~22% to ~98% of width)
+  ctx.fillText(composite, cw * 0.62, chh * 0.55);
   ctx.shadowBlur = 0;
-  // Unit label
-  ctx.font = 'bold 30px Helvetica, Arial, sans-serif';
-  ctx.fillStyle = '#ffd6c4';
-  ctx.textAlign = 'left';
-  ctx.fillText(unit, w * 0.83, h * 0.58);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.generateMipmaps = true;
   return tex;
 }
 
@@ -789,77 +995,110 @@ function makeBananaSocket(colorHex) {
 
 /* ======================= DC CABLES (RED + BLACK) ======================= */
 function buildCables() {
-  const cellTopY = CONFIG.baseHeight + CONFIG.cellHeight + 0.5;  // top of busbar
-  const cabinetSocketY = CONFIG.baseHeight + CONFIG.cabinetHeight * 0.36;  // banana socket Y
+  // Anchor points: lug rises VERTICALLY out of the busbar top, cable exits top of barrel
+  const busbarTopY = CONFIG.baseHeight + CONFIG.cellHeight + 0.5;  // top of busbar surface
+  const cabinetSocketY = CONFIG.baseHeight + CONFIG.cabinetHeight * 0.36;
   const cabinetFrontZ = -0.4 + CONFIG.cabinetDepth / 2 + 0.05;
 
-  // Common terminal lug geometry helper
-  const lugMat = new THREE.MeshStandardMaterial({ color: 0x3a3f44, metalness: 0.92, roughness: 0.28 });
+  const lugBodyMat = new THREE.MeshStandardMaterial({ color: 0x3a3f44, metalness: 0.92, roughness: 0.28 });
   const boltCapMat = new THREE.MeshStandardMaterial({ color: 0x6a7079, metalness: 0.95, roughness: 0.22 });
+
+  // Lug sits flat on busbar: tang plate is the base (horizontal, bolted DOWN), bolt cap on top,
+  // crimp barrel rises VERTICALLY out of the tang plate to receive the cable cleanly.
   const makeLug = (color) => {
     const g = new THREE.Group();
-    // Crimp barrel (where the cable enters)
-    const barrel = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.085, 0.085, 0.22, 16),
-      new THREE.MeshStandardMaterial({ color: color, metalness: 0.5, roughness: 0.45 }),
-    );
-    g.add(barrel);
-    // Tang plate
+    // Tang plate flat on busbar surface
     const tang = new THREE.Mesh(
-      new THREE.BoxGeometry(0.22, 0.035, 0.18),
-      lugMat,
+      new THREE.BoxGeometry(0.26, 0.04, 0.20),
+      lugBodyMat,
     );
-    tang.position.y = 0.14;
+    tang.position.y = 0.02;
     g.add(tang);
-    // Bolt cap on top of tang
+    // Hex bolt head on top of tang plate (bolt-through-busbar)
     const cap = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.05, 0.05, 0.06, 8),
+      new THREE.CylinderGeometry(0.055, 0.055, 0.06, 6),
       boltCapMat,
     );
-    cap.position.y = 0.17;
+    cap.position.set(-0.075, 0.07, 0);
     g.add(cap);
+    // Crimp barrel: rises VERTICALLY out of the tang plate, color matches cable
+    const barrel = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.090, 0.090, 0.26, 18),
+      new THREE.MeshStandardMaterial({ color: color, metalness: 0.45, roughness: 0.55 }),
+    );
+    barrel.position.set(0.06, 0.17, 0);  // offset from bolt, rises up
+    g.add(barrel);
+    // Heat-shrink boot collar at top of barrel
+    const boot = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.095, 0.085, 0.08, 18),
+      new THREE.MeshStandardMaterial({ color: color, metalness: 0.10, roughness: 0.80 }),
+    );
+    boot.position.set(0.06, 0.32, 0);
+    g.add(boot);
     return g;
   };
 
-  // RED cable (+) connects at the LEFT side of the busbar in the reference photo
-  const redMat = new THREE.MeshStandardMaterial({ color: 0xc92a25, metalness: 0.25, roughness: 0.55 });
-  const redStart = new THREE.Vector3(CONFIG.cellX - CONFIG.cellWidth * 0.32, cellTopY + 0.05, 0.0);
+  // ---- RED cable (+) — anchored at LEFT third of busbar, runs over to cabinet's red socket ----
+  const redMat = new THREE.MeshStandardMaterial({ color: 0xc92a25, metalness: 0.20, roughness: 0.62 });
+  const redLugPos = new THREE.Vector3(CONFIG.cellX - CONFIG.cellWidth * 0.32, busbarTopY, 0.0);
+  const redSocketPos = new THREE.Vector3(
+    CONFIG.cabinetX - CONFIG.cabinetWidth * 0.20,
+    cabinetSocketY,
+    cabinetFrontZ + 0.05,
+  );
+  // Cable starts at top of red lug's barrel and arcs over to socket
+  const redStart = new THREE.Vector3(redLugPos.x + 0.06, redLugPos.y + 0.42, redLugPos.z);
+  const redArchPeak = new THREE.Vector3(
+    (redStart.x + redSocketPos.x) / 2 - 0.4,
+    Math.max(redStart.y, redSocketPos.y) + 0.55,   // gentle arch over the cabinet rim
+    (redStart.z + redSocketPos.z) / 2 + 0.15,
+  );
   const redCurve = new THREE.CatmullRomCurve3([
     redStart,
-    new THREE.Vector3(CONFIG.cellX - CONFIG.cellWidth * 0.30, cellTopY + 0.85, 0.30),
-    new THREE.Vector3(CONFIG.cellX + 0.5, cellTopY + 1.20, 0.7),
-    new THREE.Vector3(CONFIG.cellX + 2.6, cellTopY + 0.85, 1.1),
-    new THREE.Vector3(CONFIG.cabinetX - 1.6, CONFIG.baseHeight + CONFIG.cabinetHeight * 0.75, cabinetFrontZ + 0.4),
-    new THREE.Vector3(CONFIG.cabinetX - CONFIG.cabinetWidth * 0.20, cabinetSocketY + 0.10, cabinetFrontZ + 0.05),
-    new THREE.Vector3(CONFIG.cabinetX - CONFIG.cabinetWidth * 0.20, cabinetSocketY, cabinetFrontZ + 0.02),
+    new THREE.Vector3(redStart.x + 0.10, redStart.y + 0.25, redStart.z + 0.10),
+    redArchPeak,
+    new THREE.Vector3(redSocketPos.x - 0.3, redSocketPos.y + 0.55, redSocketPos.z - 0.05),
+    new THREE.Vector3(redSocketPos.x, redSocketPos.y + 0.10, redSocketPos.z + 0.04),
+    new THREE.Vector3(redSocketPos.x, redSocketPos.y, redSocketPos.z),
   ]);
-  const redTube = new THREE.Mesh(new THREE.TubeGeometry(redCurve, 96, 0.085, 14, false), redMat);
+  const redTube = new THREE.Mesh(new THREE.TubeGeometry(redCurve, 96, 0.085, 16, false), redMat);
   redTube.castShadow = true;
   scene.add(redTube);
 
   // Red lug at busbar
   const redLug = makeLug(0xc92a25);
-  redLug.position.set(redStart.x, redStart.y, redStart.z);
+  redLug.position.copy(redLugPos);
   scene.add(redLug);
 
-  // BLACK cable (-) connects at the RIGHT side of the busbar
-  const blackMat = new THREE.MeshStandardMaterial({ color: 0x0c0e11, metalness: 0.25, roughness: 0.55 });
-  const blackStart = new THREE.Vector3(CONFIG.cellX + CONFIG.cellWidth * 0.32, cellTopY + 0.05, 0.0);
+  // ---- BLACK cable (–) — anchored at RIGHT third of busbar, runs over to cabinet's black socket ----
+  const blackMat = new THREE.MeshStandardMaterial({ color: 0x0c0e11, metalness: 0.20, roughness: 0.62 });
+  const blackLugPos = new THREE.Vector3(CONFIG.cellX + CONFIG.cellWidth * 0.32, busbarTopY, 0.0);
+  const blackSocketPos = new THREE.Vector3(
+    CONFIG.cabinetX + CONFIG.cabinetWidth * 0.20,
+    cabinetSocketY,
+    cabinetFrontZ + 0.05,
+  );
+  const blackStart = new THREE.Vector3(blackLugPos.x + 0.06, blackLugPos.y + 0.42, blackLugPos.z);
+  const blackArchPeak = new THREE.Vector3(
+    (blackStart.x + blackSocketPos.x) / 2,
+    Math.max(blackStart.y, blackSocketPos.y) + 0.40,
+    (blackStart.z + blackSocketPos.z) / 2 + 0.20,
+  );
   const blackCurve = new THREE.CatmullRomCurve3([
     blackStart,
-    new THREE.Vector3(CONFIG.cellX + CONFIG.cellWidth * 0.32, cellTopY + 0.70, 0.30),
-    new THREE.Vector3(CONFIG.cellX + CONFIG.cellWidth * 0.55, cellTopY + 0.95, 0.7),
-    new THREE.Vector3(CONFIG.cabinetX - 1.4, CONFIG.baseHeight + CONFIG.cabinetHeight * 0.62, cabinetFrontZ + 0.35),
-    new THREE.Vector3(CONFIG.cabinetX + CONFIG.cabinetWidth * 0.20, cabinetSocketY + 0.10, cabinetFrontZ + 0.05),
-    new THREE.Vector3(CONFIG.cabinetX + CONFIG.cabinetWidth * 0.20, cabinetSocketY, cabinetFrontZ + 0.02),
+    new THREE.Vector3(blackStart.x + 0.10, blackStart.y + 0.20, blackStart.z + 0.10),
+    blackArchPeak,
+    new THREE.Vector3(blackSocketPos.x - 0.2, blackSocketPos.y + 0.55, blackSocketPos.z + 0.05),
+    new THREE.Vector3(blackSocketPos.x, blackSocketPos.y + 0.10, blackSocketPos.z + 0.04),
+    new THREE.Vector3(blackSocketPos.x, blackSocketPos.y, blackSocketPos.z),
   ]);
-  const blackTube = new THREE.Mesh(new THREE.TubeGeometry(blackCurve, 96, 0.085, 14, false), blackMat);
+  const blackTube = new THREE.Mesh(new THREE.TubeGeometry(blackCurve, 96, 0.085, 16, false), blackMat);
   blackTube.castShadow = true;
   scene.add(blackTube);
 
   // Black lug at busbar
   const blackLug = makeLug(0x141618);
-  blackLug.position.set(blackStart.x, blackStart.y, blackStart.z);
+  blackLug.position.copy(blackLugPos);
   scene.add(blackLug);
 }
 
@@ -869,7 +1108,6 @@ function buildGoldMudTray() {
   grp.position.set(CONFIG.trayX, CONFIG.baseHeight, 2.3);
 
   const stainMat = new THREE.MeshStandardMaterial({ color: 0xb1b7bc, metalness: 0.9, roughness: 0.3 });
-  const mudMat = new THREE.MeshStandardMaterial({ color: 0x8a8f93, metalness: 0.55, roughness: 0.85 });
 
   // Tray - shallow stainless rectangular pan
   const trayW = 1.8, trayD = 1.4, trayH = 0.18, lipT = 0.04;
@@ -925,12 +1163,13 @@ function buildCrucible() {
   grp.position.set(CONFIG.crucibleX, CONFIG.baseHeight, 2.3);
 
   // Crucible body - warm brass-bronze ceramic, slightly tapered
+  // Now lifted to sit ON the trivet ring (trivet top at y=0.328 + bottom-radius taper)
   const crucMat = new THREE.MeshStandardMaterial({ color: 0x4a2f1a, metalness: 0.45, roughness: 0.72 });
   const crucible = new THREE.Mesh(
     new THREE.CylinderGeometry(0.40, 0.28, 0.70, 28),
     crucMat,
   );
-  crucible.position.y = 0.40;
+  crucible.position.y = 0.69;       // lifted from 0.40 → 0.69 (above trivet)
   crucible.castShadow = true; crucible.receiveShadow = true;
   grp.add(crucible);
 
@@ -940,7 +1179,7 @@ function buildCrucible() {
     new THREE.MeshStandardMaterial({ color: 0x6e4326, metalness: 0.65, roughness: 0.55 }),
   );
   rim.rotation.x = Math.PI / 2;
-  rim.position.y = 0.74;
+  rim.position.y = 1.03;            // 0.74 + 0.29
   grp.add(rim);
 
   // Slight glow ring at top inside (heated rim)
@@ -949,16 +1188,53 @@ function buildCrucible() {
     new THREE.MeshStandardMaterial({ color: 0xff7a14, emissive: 0xff5a08, emissiveIntensity: 1.2, metalness: 0.6, roughness: 0.6 }),
   );
   hotRing.rotation.x = Math.PI / 2;
-  hotRing.position.y = 0.73;
+  hotRing.position.y = 1.02;
   grp.add(hotRing);
 
-  // Stand under crucible (small dark plinth)
-  const stand = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.36, 0.4, 0.08, 24),
-    new THREE.MeshStandardMaterial({ color: 0x1a1c20, metalness: 0.6, roughness: 0.55 }),
+  // Stand assembly: insulating pad → 3-legged metal trivet → glowing burner ring → crucible sits on top
+  // Insulating pad (firebrick) — wider than the trivet, sits directly on the base grate
+  const pad = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.55, 0.58, 0.10, 28),
+    new THREE.MeshStandardMaterial({ color: 0x191b1d, metalness: 0.40, roughness: 0.85 }),
   );
-  stand.position.y = 0.04;
-  grp.add(stand);
+  pad.position.y = 0.05;
+  pad.castShadow = true; pad.receiveShadow = true;
+  grp.add(pad);
+
+  // Burner ring — glowing red ring (gas torch ring or induction coil) sitting on the pad
+  const burnerRing = new THREE.Mesh(
+    new THREE.TorusGeometry(0.34, 0.035, 12, 36),
+    new THREE.MeshStandardMaterial({
+      color: 0x5a1a06,
+      emissive: 0xff4a14,
+      emissiveIntensity: 1.6,
+      metalness: 0.4,
+      roughness: 0.7,
+    }),
+  );
+  burnerRing.rotation.x = Math.PI / 2;
+  burnerRing.position.y = 0.13;
+  grp.add(burnerRing);
+
+  // Trivet: 3 metal legs in a triangle (120° apart), supporting the crucible above the burner
+  const trivetMat = new THREE.MeshStandardMaterial({ color: 0x232527, metalness: 0.85, roughness: 0.35 });
+  for (let i = 0; i < 3; i++) {
+    const ang = (i / 3) * Math.PI * 2 + Math.PI / 6;
+    const leg = new THREE.Mesh(
+      new THREE.BoxGeometry(0.05, 0.20, 0.05),
+      trivetMat,
+    );
+    leg.position.set(Math.cos(ang) * 0.32, 0.20, Math.sin(ang) * 0.32);
+    grp.add(leg);
+  }
+  // Trivet top ring (where the crucible rests)
+  const trivetRing = new THREE.Mesh(
+    new THREE.TorusGeometry(0.30, 0.028, 10, 28),
+    trivetMat,
+  );
+  trivetRing.rotation.x = Math.PI / 2;
+  trivetRing.position.y = 0.30;
+  grp.add(trivetRing);
 
   // Molten pool inside crucible (just the surface)
   const poolMat = new THREE.MeshStandardMaterial({
@@ -970,17 +1246,16 @@ function buildCrucible() {
   });
   const pool = new THREE.Mesh(new THREE.CircleGeometry(0.36, 28), poolMat);
   pool.rotation.x = -Math.PI / 2;
-  pool.position.y = 0.71;
+  pool.position.y = 1.00;
   grp.add(pool);
 
-  // Flame - tighter teardrop shape rising from the crucible
-  // Inner hot core (yellow-white), narrower
+  // Flame - tighter teardrop shape rising from the crucible (all Y values shifted +0.29 to match new crucible height)
   const layers = [
-    { color: 0xffe9b0, scaleX: 0.55, scaleY: 0.85, y: 0.95, op: 0.95 },
-    { color: 0xffc065, scaleX: 0.72, scaleY: 1.05, y: 1.15, op: 0.85 },
-    { color: 0xff8a30, scaleX: 0.85, scaleY: 1.30, y: 1.40, op: 0.75 },
-    { color: 0xff6618, scaleX: 0.95, scaleY: 1.55, y: 1.65, op: 0.55 },
-    { color: 0xd83a08, scaleX: 1.05, scaleY: 1.75, y: 1.90, op: 0.35 },
+    { color: 0xffe9b0, scaleX: 0.45, scaleY: 0.70, y: 1.20, op: 0.95 },
+    { color: 0xffc065, scaleX: 0.58, scaleY: 0.85, y: 1.36, op: 0.85 },
+    { color: 0xff8a30, scaleX: 0.68, scaleY: 1.05, y: 1.55, op: 0.70 },
+    { color: 0xff6618, scaleX: 0.78, scaleY: 1.25, y: 1.78, op: 0.50 },
+    { color: 0xd83a08, scaleX: 0.86, scaleY: 1.40, y: 2.00, op: 0.30 },
   ];
   for (let i = 0; i < layers.length; i++) {
     const L = layers[i];
@@ -1009,14 +1284,21 @@ function buildCrucible() {
 
   // Hot point light flickering from the flame
   const fireLight = new THREE.PointLight(0xffa648, 2.6, 8, 1.8);
-  fireLight.position.set(0, 1.3, 0);
+  fireLight.position.set(0, 1.55, 0);
   fireLight.userData = { base: 2.6, amp: 0.7, freq: 6.0 };
   flameLights.push(fireLight);
   grp.add(fireLight);
 
+  // Burner glow light (under the trivet — warms the base of the crucible)
+  const burnerLight = new THREE.PointLight(0xff5520, 1.4, 4, 2.2);
+  burnerLight.position.set(0, 0.18, 0);
+  burnerLight.userData = { base: 1.4, amp: 0.45, freq: 8.0 };
+  flameLights.push(burnerLight);
+  grp.add(burnerLight);
+
   // Subtle ground bounce light tint
   const bounce = new THREE.PointLight(0xff8a30, 0.8, 5, 2.0);
-  bounce.position.set(0, 0.15, 0);
+  bounce.position.set(0, 0.05, 0);
   bounce.userData = { base: 0.8, amp: 0.3, freq: 4.0 };
   flameLights.push(bounce);
   grp.add(bounce);
@@ -1097,8 +1379,9 @@ function animate() {
   // Rectifier readout jitter
   if (t - lastRectifierUpdate > 1.4) {
     lastRectifierUpdate = t;
-    const vJitter = (2.95 + Math.random() * 0.10).toFixed(1);
-    const aJitter = String(247 + Math.floor(Math.random() * 7));
+    // Tight jitter to suggest a stable rectifier reading, not an unstable supply
+    const vJitter = (2.98 + Math.random() * 0.04).toFixed(1);    // 2.98–3.02 → reads "3.0"
+    const aJitter = String(249 + Math.floor(Math.random() * 3)); // 249–251
     if (rectifierDisplays.length >= 2) {
       updateRectifierDisplay(rectifierDisplays[0], vJitter, 'V');
       updateRectifierDisplay(rectifierDisplays[1], aJitter, 'A');
@@ -1108,7 +1391,7 @@ function animate() {
   // Idle auto-rotate
   if (autoRotateEnabled && (Date.now() - lastUserInteraction) > 5000) {
     const radius = Math.hypot(camera.position.x, camera.position.z);
-    const angle = Math.atan2(camera.position.z, camera.position.x) + 0.0012;
+    const angle = Math.atan2(camera.position.z, camera.position.x) + 0.0006;
     camera.position.x = Math.cos(angle) * radius;
     camera.position.z = Math.sin(angle) * radius;
     camera.lookAt(controls.target);
@@ -1133,9 +1416,19 @@ function onResize() {
 window.addEventListener('slidechange', (e) => {
   const idx = e.detail?.index;
   if (idx === 13 || idx === 995) {  // Slide 14 (data-slide="14"), 0-based DOM index = 13
-    init();
-    setTimeout(onResize, 50);
-    startRendering();
+    // Slayt 8 atlasında küçük canvas'a mount edilmiş olabilir;
+    // büyük equipment canvas'ına geçişi mount() pattern'iyle güvenli yap.
+    const targetCanvas = document.getElementById('three-canvas-ew');
+    if (!targetCanvas) return;
+    if (initialized && canvas === targetCanvas) {
+      startRendering();
+      setTimeout(onResize, 50);
+    } else {
+      if (initialized) _disposeForMount();
+      init(targetCanvas);
+      setTimeout(onResize, 50);
+      startRendering();
+    }
   } else {
     stopRendering();
   }
@@ -1204,11 +1497,10 @@ window.threeElectrowinning = {
     startRendering();
   },
   unmount() {
-    if (!initialized) {
-      if (frameId !== null) { cancelAnimationFrame(frameId); frameId = null; }
-      return;
-    }
-    _disposeForMount();
+    // Sadece render döngüsünü durdur — renderer/context/canvas yaşar.
+    // Aynı canvas'a tekrar mount edildiğinde fast-path (initialized && canvas === canvasEl)
+    // devreye girer; aksi halde forceContextLoss canvas'ı kalıcı öldürür → beyaz ekran.
+    stopRendering();
   },
   get isMounted() { return initialized; },
   get currentCanvas() { return canvas; },
