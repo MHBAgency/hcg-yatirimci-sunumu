@@ -1,0 +1,36 @@
+HİKMET ÇETİN GOLD — YATIRIMCI SUNUMU
+=====================================
+
+İndirdiğiniz ZIP dosyasını açtınız. Aşağıdaki üç yöntemden BİRİNİ kullanın.
+
+────────────────────────────────────────
+YÖNTEM 1 — EN KOLAYI (önerilir)
+────────────────────────────────────────
+Online sürüm her zaman en güncel kalır:
+
+   https://sunum.ntepars.com
+
+İnternet bağlantısı varken bu adresi açın. Tüm 3D sahneler ve
+animasyonlar burada eksiksiz çalışır.
+
+────────────────────────────────────────
+YÖNTEM 2 — UYGULAMA OLARAK KURUN (offline)
+────────────────────────────────────────
+1. Yukarıdaki adresi Google Chrome veya Microsoft Edge'de açın
+2. Adres çubuğunun sağında küçük bir "Yükle" / "+" ikonu çıkar
+3. Tıkla → "Kur" → masaüstüne uygulama olarak iner
+4. Bir kez kurduktan sonra internet olmasa da açılır
+
+────────────────────────────────────────
+YÖNTEM 3 — BU KLASÖRÜ DOĞRUDAN AÇIN
+────────────────────────────────────────
+"index.html" dosyasına çift tıklayın.
+
+NOT: Bu yöntemde tarayıcı güvenlik kısıtlaması nedeniyle bazı
+3D sahneler yüklenmeyebilir. Tam deneyim için Yöntem 1 veya 2'yi
+kullanmanızı öneririz.
+
+────────────────────────────────────────
+İLETİŞİM
+────────────────────────────────────────
+NTE Pars Metal · Yatırımcı İlişkileri

@@ -1,8 +1,11 @@
-/* NTE Pars Metal — PWA Install + Fresh-Download Controller
- * Slayt 16'daki "Sunumu İndir" butonunu yönetir.
- * Akış (her tarayıcıda aynı): tıklama -> SW'a tüm cache'i taze indir dedirt
- *   -> ardından Chromium'da native install prompt, diğerlerinde "yer imine ekle" yönergesi.
- * Böylece kullanıcı her tıklamada güncel sürümü almış olur.
+/* NTE Pars Metal — "Sunumu İndir" butonu
+ *
+ * Hedef: Hangi tarayıcıda olursa olsun butona basınca GERÇEK bir dosya insin.
+ * Akış:
+ *   1) sunum.zip dosyasını anchor + click ile indir (her tarayıcı destekler)
+ *   2) Paralel: Service Worker'a tüm asset'leri taze çek dedirt (online iken offline cache hazırlanır)
+ *   3) Chrome/Edge'de `beforeinstallprompt` event'i geldiyse, ZIP indikten sonra opsiyonel olarak "uygulama olarak da kur" prompt'u göster
+ * Böylece kullanıcı her durumda fiziksel bir kopya alır + isteyen uygulama olarak da kurabilir.
  */
 (function () {
   const block = document.querySelector('[data-pwa-block]');
@@ -14,54 +17,45 @@
   const statusEl = block.querySelector('[data-pwa-status]');
   if (!btn || !labelEl || !subEl || !statusEl) return;
 
+  const ZIP_URL = './sunum.zip';
+  const ZIP_FILENAME = 'hikmet-cetin-gold-sunum.zip';
+
   const isStandalone =
-    window.matchMedia && window.matchMedia('(display-mode: standalone)').matches ||
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
     window.navigator.standalone === true;
 
-  if (isStandalone) {
-    block.hidden = true;
-    return;
-  }
-
-  const ua = navigator.userAgent || '';
-  const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-
   let deferredPrompt = null;
-  let mode = 'pending';
-  let refreshing = false;
+  let working = false;
 
-  function setMode(next) {
-    mode = next;
+  // Başlangıç durumu — uygulama olarak zaten kuruluysa farklı mesaj
+  function setIdleState() {
     block.hidden = false;
-    block.setAttribute('data-pwa-state', mode);
-    btn.disabled = false;
-
-    if (mode === 'installable') {
+    if (isStandalone) {
       labelEl.textContent = 'Sunumu İndir';
-      subEl.textContent = 'Tek tıkla · En güncel sürüm · Çevrimdışı açılır';
-      statusEl.textContent = 'Sunum çevrimdışı kullanıma hazır';
-    } else if (mode === 'installed') {
-      labelEl.textContent = 'Yüklendi';
-      subEl.textContent = 'Sunum masaüstünden çevrimdışı açılır';
-      statusEl.textContent = '✓ Kurulum tamamlandı';
-      btn.disabled = true;
-    } else if (mode === 'ready-cache') {
-      labelEl.textContent = 'Sunumu İndir';
-      subEl.textContent = 'En güncel sürümü indir · Yer imine ekle, çevrimdışı açılır';
-      statusEl.textContent = 'Ctrl+D (Win) · ⌘+D (Mac) → Yer imine ekle';
-    } else if (mode === 'ios') {
-      labelEl.textContent = 'Sunumu İndir';
-      subEl.textContent = 'Paylaş ⤴ → "Ana Ekrana Ekle" ile çevrimdışı açılır';
-      statusEl.textContent = 'iOS Safari · Çevrimdışı kullanıma hazır';
+      subEl.textContent = 'ZIP olarak masaüstünüze iner · Çevrimdışı açılır';
+      statusEl.textContent = '✓ Uygulama olarak yüklü';
     } else {
       labelEl.textContent = 'Sunumu İndir';
-      subEl.textContent = 'Yer imine ekle · Çevrimdışı açılır';
-      statusEl.textContent = 'Ctrl+D (Win) · ⌘+D (Mac) → Yer imine ekle';
+      subEl.textContent = 'ZIP olarak masaüstünüze iner · Çevrimdışı açılır';
+      statusEl.textContent = '';
     }
+    btn.disabled = false;
   }
 
-  // SW'a "tüm cache'i sıfırla, en güncel asset'leri yeniden indir" dedirten yardımcı.
-  // Promise resolve olduğunda kullanıcı %100 güncel sürümü almış olur.
+  setIdleState();
+
+  // Chrome/Edge'de install prompt'unu yakala — kullanmak için saklayalım
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    statusEl.textContent = '✓ Uygulama olarak kuruldu';
+  });
+
+  // Service Worker'a "tüm asset'leri taze çek" dedirt — offline cache hazırlığı
   function refreshAllAssets(onProgress) {
     return new Promise((resolve) => {
       if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
@@ -85,7 +79,6 @@
           done({ ok: false, reason: data.error });
         }
       };
-      // Güvenlik: 30 sn'de bitmezse devam ettir
       setTimeout(() => done({ ok: false, reason: 'timeout' }), 30000);
       try {
         navigator.serviceWorker.controller.postMessage(
@@ -98,120 +91,113 @@
     });
   }
 
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    setMode('installable');
-  });
+  // ZIP'i Blob üzerinden indir — Save dialog'u tetiklenmesi en garanti yol
+  async function downloadZipAsBlob(onProgress) {
+    const response = await fetch(ZIP_URL, { cache: 'no-store' });
+    if (!response.ok) throw new Error('ZIP indirilemedi: ' + response.status);
 
-  window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    setMode('installed');
-  });
+    const contentLength = +response.headers.get('Content-Length') || 0;
+    if (response.body && contentLength > 0 && typeof ReadableStream !== 'undefined') {
+      const reader = response.body.getReader();
+      const chunks = [];
+      let received = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        received += value.length;
+        if (onProgress) onProgress(received, contentLength);
+      }
+      const blob = new Blob(chunks, { type: 'application/zip' });
+      triggerDownload(blob);
+    } else {
+      const blob = await response.blob();
+      triggerDownload(blob);
+    }
+  }
+
+  function triggerDownload(blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = ZIP_FILENAME;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 1000);
+  }
+
+  // Anchor tabanlı saf fallback — fetch yoksa veya başarısızsa
+  function directAnchorDownload() {
+    const a = document.createElement('a');
+    a.href = ZIP_URL;
+    a.download = ZIP_FILENAME;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => document.body.removeChild(a), 1000);
+  }
+
+  async function maybeOfferInstall() {
+    if (!deferredPrompt) return;
+    try {
+      const choice = await deferredPrompt.prompt().then(() => deferredPrompt.userChoice);
+      if (choice && choice.outcome === 'accepted') {
+        statusEl.textContent = '✓ Uygulama olarak da kuruldu';
+      }
+      deferredPrompt = null;
+    } catch (err) {
+      // sessizce geç — ZIP zaten indi
+    }
+  }
 
   btn.addEventListener('click', async () => {
-    if (refreshing) return;
-    refreshing = true;
+    if (working) return;
+    working = true;
     btn.disabled = true;
 
-    const originalLabel = labelEl.textContent;
-    const originalSub = subEl.textContent;
-
-    labelEl.textContent = 'Güncelleniyor...';
-    subEl.textContent = 'En güncel sürüm indiriliyor';
+    labelEl.textContent = 'İndiriliyor...';
+    subEl.textContent = 'sunum.zip dosyanız hazırlanıyor';
     statusEl.textContent = '⏳ 0%';
 
-    // 1) SW güncelle (yeni sw.js varsa onu da yakala)
+    // 1) ZIP indir — asıl iş
+    let downloaded = false;
     try {
-      const reg = await navigator.serviceWorker.getRegistration();
-      if (reg) {
-        await reg.update().catch(() => {});
-        if (reg.waiting) {
-          reg.waiting.postMessage({ type: 'skip-waiting' });
-        }
-      }
-    } catch (e) { /* ignore */ }
-
-    // 2) Tüm asset'leri taze indir
-    const result = await refreshAllAssets((done, total) => {
-      const pct = total ? Math.round((done / total) * 100) : 0;
-      statusEl.textContent = '⏳ ' + pct + '%';
-    });
-
-    if (result.ok) {
-      statusEl.textContent = '✓ En güncel sürüm indirildi';
-    } else {
-      statusEl.textContent = 'Çevrimiçi sürüm güncel · indirme atlandı';
-    }
-
-    // 3) deferredPrompt henüz gelmediyse 1.5 sn'lik bir pencere aç — race condition'ı yakala
-    if (!deferredPrompt) {
-      await new Promise((res) => {
-        const timer = setTimeout(res, 1500);
-        const once = (e) => {
-          e.preventDefault();
-          deferredPrompt = e;
-          clearTimeout(timer);
-          window.removeEventListener('beforeinstallprompt', once);
-          res();
-        };
-        window.addEventListener('beforeinstallprompt', once);
+      await downloadZipAsBlob((done, total) => {
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        statusEl.textContent = '⏳ ' + pct + '%  (' + (done / 1048576).toFixed(1) + ' / ' + (total / 1048576).toFixed(1) + ' MB)';
       });
-    }
-
-    // 4) Asıl indirme aksiyonu: Chromium'da native install, diğerlerinde yönerge
-    if (deferredPrompt) {
-      labelEl.textContent = 'Bilgisayara Kur';
-      subEl.textContent = 'En güncel sürüm hazır · Kuruluma devam edin';
+      downloaded = true;
+    } catch (err) {
+      console.warn('[İndir] Blob indirme başarısız, anchor fallback', err);
       try {
-        deferredPrompt.prompt();
-        const choice = await deferredPrompt.userChoice;
-        if (choice && choice.outcome === 'accepted') {
-          // appinstalled event tetiklenecek; setMode('installed') oradan çağrılır
-        } else {
-          labelEl.textContent = originalLabel;
-          subEl.textContent = originalSub;
-          btn.disabled = false;
-        }
-        deferredPrompt = null;
-      } catch (err) {
-        console.warn('[PWA] Kurulum istemi başarısız', err);
-        labelEl.textContent = originalLabel;
-        subEl.textContent = originalSub;
-        btn.disabled = false;
+        directAnchorDownload();
+        downloaded = true;
+      } catch (err2) {
+        console.error('[İndir] Anchor indirme de başarısız', err2);
       }
-    } else if (isIOS) {
-      labelEl.textContent = 'Ana Ekrana Ekle';
-      subEl.textContent = 'Paylaş ⤴ → "Ana Ekrana Ekle"';
-      statusEl.textContent = '✓ Güncel sürüm hazır · iOS Safari yönergeyi takip edin';
-      btn.disabled = false;
-    } else {
-      labelEl.textContent = 'Yer İmine Ekle';
-      subEl.textContent = 'Ctrl+D (Win) · ⌘+D (Mac)';
-      statusEl.textContent = '✓ Güncel sürüm önbelleğe alındı · çevrimdışı açılır';
-      btn.disabled = false;
     }
-    refreshing = false;
-  });
 
-  if (isIOS) {
-    setMode('ios');
-    return;
-  }
+    if (downloaded) {
+      labelEl.textContent = 'İndirildi ✓';
+      subEl.textContent = 'Downloads klasörünüzü kontrol edin';
+      statusEl.textContent = '✓ sunum.zip indi · Çıkartıp NASIL-ACILIR.txt dosyasını okuyun';
+    } else {
+      labelEl.textContent = 'İndirme başarısız';
+      subEl.textContent = 'İnternet bağlantınızı kontrol edip tekrar deneyin';
+      statusEl.textContent = '⚠ Tekrar deneyin veya yöneticinize ulaşın';
+    }
 
-  if (!('serviceWorker' in navigator)) {
-    setMode('ready-cache');
-    return;
-  }
+    // 2) Paralel: SW asset refresh (best-effort, başarısız olursa önemsiz)
+    refreshAllAssets().catch(() => {});
 
-  navigator.serviceWorker.ready.then(() => {
-    // Chrome beforeinstallprompt'u biraz geç fırlatabilir — kısa bekleme tanı.
+    // 3) Chrome/Edge'de PWA install prompt'u varsa kullanıcıya sun
+    setTimeout(() => maybeOfferInstall(), 600);
+
     setTimeout(() => {
-      if (mode === 'pending') {
-        setMode('ready-cache');
-      }
-    }, 2500);
-  }).catch(() => {
-    setMode('ready-cache');
+      btn.disabled = false;
+      working = false;
+    }, 1500);
   });
 })();

@@ -3,7 +3,7 @@
  * Tüm static asset'ler pre-cache edilir, HTML için network-first
  */
 
-const CACHE_VERSION = 'nte-v21-2026-05-16-png-icons';
+const CACHE_VERSION = 'nte-v22-2026-05-16-zip-download';
 const CACHE_NAME = `nte-presentation-${CACHE_VERSION}`;
 const CACHE_PREFIX = 'nte-presentation-';
 
@@ -119,6 +119,11 @@ self.addEventListener('fetch', (event) => {
 
   // Sadece kendi origin'imiz için cache yap
   if (url.origin !== self.location.origin) return;
+
+  // ZIP indirme isteği: ASLA cache'leme — her zaman taze network'ten
+  if (url.pathname.endsWith('/sunum.zip') || url.pathname.endsWith('.zip')) {
+    return; // tarayıcı normal akışla indirsin
+  }
 
   // HTML: network-first (güncel sürüm yakalanır)
   if (req.mode === 'navigate' || req.destination === 'document') {
