@@ -1,14 +1,13 @@
 /* ============================================================
    SLIDE 05 — Yöntem Seçimi · Eleme Turnuvası step controller
    ----------------------------------------------------------------
-   6 adımlık akış (data-step="0..5"):
+   5 adımlık akış (data-step="0..4"):
      0 → açılış sorusu (4 yöntem üstte nötr, ortada soru)
      1 → ULTRA İNCE ÖĞÜTME değerlendiriliyor → elenir
      2 → BIOX değerlendiriliyor → elenir
      3 → POX değerlendiriliyor → elenir
      4 → KAVURMA + CIL kazanır (★ ribbon)
-     5 → 4 yöntem yan yana karşılaştırma tablosu
-   Adım 5'te sağ-ok navigation'a teslim → slayt 6'ya geçer.
+   Adım 4'te sağ-ok navigation'a teslim → slayt 6'ya geçer.
    Sol-ok adımları geri alır; adım 0'da slayt 4'e döner.
    slide3-reveal.js ile aynı pattern.
    ============================================================ */
@@ -17,20 +16,19 @@
   if (!section) return;
 
   const SLIDE_INDEX = 4; // data-slide="5" → 0-indexed = 4
-  const TOTAL_STEPS = 5;
+  const TOTAL_STEPS = 4;
   const STEP_LOCK_MS = 420;
   const WIN_LOCK_MS = 620;     // 4. adım (kazanan) — ribbon pop-in için biraz daha uzun
 
   // Adım → o adımda incelenen yöntem (null = aktif yok)
   // Adım → o adıma kadar elenen yöntemler kümesi
-  const METHOD_AT_STEP = [null, 'ultra', 'biox', 'pox', 'kavurma', null];
+  const METHOD_AT_STEP = [null, 'ultra', 'biox', 'pox', 'kavurma'];
   const ELIMINATED_AT_STEP = [
     [],                                    // step 0
     [],                                    // step 1 (Ultra inceleniyor, henüz elenmedi)
     ['ultra'],                             // step 2 (Ultra elendi, BIOX inceleniyor)
     ['ultra', 'biox'],                     // step 3
     ['ultra', 'biox', 'pox'],              // step 4 (Kavurma kazandı; diğer 3 elendi)
-    ['ultra', 'biox', 'pox'],              // step 5 (karşılaştırma — aynı durum, Kavurma kazanan)
   ];
 
   const tabs = Array.from(section.querySelectorAll('.ms-tab'));

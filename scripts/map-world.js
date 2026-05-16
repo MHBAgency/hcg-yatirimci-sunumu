@@ -10,7 +10,7 @@
   const pinRefs = {
     global: [],     // dünya madenleri (Tethyan dışı)
     tethyan: [],    // Tethyan kuşağı rakipleri
-    primary: null,  // Hikmet Çetin Gold
+    primary: null,  // NTE Pars Metal
   };
 
   // Sülfürlü altın madenleri — Tethyan dışı (global)
@@ -36,9 +36,9 @@
     { name: 'Reko Diq',  coords: [29.0, 62.3],   country: 'Pakistan', company: 'Barrick Gold',  mineral: 'Sülfürlü/Bakır' },
   ];
 
-  // Hikmet Çetin Gold — Safadaşt, İran
+  // NTE Pars Metal — Safadaşt, İran
   const ourSite = {
-    name: 'Hikmet Çetin Gold',
+    name: 'NTE Pars Metal',
     coords: [35.72, 50.83],
     country: 'Safadaşt, İran',
     detail: 'Sülfürlü Altın İşleme Tesisi · $10M CAPEX',
@@ -60,26 +60,27 @@
   function makePin(coords, opts = {}) {
     const { primary = false, label = '', subtitle = '' } = opts;
     const icon = L.divIcon({
-      className: 'mine-pin-wrapper',
+      className: 'mine-pin-wrapper' + (primary ? ' is-primary' : ''),
       html: primary ? '<div class="mine-pin primary"></div>' : '<div class="mine-pin"></div>',
-      iconSize: primary ? [22, 22] : [14, 14],
-      iconAnchor: primary ? [11, 11] : [7, 7],
+      iconSize: primary ? [30, 30] : [20, 20],
+      iconAnchor: primary ? [15, 15] : [10, 10],
     });
     const marker = L.marker(coords, {
       icon,
       zIndexOffset: primary ? 1000 : 0,
+      riseOnHover: true,
     });
     if (label) {
-      const popup = primary
-        ? `<div class="pin-popup" style="border-color: var(--gold);">
-             <strong style="color: var(--gold-bright); font-size: 16px;">★ ${label}</strong>
-             <div style="color: var(--gold); font-weight: 600;">${subtitle}</div>
-           </div>`
-        : `<div class="pin-popup">
-             <strong>${label}</strong>
-             <div>${subtitle}</div>
-           </div>`;
-      marker.bindPopup(popup, { closeButton: true, offset: [0, primary ? -8 : -4] });
+      const html = primary
+        ? `<div class="pin-card primary"><strong>★ ${label}</strong><span>${subtitle}</span></div>`
+        : `<div class="pin-card"><strong>${label}</strong><span>${subtitle}</span></div>`;
+      marker.bindTooltip(html, {
+        permanent: true,
+        direction: 'top',
+        offset: primary ? [0, -16] : [0, -12],
+        opacity: 1,
+        className: 'pin-tooltip' + (primary ? ' primary' : ''),
+      });
     }
     return marker;
   }
@@ -135,9 +136,12 @@
       setTimeout(() => {
         const m = makePin(mine.coords, {
           label: mine.name,
-          subtitle: `${mine.country} · ${mine.company} · ${mine.mineral}`,
+          subtitle: mine.country,
         }).addTo(map);
         pinRefs.global.push(m);
+        // Step controller zaten 'safadast' seviyesinde başlatmış olabilir —
+        // yeni eklenen global pin'i o seviyeye göre soluklaştır.
+        updatePinVisibility(currentZoomLevel);
       }, 200 + i * 90);
     });
 
@@ -146,20 +150,19 @@
       setTimeout(() => {
         const m = makePin(mine.coords, {
           label: mine.name,
-          subtitle: `${mine.country} · ${mine.company} · ${mine.mineral}`,
+          subtitle: mine.country,
         }).addTo(map);
         pinRefs.tethyan.push(m);
       }, 200 + (globalMines.length + i) * 90);
     });
 
-    // Hikmet Çetin Gold — primary pin (dramatik açılış)
+    // NTE Pars Metal — primary pin (dramatik açılış)
     setTimeout(() => {
       pinRefs.primary = makePin(ourSite.coords, {
         primary: true,
         label: ourSite.name,
         subtitle: `${ourSite.country} · ${ourSite.detail}`,
       }).addTo(map);
-      pinRefs.primary.openPopup();
     }, 200 + (globalMines.length + tethyanMines.length) * 90 + 300);
 
     // İlk zoom drama: dünyaya açıl. Step-controller (slide6-reveal)
@@ -187,11 +190,14 @@
   function updatePinVisibility(level) {
     // Tüm seviyelerde primary + Tethyan görünür kalır
     // World seviyesinde global pinler de görünür
-    // Yakın zoom'da global pinleri soluklaştır (canvas pinleri pseudo-state'le yönetiyoruz)
+    // Yakın zoom'da global pinleri (pin + tooltip) soluklaştır
     const dimGlobal = level !== 'world';
     pinRefs.global.forEach(m => {
       const el = m.getElement && m.getElement();
-      if (el) el.style.opacity = dimGlobal ? '0.25' : '1';
+      if (el) el.style.opacity = dimGlobal ? '0.22' : '1';
+      const tt = m.getTooltip && m.getTooltip();
+      const ttEl = tt && tt.getElement && tt.getElement();
+      if (ttEl) ttEl.style.opacity = dimGlobal ? '0' : '1';
     });
   }
 

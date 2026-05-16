@@ -1132,7 +1132,7 @@ function onResize() {
 /* ============================ SLIDECHANGE INTEGRATION ============================ */
 window.addEventListener('slidechange', (e) => {
   const idx = e.detail?.index;
-  if (idx === 16 || idx === 995) {
+  if (idx === 13 || idx === 995) {  // Slide 14 (data-slide="14"), 0-based DOM index = 13
     init();
     setTimeout(onResize, 50);
     startRendering();
@@ -1142,7 +1142,7 @@ window.addEventListener('slidechange', (e) => {
 });
 
 // If the slide is already active when this script loads
-if (document.querySelector('.slide[data-slide="17"]')?.classList.contains('active')) {
+if (document.querySelector('.slide[data-slide="14"]')?.classList.contains('active')) {
   init();
   startRendering();
 }

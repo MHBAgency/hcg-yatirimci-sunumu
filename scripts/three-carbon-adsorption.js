@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 /* ===================================================================
- * Hikmet Çetin Gold — Procedural 3D Carbon Adsorption Columns
+ * NTE Pars Metal — Procedural 3D Carbon Adsorption Columns
  * 4-column train (C-201A/B/C/D) in series — gold-loaded PLS from CIL
  * cascades through activated-carbon columns. Modeled to match the
  * firm's reference image: tall slim columns on an elevated concrete
@@ -26,7 +26,7 @@ const CONFIG = {
   coneHeight: 0.9,              // sharp cone bottom
   skidDeckY: 0.55,              // top surface of the elevated skid deck
   skidDeckHeight: 0.4,          // skid deck thickness (concrete slab)
-  slideIndex: 14,   // Slide 15 (data-slide="15"), 0-based DOM index = 14
+  slideIndex: 11,   // Slide 12 (data-slide="12"), 0-based DOM index = 11
 };
 
 let renderer, scene, camera, controls;
@@ -2396,7 +2396,7 @@ window.addEventListener('slidechange', (e) => {
 });
 
 // Eager-start fallback for the test page
-if (document.querySelector(`.slide[data-slide="15"]`)?.classList.contains('active')) {
+if (document.querySelector(`.slide[data-slide="12"]`)?.classList.contains('active')) {
   init();
   startRendering();
 }

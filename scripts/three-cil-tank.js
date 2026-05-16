@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 /* ===================================================================
- * Hikmet Çetin Gold — Procedural 3D CIL Leach Tank Battery (v2)
+ * NTE Pars Metal — Procedural 3D CIL Leach Tank Battery (v2)
  * 6-tank CIL train with interstage transfers, motors, level gauges,
  * stencil labels, animated slurry & flow markers, full safety details.
  * Built entirely from Three.js primitives — no external models.
@@ -97,7 +97,7 @@ function init(targetCanvas) {
 
   window.addEventListener('resize', onResize);
   window.addEventListener('slidechange', (e) => {
-    if (e.detail.index === 13) onResize();
+    if (e.detail.index === 10) onResize();
   });
 }
 
@@ -2027,7 +2027,7 @@ function onResize() {
 }
 
 window.addEventListener('slidechange', (e) => {
-  if (e.detail.index === 13) {  // Slide 14 (data-slide="14"), 0-based DOM index = 13
+  if (e.detail.index === 10) {  // Slide 11 (data-slide="11"), 0-based DOM index = 10
     init();
     setTimeout(onResize, 50);
     startRendering();
@@ -2037,7 +2037,7 @@ window.addEventListener('slidechange', (e) => {
   }
 });
 
-if (document.querySelector('.slide[data-slide="14"]')?.classList.contains('active')) {
+if (document.querySelector('.slide[data-slide="11"]')?.classList.contains('active')) {
   init();
   startRendering();
 }

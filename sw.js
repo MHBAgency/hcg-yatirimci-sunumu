@@ -1,10 +1,11 @@
-/* Hikmet Çetin Gold — Service Worker
+/* NTE Pars Metal — Service Worker
  * Cache-first strategy for offline-first presentation
  * Tüm static asset'ler pre-cache edilir, HTML için network-first
  */
 
-const CACHE_VERSION = 'hcg-v11-2026-05-16-css-cleanup';
-const CACHE_NAME = `hcg-presentation-${CACHE_VERSION}`;
+const CACHE_VERSION = 'nte-v14-2026-05-16-cleanup';
+const CACHE_NAME = `nte-presentation-${CACHE_VERSION}`;
+const CACHE_PREFIX = 'nte-presentation-';
 
 // Tüm kritik asset'ler — sunum başlamadan önce pre-cache edilir
 const PRECACHE_URLS = [
@@ -27,6 +28,16 @@ const PRECACHE_URLS = [
   './scripts/loading-progress.js',
   './scripts/sw-register.js',
 
+  // Slide reveal scripts (slayt animasyonları — offline kritik)
+  './scripts/slide2-reveal.js',
+  './scripts/slide3-reveal.js',
+  './scripts/slide4-reveal.js',
+  './scripts/slide5-reveal.js',
+  './scripts/slide6-reveal.js',
+  './scripts/slide7-reveal.js',
+  './scripts/slide8-reveal.js',
+  './scripts/slide15-reveal.js',
+
   // Three.js (yerel)
   './vendor/three/three.module.js',
   './vendor/three/addons/controls/OrbitControls.js',
@@ -40,7 +51,14 @@ const PRECACHE_URLS = [
   './assets/images/roasting.jpeg',
   './assets/images/oxygen-plant.jpeg',
   './assets/images/adsorption.jpeg',
-  './assets/images/ore-samples.jpeg',
+
+  // Slayt 2/3/7 arka plan görselleri (yeni webp set — offline kritik)
+  './assets/images/ore-microphoto-1-v2.webp',
+  './assets/images/ore-samples-v2.webp',
+  './assets/images/pyrite-crystals-v2.webp',
+  './assets/images/pyrite-quartz-v2.webp',
+  './assets/images/quartz-vein.webp',
+  './assets/images/tailings-hero.webp',
 
   // İkonlar
   './assets/icons/icon-192.svg',
@@ -81,7 +99,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => Promise.all(
       keys
-        .filter((k) => k.startsWith('hcg-presentation-') && k !== CACHE_NAME)
+        .filter((k) => k.startsWith(CACHE_PREFIX) && k !== CACHE_NAME)
         .map((k) => caches.delete(k))
     )).then(() => self.clients.claim())
   );

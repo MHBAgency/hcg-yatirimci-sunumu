@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 /* ===================================================================
- * Hikmet Çetin Gold — Procedural 3D Carbon Regeneration Unit
+ * NTE Pars Metal — Procedural 3D Carbon Regeneration Unit
  * Reference image: horizontal dark-metallic rotary regen kiln on a
  * black steel skid, stainless top feed funnel, blue motor / gearbox
  * at one end, vertical grey ELUTION COLUMN on the left with a black
@@ -13,7 +13,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
  * =================================================================== */
 
 const CONFIG = {
-  slideIndex: 15,                  // Slide 16 (data-slide="16"), 0-based DOM index = 15
+  slideIndex: 12,                  // Slide 13 (data-slide="13"), 0-based DOM index = 12
 };
 
 let renderer, scene, camera, controls;
@@ -1243,7 +1243,7 @@ window.addEventListener('slidechange', (e) => {
 });
 
 // Auto-init if the matching slide is already active on load
-if (document.querySelector(`.slide[data-slide="16"]`)?.classList.contains('active')) {
+if (document.querySelector(`.slide[data-slide="13"]`)?.classList.contains('active')) {
   init();
   startRendering();
 }

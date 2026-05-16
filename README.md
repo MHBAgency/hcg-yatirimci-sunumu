@@ -1,4 +1,4 @@
-# Hikmet Çetin Gold — Yatırımcı Sunumu
+# NTE Pars Metal — Yatırımcı Sunumu
 
 Sülfürlü altın cevheri işleyen tesis için yatırımcı sunumu — interaktif web demosu.
 
@@ -9,7 +9,7 @@ Sülfürlü altın cevheri işleyen tesis için yatırımcı sunumu — interakt
 
 ## Slaytlar
 
-1. **Kapak** — Hikmet Çetin Gold tanıtım
+1. **Kapak** — NTE Pars Metal tanıtım
 2. **Dünya Haritası** — Sülfürlü altın madenleri + saha konumu
 3. **CIL Liç Tankı (İnteraktif 3D)** — Fareyle döndürülen Three.js modeli
 4. **CIL Liç Tankı (Görsel)** — Konsept render + animasyonlu açıklamalar
@@ -40,4 +40,4 @@ Vercel veya Netlify'a bu repo'yu bağla → otomatik static deploy.
 
 ---
 
-© 2026 — Hikmet Çetin Gold için hazırlanmıştır.
+© 2026 — NTE Pars Metal için hazırlanmıştır.

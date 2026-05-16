@@ -14,8 +14,8 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-<link rel="stylesheet" href="styles/main.css?v=22" />
-<link rel="stylesheet" href="styles/dna.css?v=24" />
+<link rel="stylesheet" href="styles/main.css?v=23" />
+<link rel="stylesheet" href="styles/dna.css?v=25" />
 </head>
 <body>
 
@@ -73,9 +73,9 @@
     <div class="dna-cover">
 
       <h1 class="dna-cover__title">
-        <span class="dna-reveal-word">NTE Pars</span>
-        <span class="dna-reveal-word">Metal</span><br/>
-        <span class="dna-reveal-word dna-cover__title-strong">Projesi.</span>
+        <span class="dna-reveal-word dna-cover__title-strong">NTE Pars</span>
+        <span class="dna-reveal-word dna-cover__title-strong">Metal</span><br/>
+        <span class="dna-reveal-word">Projesi.</span>
       </h1>
 
       <span class="dna-cover__sub dna-anim-fade-up dna-delay-4">
@@ -221,11 +221,11 @@
 
     <!-- Katman 1: Arka plan görsel istifi (her step'te bir görsel öne çıkar) -->
     <div class="micro-bg" aria-hidden="true">
-      <div class="micro-bg__img" data-bg="rock"   style="background-image:url('assets/images/ore-samples.jpeg');"></div>
-      <div class="micro-bg__img" data-bg="micro"  style="background-image:url('assets/images/ore-microphoto-1.jpeg');"></div>
-      <div class="micro-bg__img" data-bg="pyrite" style="background-image:url('assets/images/pyrite-crystals.jpeg');"></div>
-      <div class="micro-bg__img" data-bg="arseno" style="background-image:url('assets/images/pyrite-quartz.jpeg');"></div>
-      <div class="micro-bg__img" data-bg="quartz" style="background-image:url('assets/images/pyrite-quartz.jpeg');"></div>
+      <div class="micro-bg__img" data-bg="rock"   style="background-image:url('assets/images/ore-samples-v2.webp');"></div>
+      <div class="micro-bg__img" data-bg="micro"  style="background-image:url('assets/images/ore-microphoto-1-v2.webp');"></div>
+      <div class="micro-bg__img" data-bg="pyrite" style="background-image:url('assets/images/pyrite-crystals-v2.webp');"></div>
+      <div class="micro-bg__img" data-bg="arseno" style="background-image:url('assets/images/pyrite-quartz-v2.webp');"></div>
+      <div class="micro-bg__img" data-bg="quartz" style="background-image:url('assets/images/quartz-vein.webp');"></div>
       <div class="micro-bg__overlay"></div>
     </div>
 
@@ -962,67 +962,6 @@
         </div>
       </article>
 
-      <!-- ADIM 5: KARŞILAŞTIRMA TABLOSU -->
-      <div class="ms-compare" data-show-on="5">
-        <div class="ms-compare__caption">Şeffaf değerlendirme — 4 yöntem, 1 kazanan</div>
-        <div class="ms-compare__grid">
-
-          <article class="ms-mini" data-method="ultra">
-            <span class="ms-mini__no">01 / 04</span>
-            <span class="ms-mini__name">Ultra İnce Öğütme</span>
-            <span class="ms-mini__sub">10-20 μm</span>
-            <div class="ms-mini__rows">
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Verim</span><span class="ms-mini__row-val">%70-85</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Hız</span><span class="ms-mini__row-val">Hızlı</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">CAPEX</span><span class="ms-mini__row-val">Enerji yoğun</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Olgunluk</span><span class="ms-mini__row-val">Yaygın</span></div>
-            </div>
-            <div class="ms-mini__verdict">× Düşük verim</div>
-          </article>
-
-          <article class="ms-mini" data-method="biox">
-            <span class="ms-mini__no">02 / 04</span>
-            <span class="ms-mini__name">BIOX</span>
-            <span class="ms-mini__sub">40-45°C</span>
-            <div class="ms-mini__rows">
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Verim</span><span class="ms-mini__row-val">%90-95</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Hız</span><span class="ms-mini__row-val">3-5 gün</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">CAPEX</span><span class="ms-mini__row-val">Orta</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Olgunluk</span><span class="ms-mini__row-val">Sınırlı</span></div>
-            </div>
-            <div class="ms-mini__verdict">× Uzun çevrim</div>
-          </article>
-
-          <article class="ms-mini" data-method="pox">
-            <span class="ms-mini__no">03 / 04</span>
-            <span class="ms-mini__name">POX</span>
-            <span class="ms-mini__sub">10-35 bar</span>
-            <div class="ms-mini__rows">
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Verim</span><span class="ms-mini__row-val">%95-98</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Hız</span><span class="ms-mini__row-val">~2 saat</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">CAPEX</span><span class="ms-mini__row-val">Çok yüksek</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Olgunluk</span><span class="ms-mini__row-val">Niş</span></div>
-            </div>
-            <div class="ms-mini__verdict">× CAPEX engeli</div>
-          </article>
-
-          <article class="ms-mini is-winner" data-method="kavurma">
-            <span class="ms-mini__ribbon">★ Seçildi</span>
-            <span class="ms-mini__no">04 / 04</span>
-            <span class="ms-mini__name">Kavurma + CIL</span>
-            <span class="ms-mini__sub">Klasik + Liç</span>
-            <div class="ms-mini__rows">
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Verim</span><span class="ms-mini__row-val">%90-95</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Hız</span><span class="ms-mini__row-val">30-90 dk</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">CAPEX</span><span class="ms-mini__row-val">Düşük</span></div>
-              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Olgunluk</span><span class="ms-mini__row-val">Endüstri std.</span></div>
-            </div>
-            <div class="ms-mini__verdict">✓ En hızlı geri ödeme</div>
-          </article>
-
-        </div>
-      </div>
-
     </div>
   </section>
 
@@ -1128,7 +1067,7 @@
             </li>
             <li class="primary">
               <span class="cmp-flag">★</span>
-              <div><strong>Hikmet Çetin Gold</strong><span>Safadaşt · $10M CAPEX</span></div>
+              <div><strong>NTE Pars Metal</strong><span>Safadaşt · $10M CAPEX</span></div>
             </li>
             <li>
               <span class="cmp-flag">🇮🇷</span>
@@ -1241,13 +1180,10 @@
       </span>
     </div>
 
-    <!-- Katman 1: Arka plan görseli (atık) -->
-    <!-- NOT: img src kolayca değiştirilebilir — kullanıcı sonradan
-         daha sinematik atık görseli üretecek (örn. tailings-hero.jpeg) -->
+    <!-- Katman 1: Arka plan görseli (antimon atığı, sinematik) -->
     <div class="s7-bg" aria-hidden="true">
       <div class="s7-bg__img"
-           data-source="tailings-hero.jpeg"
-           style="background-image:url('assets/images/refractory-problem.jpeg');"></div>
+           style="background-image:url('assets/images/tailings-hero.webp');"></div>
       <div class="s7-bg__overlay"></div>
       <div class="s7-bg__overlay s7-bg__overlay--esg"></div>
     </div>
@@ -2206,15 +2142,45 @@
       <div class="s15-pie-stage">
         <div class="s15-pie-lg">
           <svg viewBox="0 0 200 200" class="s15-pie-svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="s15-grad-1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"   stop-color="#b8902f"/>
+                <stop offset="48%"  stop-color="#f5d76e"/>
+                <stop offset="100%" stop-color="#fff1b8"/>
+              </linearGradient>
+              <linearGradient id="s15-grad-2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"   stop-color="#7a4322"/>
+                <stop offset="55%"  stop-color="#c97f4a"/>
+                <stop offset="100%" stop-color="#e3a578"/>
+              </linearGradient>
+              <linearGradient id="s15-grad-3" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"   stop-color="#3a5c75"/>
+                <stop offset="55%"  stop-color="#7aa8c4"/>
+                <stop offset="100%" stop-color="#a8cee3"/>
+              </linearGradient>
+              <linearGradient id="s15-grad-4" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"   stop-color="#55502b"/>
+                <stop offset="55%"  stop-color="#9b9054"/>
+                <stop offset="100%" stop-color="#c6bb82"/>
+              </linearGradient>
+              <radialGradient id="s15-center-bg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"   stop-color="rgba(8, 11, 18, 0.95)"/>
+                <stop offset="70%"  stop-color="rgba(12, 16, 26, 0.75)"/>
+                <stop offset="100%" stop-color="rgba(12, 16, 26, 0)"/>
+              </radialGradient>
+            </defs>
             <circle cx="100" cy="100" r="70" fill="none" stroke="#142339" stroke-width="40"/>
             <circle class="s15-pie-seg" data-seg="1" cx="100" cy="100" r="70" fill="none"
-                    stroke="#f5d76e" stroke-width="40"/>
+                    stroke="url(#s15-grad-1)" stroke-width="40"/>
             <circle class="s15-pie-seg" data-seg="2" cx="100" cy="100" r="70" fill="none"
-                    stroke="#c97f4a" stroke-width="40" stroke-dashoffset="-175.8"/>
+                    stroke="url(#s15-grad-2)" stroke-width="40" stroke-dashoffset="-175.8"/>
             <circle class="s15-pie-seg" data-seg="3" cx="100" cy="100" r="70" fill="none"
-                    stroke="#7aa8c4" stroke-width="40" stroke-dashoffset="-285.74"/>
+                    stroke="url(#s15-grad-3)" stroke-width="40" stroke-dashoffset="-285.74"/>
             <circle class="s15-pie-seg" data-seg="4" cx="100" cy="100" r="70" fill="none"
-                    stroke="#9b9054" stroke-width="40" stroke-dashoffset="-351.71"/>
+                    stroke="url(#s15-grad-4)" stroke-width="40" stroke-dashoffset="-351.71"/>
+            <circle cx="100" cy="100" r="50" fill="url(#s15-center-bg)"/>
+            <circle cx="100" cy="100" r="50" fill="none"
+                    stroke="rgba(245, 215, 110, 0.12)" stroke-width="1"/>
           </svg>
           <div class="s15-pie-lg__center">
             <span class="s15-pie-lg__val">$10M</span>
@@ -2529,7 +2495,7 @@
 
       <div class="dna-closing__brand dna-anim-fade-up dna-delay-3">
         <span class="dna-closing__brand-main">NTE PARS METAL</span>
-        <span class="dna-closing__brand-sub">Hikmet Çetin Gold projesi</span>
+        <span class="dna-closing__brand-sub">NTE Pars Metal projesi</span>
       </div>
 
       <div class="dna-closing__contact dna-stagger dna-delay-4">
@@ -2598,12 +2564,12 @@
 <script src="scripts/navigation.js?v=10"></script>
 <script src="scripts/equipment-toggle.js"></script>
 <script src="scripts/map-world.js"></script>
-<script type="module" src="scripts/three-cil-tank.js"></script>
-<script type="module" src="scripts/three-roaster.js"></script>
-<script type="module" src="scripts/three-oxygen.js"></script>
-<script type="module" src="scripts/three-carbon-adsorption.js"></script>
-<script type="module" src="scripts/three-carbon-regen.js"></script>
-<script type="module" src="scripts/three-electrowinning.js"></script>
+<script type="module" src="scripts/three-cil-tank.js?v=2"></script>
+<script type="module" src="scripts/three-roaster.js?v=2"></script>
+<script type="module" src="scripts/three-oxygen.js?v=2"></script>
+<script type="module" src="scripts/three-carbon-adsorption.js?v=2"></script>
+<script type="module" src="scripts/three-carbon-regen.js?v=2"></script>
+<script type="module" src="scripts/three-electrowinning.js?v=2"></script>
 
 </body>
 </html>

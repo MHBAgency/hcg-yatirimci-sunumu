@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 /* ===================================================================
- * Hikmet Çetin Gold — Procedural 3D Oxygen Plant (PSA-O₂ Unit) v3
+ * NTE Pars Metal — Procedural 3D Oxygen Plant (PSA-O₂ Unit) v3
  *
  * REWRITTEN to match the firm's reference photograph at first sight:
  *
@@ -1339,7 +1339,7 @@ function onResize() {
 }
 
 /* ============================ SLIDE INTEGRATION ============================ */
-const OXYGEN_SLIDE_INDEX = 12;  // Slide 13 (data-slide="13"), 0-based DOM index = 12
+const OXYGEN_SLIDE_INDEX = 9;  // Slide 10 (data-slide="10"), 0-based DOM index = 9
 
 window.addEventListener('slidechange', (e) => {
   if (e.detail.index === OXYGEN_SLIDE_INDEX) {
@@ -1352,7 +1352,7 @@ window.addEventListener('slidechange', (e) => {
 });
 
 // Auto-start if the slide is already active when this script loads
-if (document.querySelector(`.slide[data-slide="13"]`)?.classList.contains('active')) {
+if (document.querySelector(`.slide[data-slide="10"]`)?.classList.contains('active')) {
   init();
   startRendering();
 }

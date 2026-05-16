@@ -200,10 +200,8 @@
 .slide.active * {
   pointer-events: auto;
 }
-/* Three.js canvas'ları sadece görsel — etkileşim almasın */
-canvas[id^="three-canvas"] {
-  pointer-events: none !important;
-}
+/* NOT: Three.js canvas'ları için pointer-events: none kuralı kaldırıldı —
+   equipment-slide (9-14) OrbitControls etkileşimini engelliyordu. */
 
 
 /* ============================================================
@@ -1423,6 +1421,9 @@ canvas[id^="three-canvas"] {
   border-top: 1px solid var(--dna-line);
   border-bottom: 1px solid var(--dna-line);
   padding: var(--dna-s-6) 0;
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
 }
 .dna-cover-meta__item {
   display: flex;
@@ -1431,6 +1432,7 @@ canvas[id^="three-canvas"] {
   align-items: center;
   padding: var(--dna-s-2) var(--dna-s-4);
   position: relative;
+  z-index: 1;
   cursor: default;
   transition: transform var(--dna-t-base) var(--dna-ease-out);
 }
@@ -1518,7 +1520,7 @@ canvas[id^="three-canvas"] {
   color: var(--dna-gold-bright);
   text-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
 }
-.dna-cover-meta__item:hover .dna-cover-meta__value:not(.dna-cover-meta__value--accent) {
+.dna-cover-meta__item:hover .dna-cover-meta__value {
   color: var(--dna-gold-bright);
   text-shadow: 0 0 10px rgba(212, 175, 55, 0.30);
 }
@@ -1928,11 +1930,12 @@ canvas[id^="three-canvas"] {
 .cinematic-map-slide .cmap-panel {
   position: absolute;
   z-index: 3;
-  top: clamp(80px, 9vh, 130px);
+  top: 50%;
+  transform: translateY(-50%);
   right: clamp(28px, 2.6vw, 56px);
   /* bottom kaldırıldı — panel içeriğine göre kısa kalır.
      max-height yine güvence: ekran taşmasın. */
-  max-height: calc(100vh - clamp(140px, 14vh, 200px));
+  max-height: calc(100vh - clamp(120px, 12vh, 180px));
   width: clamp(300px, 26vw, 380px);
   background: rgba(8, 12, 18, 0.66);
   backdrop-filter: blur(16px) saturate(140%);
@@ -1969,78 +1972,131 @@ canvas[id^="three-canvas"] {
   pointer-events: auto;
 }
 .mine-pin {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: rgba(160, 175, 200, 0.92);
-  border: 1.5px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 0 0 2px rgba(8, 12, 18, 0.45),
-              0 0 6px rgba(160, 175, 200, 0.5);
+  background: radial-gradient(circle at 35% 30%,
+              rgba(255, 255, 255, 1) 0%,
+              rgba(225, 235, 250, 0.98) 45%,
+              rgba(170, 190, 215, 0.95) 100%);
+  border: 2px solid rgba(255, 255, 255, 1);
+  box-shadow:
+    0 0 0 2.5px rgba(8, 12, 18, 0.75),
+    0 0 10px rgba(210, 225, 245, 0.85),
+    0 0 22px rgba(170, 190, 215, 0.55);
   transition: transform 220ms var(--dna-ease-out, ease-out),
               opacity 320ms var(--dna-ease-out, ease-out);
+  animation: cmap-pin-breathe 3.6s ease-in-out infinite;
+}
+@keyframes cmap-pin-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.12); }
 }
 .mine-pin-wrapper:hover .mine-pin {
-  transform: scale(1.25);
+  transform: scale(1.35);
 }
 .mine-pin.primary {
-  width: 20px;
-  height: 20px;
-  background: var(--dna-gold-bright, #ffd86b);
-  border: 2px solid #fff;
+  width: 26px;
+  height: 26px;
+  background: radial-gradient(circle at 35% 30%,
+              #fff5d0 0%,
+              var(--dna-gold-bright, #ffd86b) 45%,
+              var(--dna-gold, #d4af37) 100%);
+  border: 2.5px solid #fff;
   box-shadow:
-    0 0 0 3px rgba(212, 175, 55, 0.35),
-    0 0 14px rgba(255, 216, 107, 0.85),
-    0 0 26px rgba(212, 175, 55, 0.55);
-  animation: cmap-pulse 2.4s ease-in-out infinite;
+    0 0 0 4px rgba(212, 175, 55, 0.5),
+    0 0 22px rgba(255, 216, 107, 1),
+    0 0 44px rgba(212, 175, 55, 0.8),
+    0 0 70px rgba(212, 175, 55, 0.45);
+  animation: cmap-pulse 2.2s ease-in-out infinite;
 }
 @keyframes cmap-pulse {
   0%, 100% {
+    transform: scale(1);
     box-shadow:
-      0 0 0 3px rgba(212, 175, 55, 0.35),
-      0 0 14px rgba(255, 216, 107, 0.85),
-      0 0 26px rgba(212, 175, 55, 0.55);
+      0 0 0 4px rgba(212, 175, 55, 0.5),
+      0 0 22px rgba(255, 216, 107, 1),
+      0 0 44px rgba(212, 175, 55, 0.8),
+      0 0 70px rgba(212, 175, 55, 0.45);
   }
   50% {
+    transform: scale(1.14);
     box-shadow:
-      0 0 0 6px rgba(212, 175, 55, 0.18),
-      0 0 22px rgba(255, 216, 107, 1),
-      0 0 38px rgba(212, 175, 55, 0.7);
+      0 0 0 8px rgba(212, 175, 55, 0.28),
+      0 0 34px rgba(255, 216, 107, 1),
+      0 0 60px rgba(212, 175, 55, 0.9),
+      0 0 90px rgba(212, 175, 55, 0.55);
   }
 }
 
-/* --- Pin popup (Leaflet override) ----------------------------------- */
-.leaflet-popup-content-wrapper {
-  background: rgba(8, 12, 18, 0.92) !important;
-  color: var(--dna-text, #e6e9ee) !important;
-  border-radius: 6px !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5) !important;
-  border: 1px solid rgba(212, 175, 55, 0.22) !important;
-}
-.leaflet-popup-content { margin: 10px 14px !important; }
-.leaflet-popup-tip {
-  background: rgba(8, 12, 18, 0.92) !important;
-  border: 1px solid rgba(212, 175, 55, 0.22) !important;
-}
-.pin-popup {
-  font-family: var(--dna-font, system-ui);
-  font-size: 12px;
-  line-height: 1.45;
-  min-width: 160px;
-}
-.pin-popup strong {
-  display: block;
-  font-size: 13px;
+/* --- Pin tooltip (otomatik açık ufak kart) -------------------------- */
+.leaflet-tooltip.pin-tooltip {
+  background: rgba(10, 14, 20, 0.86);
   color: var(--dna-text, #e6e9ee);
-  margin-bottom: 2px;
-  letter-spacing: 0.02em;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  padding: 5px 9px;
+  font-family: var(--dna-font, system-ui);
+  letter-spacing: 0.04em;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 24px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  white-space: nowrap;
+  transition: opacity 380ms var(--dna-ease-out, ease-out);
+  pointer-events: none;
 }
-.pin-popup div {
+.leaflet-tooltip.pin-tooltip::before {
+  display: none; /* leaflet ok'unu gizle — temiz kart hissi */
+}
+.pin-tooltip .pin-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: pin-card-in 620ms var(--dna-ease-out, ease-out) both;
+}
+@keyframes pin-card-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.pin-tooltip .pin-card strong {
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.25;
+}
+.pin-tooltip .pin-card span {
   color: var(--dna-text-3, #98a2b3);
-  font-size: 11px;
-  letter-spacing: 0.03em;
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  font-weight: 400;
 }
-.leaflet-popup-close-button {
-  color: var(--dna-text-3, #98a2b3) !important;
+
+/* Primary kart — altın çerçeve, hafif glow */
+.leaflet-tooltip.pin-tooltip.primary {
+  background: linear-gradient(180deg,
+              rgba(28, 20, 6, 0.95) 0%,
+              rgba(18, 14, 6, 0.95) 100%);
+  border: 1.5px solid var(--dna-gold, #d4af37);
+  border-radius: 8px;
+  padding: 7px 12px;
+  box-shadow:
+    0 0 0 1px rgba(255, 216, 107, 0.18),
+    0 12px 36px rgba(0, 0, 0, 0.65),
+    0 0 28px rgba(212, 175, 55, 0.38);
+}
+.pin-tooltip.primary .pin-card strong {
+  color: var(--dna-gold-bright, #ffd86b);
+  font-size: 13px;
+  letter-spacing: 0.07em;
+}
+.pin-tooltip.primary .pin-card span {
+  color: var(--dna-gold, #d4af37);
+  font-size: 10.5px;
+  font-weight: 500;
 }
 
 /* --- Title cross-fade ------------------------------------------------ */
@@ -3339,7 +3395,7 @@ canvas[id^="three-canvas"] {
 .unlock-yield__ring {
   --p: 95;
   --size: clamp(120px, 11vw, 156px);
-  --thickness: 10px;
+  --thickness: 13px;
   --p-render: 0;
   position: relative;
   width: var(--size);
@@ -3348,6 +3404,7 @@ canvas[id^="three-canvas"] {
   display: flex;
   align-items: center;
   justify-content: center;
+  filter: drop-shadow(0 0 12px rgba(245, 215, 110, 0.32)) drop-shadow(0 0 26px rgba(212, 175, 55, 0.18));
 }
 /* Halka — conic-gradient pseudo-element olarak; mask sadece pseudo'da */
 .unlock-yield__ring::before {
@@ -3358,20 +3415,37 @@ canvas[id^="three-canvas"] {
   background:
     conic-gradient(
       from -90deg,
-      var(--dna-gold-deep, #a8861c) 0,
-      var(--dna-gold) calc(var(--p-render) * 0.5deg),
-      var(--dna-gold-bright) calc(var(--p-render) * 1deg),
-      var(--dna-line-2) calc(var(--p-render) * 1deg)
+      #8a6c14 0deg,
+      #a8861c calc(var(--p-render) * 0.648deg),
+      var(--dna-gold) calc(var(--p-render) * 1.728deg),
+      var(--dna-gold-bright) calc(var(--p-render) * 2.88deg),
+      #fff1b8 calc(var(--p-render) * 3.456deg),
+      var(--dna-gold-bright) calc(var(--p-render) * 3.6deg),
+      rgba(26, 32, 48, 0.9) calc(var(--p-render) * 3.6deg),
+      rgba(20, 25, 38, 0.9) 360deg
     );
   -webkit-mask: radial-gradient(circle, transparent calc(50% - var(--thickness)), #000 calc(50% - var(--thickness) + 1px));
           mask: radial-gradient(circle, transparent calc(50% - var(--thickness)), #000 calc(50% - var(--thickness) + 1px));
 }
+.unlock-yield__ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(245, 215, 110, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  -webkit-mask: radial-gradient(circle, transparent calc(50% - var(--thickness)), #000 calc(50% - var(--thickness) + 1px));
+          mask: radial-gradient(circle, transparent calc(50% - var(--thickness)), #000 calc(50% - var(--thickness) + 1px));
+}
 .slide.active .unlock-yield__ring {
-  animation: unlock-ring-fill 1.4s 0.5s var(--dna-ease-inout) forwards;
+  animation: unlock-ring-fill 1.6s 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes unlock-ring-fill {
-  from { --p-render: 0; }
-  to   { --p-render: var(--p); }
+  0%   { --p-render: 0; }
+  85%  { --p-render: calc(var(--p) + 1); }
+  100% { --p-render: var(--p); }
 }
 @property --p-render {
   syntax: '<number>';
@@ -3397,6 +3471,10 @@ canvas[id^="three-canvas"] {
   letter-spacing: var(--dna-track-tight);
   color: var(--dna-gold-bright);
   line-height: 1;
+  text-shadow:
+    0 0 18px rgba(245, 215, 110, 0.55),
+    0 0 36px rgba(212, 175, 55, 0.22),
+    0 1px 0 rgba(0, 0, 0, 0.4);
 }
 .unlock-yield__lbl {
   font-family: var(--dna-font-mono);
@@ -3651,7 +3729,7 @@ canvas[id^="three-canvas"] {
 .story2__bg {
   position: absolute;
   inset: 0;
-  background-image: url("../assets/images/ore-microphoto-1.jpeg");
+  background-image: url("../assets/images/ore-microphoto-1-v2.webp");
   background-size: cover;
   background-position: center;
   filter: blur(5px) saturate(0.85) brightness(0.55);
@@ -3746,8 +3824,8 @@ canvas[id^="three-canvas"] {
   letter-spacing: -0.01em;
   opacity: 0;
   transform: translateY(0.18em);
-  transition: opacity 460ms cubic-bezier(0.4, 0, 0.2, 1) 80ms,
-              transform 460ms cubic-bezier(0.4, 0, 0.2, 1) 80ms;
+  transition: opacity 320ms cubic-bezier(0.4, 0, 0.2, 1) 50ms,
+              transform 320ms cubic-bezier(0.4, 0, 0.2, 1) 50ms;
   text-shadow: 0 0 18px rgba(212, 175, 55, 0.18);
 }
 
@@ -3786,9 +3864,9 @@ canvas[id^="three-canvas"] {
   transform-origin: 0 0;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 480ms cubic-bezier(0.4, 0, 0.2, 1),
-              transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1),
-              visibility 0s linear 700ms;
+  transition: opacity 320ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 480ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              visibility 0s linear 480ms;
   will-change: transform, opacity;
   pointer-events: none;
 }
@@ -3819,16 +3897,16 @@ canvas[id^="three-canvas"] {
   --fly-s: 1;
   opacity: 1;
   visibility: visible;
-  transition: opacity 520ms cubic-bezier(0.4, 0, 0.2, 1),
-              transform 720ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: opacity 340ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 500ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* Uçma fazı: JS tarafından --fly-x / --fly-y / --fly-s set edilir */
 .story2__big.is-flying {
   opacity: 0;
   visibility: visible;
-  transition: opacity 520ms cubic-bezier(0.4, 0, 0.2, 1) 140ms,
-              transform 640ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 360ms cubic-bezier(0.4, 0, 0.2, 1) 100ms,
+              transform 460ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* "3" daha dramatik durur (renk farkı) */
@@ -3847,8 +3925,8 @@ canvas[id^="three-canvas"] {
   gap: 14px;
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity 720ms cubic-bezier(0.4, 0, 0.2, 1),
-              transform 720ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 .story2-slide[data-step="4"] .story2__support {
@@ -3863,7 +3941,7 @@ canvas[id^="three-canvas"] {
     transparent 0%,
     var(--dna-gold) 50%,
     transparent 100%);
-  transition: width 900ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 640ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .story2-slide[data-step="4"] .story2__support-line {
   width: 460px;
@@ -3885,12 +3963,12 @@ canvas[id^="three-canvas"] {
 .story2__support-items > span:not(.story2__support-sep) {
   opacity: 0;
   transform: translateY(6px);
-  transition: opacity 520ms cubic-bezier(0.4, 0, 0.2, 1),
-              transform 520ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 380ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 380ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-.story2-slide[data-step="4"] .story2__support-items > span:nth-child(1) { transition-delay: 280ms; }
-.story2-slide[data-step="4"] .story2__support-items > span:nth-child(3) { transition-delay: 420ms; }
-.story2-slide[data-step="4"] .story2__support-items > span:nth-child(5) { transition-delay: 560ms; }
+.story2-slide[data-step="4"] .story2__support-items > span:nth-child(1) { transition-delay: 180ms; }
+.story2-slide[data-step="4"] .story2__support-items > span:nth-child(3) { transition-delay: 280ms; }
+.story2-slide[data-step="4"] .story2__support-items > span:nth-child(5) { transition-delay: 380ms; }
 .story2-slide[data-step="4"] .story2__support-items > span {
   opacity: 1;
   transform: translateY(0);
@@ -3910,7 +3988,7 @@ canvas[id^="three-canvas"] {
   color: var(--dna-text-4);
   font-weight: 500;
   opacity: 0;
-  transition: opacity 520ms cubic-bezier(0.4, 0, 0.2, 1) 700ms;
+  transition: opacity 380ms cubic-bezier(0.4, 0, 0.2, 1) 480ms;
 }
 .story2-slide[data-step="4"] .story2__support-loc {
   opacity: 1;
@@ -4238,20 +4316,26 @@ canvas[id^="three-canvas"] {
   margin-bottom: 10px;
 }
 .micro-panel__title {
-  font-family: var(--dna-font);
-  font-size: clamp(22px, 2vw, 30px);
-  font-weight: var(--dna-w-bold);
-  color: var(--dna-gold-bright);
-  letter-spacing: 0.04em;
-  margin: 0 0 6px;
-  line-height: 1.05;
+  font-family: var(--dna-font-serif);
+  font-style: italic;
+  font-size: clamp(26px, 2.4vw, 36px);
+  font-weight: 500;
+  background: linear-gradient(180deg, var(--dna-gold-bright) 28%, var(--dna-gold) 62%, var(--dna-gold-soft) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  letter-spacing: -0.005em;
+  margin: 0 0 8px;
+  line-height: 1.08;
+  filter: drop-shadow(0 0 14px rgba(245, 215, 110, 0.22));
 }
 .micro-panel__formula {
   display: block;
   font-family: var(--dna-font-mono);
   font-size: 11.5px;
-  color: var(--dna-text-2);
-  letter-spacing: 0.06em;
+  color: rgba(245, 215, 110, 0.78);
+  letter-spacing: 0.08em;
   margin-bottom: 18px;
 }
 .micro-panel__load {
@@ -4316,7 +4400,7 @@ canvas[id^="three-canvas"] {
 .micro-yield__ring {
   --p: 85;
   --size: clamp(260px, 30vw, 380px);
-  --thickness: 22px;
+  --thickness: 26px;
   --mp: 0;
   position: relative;
   width: var(--size);
@@ -4325,6 +4409,7 @@ canvas[id^="three-canvas"] {
   display: flex;
   align-items: center;
   justify-content: center;
+  filter: drop-shadow(0 0 18px rgba(245, 215, 110, 0.28)) drop-shadow(0 0 38px rgba(212, 175, 55, 0.18));
 }
 .micro-yield__ring::before {
   content: '';
@@ -4334,20 +4419,37 @@ canvas[id^="three-canvas"] {
   background:
     conic-gradient(
       from -90deg,
-      var(--dna-gold-deep, #a8861c) 0,
-      var(--dna-gold) calc(var(--mp) * 0.5deg),
-      var(--dna-gold-bright) calc(var(--mp) * 1deg),
-      rgba(255, 255, 255, 0.08) calc(var(--mp) * 1deg)
+      #8a6c14 0deg,
+      #a8861c calc(var(--mp) * 0.648deg),
+      var(--dna-gold) calc(var(--mp) * 1.62deg),
+      var(--dna-gold-bright) calc(var(--mp) * 2.808deg),
+      #fff1b8 calc(var(--mp) * 3.456deg),
+      var(--dna-gold-bright) calc(var(--mp) * 3.6deg),
+      rgba(26, 32, 48, 0.85) calc(var(--mp) * 3.6deg),
+      rgba(20, 25, 38, 0.85) 360deg
     );
   -webkit-mask: radial-gradient(circle, transparent calc(50% - var(--thickness)), #000 calc(50% - var(--thickness) + 1px));
           mask: radial-gradient(circle, transparent calc(50% - var(--thickness)), #000 calc(50% - var(--thickness) + 1px));
 }
+.micro-yield__ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(245, 215, 110, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  -webkit-mask: radial-gradient(circle, transparent calc(50% - var(--thickness)), #000 calc(50% - var(--thickness) + 1px));
+          mask: radial-gradient(circle, transparent calc(50% - var(--thickness)), #000 calc(50% - var(--thickness) + 1px));
+}
 .micro-slide[data-step="5"] .micro-yield__ring {
-  animation: micro-ring-fill 1.5s 0.45s var(--dna-ease-inout) forwards;
+  animation: micro-ring-fill 1.6s 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes micro-ring-fill {
-  from { --mp: 0; }
-  to   { --mp: var(--p); }
+  0%   { --mp: 0; }
+  85%  { --mp: calc(var(--p) + 1); }
+  100% { --mp: var(--p); }
 }
 @property --mp {
   syntax: '<number>';
@@ -4371,7 +4473,10 @@ canvas[id^="three-canvas"] {
   color: var(--dna-gold-bright);
   line-height: 1;
   letter-spacing: -0.03em;
-  text-shadow: 0 0 28px rgba(245, 215, 110, 0.35);
+  text-shadow:
+    0 0 32px rgba(245, 215, 110, 0.55),
+    0 0 64px rgba(212, 175, 55, 0.25),
+    0 2px 0 rgba(0, 0, 0, 0.4);
 }
 .micro-yield__lbl {
   font-family: var(--dna-font-mono);
@@ -6277,19 +6382,7 @@ canvas[id^="three-canvas"] {
   opacity: 1;
 }
 .s8-mini__thumb {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(0.7) saturate(0.85);
-  opacity: 1;
-  transition: opacity 360ms ease;
-  z-index: 0;
-}
-/* Active kart için canvas yüklenince thumbnail solar (canvas üzerine biner) */
-.s8-mini__card.is-active .s8-mini__thumb {
-  opacity: 0.18;
+  display: none;
 }
 
 .s8-mini__caption {
@@ -6603,10 +6696,15 @@ canvas[id^="three-canvas"] {
   width: 100%;
   height: 100%;
   transform: rotate(-90deg);
+  filter:
+    drop-shadow(0 18px 32px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 22px rgba(245, 215, 110, 0.10));
 }
 .s15-pie-seg {
   stroke-dasharray: 0 439.8;
-  transition: stroke-dasharray 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  stroke-linecap: butt;
+  transition: stroke-dasharray 720ms cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.35));
 }
 .s15-slide[data-step="2"] .s15-pie-seg[data-seg="1"],
 .s15-slide[data-step="3"] .s15-pie-seg[data-seg="1"],
@@ -6655,10 +6753,16 @@ canvas[id^="three-canvas"] {
 }
 .s15-pie-lg__val {
   font-family: var(--dna-font-serif);
+  font-style: italic;
   font-size: clamp(36px, 3.8vw, 52px);
   font-weight: var(--dna-w-semi);
-  color: var(--dna-gold-bright);
+  background: linear-gradient(180deg, var(--dna-gold-bright) 30%, var(--dna-gold) 65%, var(--dna-gold-soft) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
   letter-spacing: -0.02em;
+  filter: drop-shadow(0 0 18px rgba(245, 215, 110, 0.22));
 }
 .s15-pie-lg__lbl {
   font-family: var(--dna-font-mono);

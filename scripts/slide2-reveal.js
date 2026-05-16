@@ -16,9 +16,9 @@
   if (!section) return;
 
   const SLIDE_INDEX = 1; // data-slide="2" → 0-indexed nav = 1
-  const HOLD_MS = [0, 1300, 1300, 1750];   // big "stays at center" duration per step
-  const FLY_MS  = 720;                      // big shrinks toward slot
-  const STEP_LOCK_MS = 200;                 // tiny debounce between steps
+  const HOLD_MS = [0, 380, 380, 560];     // big "stays at center" duration per step
+  const FLY_MS  = 520;                      // big shrinks toward slot
+  const STEP_LOCK_MS = 90;                  // tiny debounce between steps
   const TOTAL_STEPS = 4;
 
   let step = 0;
@@ -92,12 +92,12 @@
     big.classList.add('is-flying');
 
     // 4) Reveal slot's filled value as big disappears
-    await wait(180);
+    await wait(130);
     slot.classList.add('is-filled');
     setStep(stepNum); // commit step
 
     // 5) Wait for flight to finish, then reset transform state
-    await wait(FLY_MS - 180);
+    await wait(FLY_MS - 130);
     big.classList.remove('is-flying');
     big.style.removeProperty('--fly-x');
     big.style.removeProperty('--fly-y');
@@ -115,7 +115,7 @@
       } else {
         // step 4 — just reveal support strip (pure CSS)
         setStep(4);
-        await wait(900);
+        await wait(620);
       }
       await wait(STEP_LOCK_MS);
     } finally {

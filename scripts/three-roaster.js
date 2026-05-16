@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 /* ===================================================================
- * Hikmet Çetin Gold — Procedural 3D Fluidized Bed Roasting Furnace
+ * NTE Pars Metal — Procedural 3D Fluidized Bed Roasting Furnace
  * Akışkan Yataklı Kavurma Fırını
  *
  * REBUILT to match the firm's reference illustration as closely as
@@ -22,7 +22,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
  * =================================================================== */
 
 const CONFIG = {
-  slideIndex: 11,
+  slideIndex: 8, // Slide 9 (data-slide="9"), 0-based DOM index = 8
 };
 
 let renderer, scene, camera, controls;
@@ -1233,7 +1233,7 @@ window.addEventListener('slidechange', (e) => {
 });
 
 // Optional: auto-start if the slide is already active when the script loads.
-if (document.querySelector(`.slide[data-slide="12"]`)?.classList.contains('active')) {
+if (document.querySelector(`.slide[data-slide="9"]`)?.classList.contains('active')) {
   init();
   startRendering();
 }
