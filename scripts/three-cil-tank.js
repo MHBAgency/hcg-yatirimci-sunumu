@@ -69,8 +69,8 @@ function init(targetCanvas) {
   controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.06;
-  controls.minDistance = 12;
-  controls.maxDistance = 55;
+  controls.enableZoom = false;
+  controls.enablePan = false;
   controls.minPolarAngle = Math.PI * 0.12;
   controls.maxPolarAngle = Math.PI * 0.50;
   controls.target.set(0, 3.5, 0);
@@ -96,9 +96,6 @@ function init(targetCanvas) {
   // Render loop is started by external slidechange listener via startRendering()
 
   window.addEventListener('resize', onResize);
-  window.addEventListener('slidechange', (e) => {
-    if (e.detail.index === 10) onResize();
-  });
 }
 
 /* ============================ LIGHTING ============================ */
@@ -2054,6 +2051,7 @@ if (document.querySelector('.slide[data-slide="11"]')?.classList.contains('activ
 
 /* ============================ EXTERNAL MOUNT API (slide 8 atlas) ============================ */
 function _disposeForMount() {
+  try { window.removeEventListener('resize', onResize); } catch (e) {}
   if (frameId !== null) {
     cancelAnimationFrame(frameId);
     frameId = null;

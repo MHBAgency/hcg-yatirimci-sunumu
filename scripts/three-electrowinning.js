@@ -97,8 +97,8 @@ function init(targetCanvas) {
   controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.07;
-  controls.minDistance = 12;
-  controls.maxDistance = 50;
+  controls.enableZoom = false;
+  controls.enablePan = false;
   controls.minPolarAngle = Math.PI * 0.15;
   controls.maxPolarAngle = Math.PI * 0.50;
   controls.target.set(0, 1.3, 0);
@@ -114,6 +114,8 @@ function init(targetCanvas) {
   buildCrucible();
   buildCables();
   buildPlumbing();
+
+  window.addEventListener('resize', onResize);
 }
 
 /* ============================== HELPERS ============================== */
@@ -1442,6 +1444,7 @@ if (document.querySelector('.slide[data-slide="14"]')?.classList.contains('activ
 
 /* ============================ EXTERNAL MOUNT API (slide 8 atlas) ============================ */
 function _disposeForMount() {
+  try { window.removeEventListener('resize', onResize); } catch (e) {}
   if (frameId !== null) {
     cancelAnimationFrame(frameId);
     frameId = null;

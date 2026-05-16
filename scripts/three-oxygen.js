@@ -99,14 +99,14 @@ function init(targetCanvas) {
 
   // Camera — front-on, slight elevation, tighter framing to match the reference photo
   camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 200);
-  camera.position.set(0, 3.6, 17.5);
+  camera.position.set(0, 4.0, 22.5);
   camera.lookAt(0, 2.6, 0);
 
   controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.06;
-  controls.minDistance = 11;
-  controls.maxDistance = 32;
+  controls.enableZoom = false;
+  controls.enablePan = false;
   controls.minPolarAngle = Math.PI * 0.18;
   controls.maxPolarAngle = Math.PI * 0.52;
   controls.target.set(0, 2.6, 0);
@@ -168,19 +168,7 @@ function buildBackdrop() {
 
 /* ============================ GROUND & SKID ============================ */
 function buildGroundAndSkid() {
-  // Gravel mining pad
-  const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(220, 220),
-    new THREE.MeshStandardMaterial({
-      color: 0x9b8a72,
-      roughness: 0.98,
-      metalness: 0.02,
-    })
-  );
-  ground.rotation.x = -Math.PI / 2;
-  ground.position.y = 0;
-  ground.receiveShadow = true;
-  scene.add(ground);
+  // Zemin yok — tesis uzay boşluğunda yüzüyor gibi görünsün (saf siyah arka plan).
 
   // Blue skid base
   const skidGroup = new THREE.Group();
@@ -1814,8 +1802,8 @@ function animate() {
   if (autoRotateEnabled && (Date.now() - lastUserInteraction) > 6000) {
     // Gentle sway around front-on view rather than full orbit
     camera.position.x = Math.sin(t * 0.18) * 2.0;
-    camera.position.z = 17.5 - Math.cos(t * 0.18) * 0.3;
-    camera.position.y = 3.6 + Math.sin(t * 0.12) * 0.12;
+    camera.position.z = 22.5 - Math.cos(t * 0.18) * 0.3;
+    camera.position.y = 4.0 + Math.sin(t * 0.12) * 0.12;
     camera.lookAt(controls.target);
   }
 
@@ -1865,6 +1853,7 @@ if (document.querySelector(`.slide[data-slide="10"]`)?.classList.contains('activ
 
 /* ============================ EXTERNAL MOUNT API (slide 8 atlas) ============================ */
 function _disposeForMount() {
+  try { window.removeEventListener('resize', onResize); } catch (e) {}
   if (frameId !== null) {
     cancelAnimationFrame(frameId);
     frameId = null;

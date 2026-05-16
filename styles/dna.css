@@ -1365,6 +1365,9 @@
   /* italic serif "j" descender'ı için ek alan — line-height: 0.92 ile kesilmesin */
   line-height: 1.1;
   padding-bottom: 0.18em;
+  /* italic son harf (örn. "Metal"deki "l") inline-block kutusundan taşmasın */
+  padding-right: 0.12em;
+  margin-right: -0.04em;
   overflow: visible;
 }
 
@@ -2408,8 +2411,9 @@
   display: flex;
   gap: 4px;
   padding: 10px 12px;
-  background: var(--dna-bg-elev-2);
-  border-bottom: 1px solid var(--dna-line);
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }
 .dna-eq__viewer .toggle-btn {
   flex: 1;
@@ -3023,7 +3027,8 @@
   flex-shrink: 0;
   border: 1px solid rgba(212,175,55,0.25);
 }
-.dna-install__icon svg { width: 16px; height: 16px; }
+.dna-install__icon svg,
+.dna-install__icon .dna-install__icon-svg { width: 16px; height: 16px; max-width: 16px; max-height: 16px; flex-shrink: 0; }
 .dna-install__icon-svg--done { display: none; }
 
 [data-pwa-state="installed"] .dna-install__icon-svg--default { display: none; }

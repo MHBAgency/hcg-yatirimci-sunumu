@@ -92,8 +92,8 @@ function init(targetCanvas) {
   controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.06;
-  controls.minDistance = 12;
-  controls.maxDistance = 52;
+  controls.enableZoom = false;
+  controls.enablePan = false;
   controls.minPolarAngle = Math.PI * 0.14;
   controls.maxPolarAngle = Math.PI * 0.50;
   controls.target.set(0, 3.6, 0);
@@ -162,9 +162,9 @@ function buildGroundAndSkid() {
   const colsWidth = (CONFIG.columnCount - 1) * CONFIG.columnSpacing;
   const totalWidth = colsWidth + 14.0;    // extra room for TK-101 left + raffinate tank right
 
-  // Ground (concrete floor)
+  // Ground (concrete floor) — saf siyah, arka plan ile kaynaşsın diye
   const groundMat = new THREE.MeshStandardMaterial({
-    color: 0x8e8a82, roughness: 0.95, metalness: 0.03,
+    color: 0x000000, roughness: 0.98, metalness: 0.0,
   });
   const ground = new THREE.Mesh(
     new THREE.BoxGeometry(totalWidth + 6, 0.16, 12),
@@ -2192,8 +2192,8 @@ function buildHeaderWalkway() {
     scene.add(sup);
   }
 
-  // Side stair coming from the FRONT of the platform down to the skid deck
-  buildSideStair(platformX, platformY, R + 0.7, deckY);
+  // Yan merdiven kaldırıldı — yatırımcı sunumunda düzgün hizalanmıyordu,
+  // platform tek başına daha temiz duruyor.
 }
 
 function buildSideStair(stairTopX, platformY, stairZ, deckY) {
@@ -2727,6 +2727,7 @@ if (document.querySelector(`.slide[data-slide="12"]`)?.classList.contains('activ
 
 /* ============================ EXTERNAL MOUNT API (slide 8 atlas) ============================ */
 function _disposeForMount() {
+  try { window.removeEventListener('resize', onResize); } catch (e) {}
   if (frameId !== null) {
     cancelAnimationFrame(frameId);
     frameId = null;

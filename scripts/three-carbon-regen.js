@@ -70,8 +70,8 @@ function init(targetCanvas) {
   controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.06;
-  controls.minDistance = 9;
-  controls.maxDistance = 40;
+  controls.enableZoom = false;
+  controls.enablePan = false;
   controls.minPolarAngle = Math.PI * 0.20;
   controls.maxPolarAngle = Math.PI * 0.52;
   controls.target.set(-0.5, 2.2, 0);
@@ -98,9 +98,6 @@ function init(targetCanvas) {
   buildPipework();        // black hoses + small grey pipes around base
 
   window.addEventListener('resize', onResize);
-  window.addEventListener('slidechange', (e) => {
-    if (e.detail.index === CONFIG.slideIndex) onResize();
-  });
 }
 
 /* ============================ LIGHTING ============================ */
@@ -1712,6 +1709,7 @@ if (document.querySelector(`.slide[data-slide="13"]`)?.classList.contains('activ
 
 /* ============================ EXTERNAL MOUNT API (slide 8 atlas) ============================ */
 function _disposeForMount() {
+  try { window.removeEventListener('resize', onResize); } catch (e) {}
   if (frameId !== null) {
     cancelAnimationFrame(frameId);
     frameId = null;

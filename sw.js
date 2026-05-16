@@ -3,7 +3,7 @@
  * Tüm static asset'ler pre-cache edilir, HTML için network-first
  */
 
-const CACHE_VERSION = 'nte-v19-2026-05-16-3d-canvas-switch';
+const CACHE_VERSION = 'nte-v21-2026-05-16-png-icons';
 const CACHE_NAME = `nte-presentation-${CACHE_VERSION}`;
 const CACHE_PREFIX = 'nte-presentation-';
 
@@ -61,7 +61,9 @@ const PRECACHE_URLS = [
   './assets/images/quartz-vein.webp',
   './assets/images/tailings-hero.webp',
 
-  // İkonlar
+  // İkonlar (PNG: PWA install kriteri için zorunlu; SVG yedek)
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
   './assets/icons/icon-192.svg',
   './assets/icons/icon-512.svg',
 
@@ -161,5 +163,46 @@ self.addEventListener('message', (event) => {
     event.waitUntil(
       caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
     );
+  }
+
+  // "İndir" butonu için: TÜM cache'leri temizle ve en güncel asset'leri yeniden indir
+  if (event.data && event.data.type === 'force-refresh-all') {
+    const port = event.ports && event.ports[0];
+    event.waitUntil(
+      (async () => {
+        try {
+          // 1) Tüm eski cache'leri sil
+          const keys = await caches.keys();
+          await Promise.all(
+            keys.filter((k) => k.startsWith(CACHE_PREFIX)).map((k) => caches.delete(k))
+          );
+          // 2) Yeni cache aç, her dosyayı TAZE (network'ten zorla) çek
+          const cache = await caches.open(CACHE_NAME);
+          let done = 0;
+          const total = PRECACHE_URLS.length;
+          await Promise.allSettled(
+            PRECACHE_URLS.map(async (url) => {
+              try {
+                const req = new Request(url, { cache: 'reload' });
+                const resp = await fetch(req);
+                if (resp.ok) await cache.put(url, resp.clone());
+              } catch (e) {
+                // sessizce geç
+              } finally {
+                done++;
+                if (port) port.postMessage({ type: 'refresh-progress', done, total });
+              }
+            })
+          );
+          if (port) port.postMessage({ type: 'refresh-done', total });
+        } catch (err) {
+          if (port) port.postMessage({ type: 'refresh-error', error: String(err) });
+        }
+      })()
+    );
+  }
+
+  if (event.data && event.data.type === 'skip-waiting') {
+    self.skipWaiting();
   }
 });

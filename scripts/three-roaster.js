@@ -131,8 +131,8 @@ function init(targetCanvas) {
   controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.06;
-  controls.minDistance = 16;
-  controls.maxDistance = 70;
+  controls.enableZoom = false;
+  controls.enablePan = false;
   controls.minPolarAngle = Math.PI * 0.12;
   controls.maxPolarAngle = Math.PI * 0.48;
   controls.target.set(0, 5.0, 0);
@@ -158,9 +158,6 @@ function init(targetCanvas) {
   buildAtmospherics();
 
   window.addEventListener('resize', onResize);
-  window.addEventListener('slidechange', (e) => {
-    if (e.detail.index === CONFIG.slideIndex) onResize();
-  });
 }
 
 /* ============================ LIGHTING ============================ */
@@ -199,7 +196,7 @@ function setupLights() {
 function buildGround() {
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(120, 60),
-    new THREE.MeshStandardMaterial({ color: 0xeae3d0, roughness: 1, metalness: 0 })
+    new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 1, metalness: 0 })
   );
   ground.rotation.x = -Math.PI / 2;
   ground.position.y = -0.01;
@@ -336,12 +333,12 @@ function buildPlatform() {
   // Yellow handrails along the deck back
   addRailing(-7.2, 8.5, 3.45, -1.4);
 
-  // Main access staircase — rises from ground level up to deck top. Placed
-  // at z=2.4 so the top tread sits *just in front* of the deck face
-  // (deck front edge is z=2.2): you climb the stairs and step from the top
-  // tread (y≈3.32) onto the deck top (y≈3.325) — basically flush. The
-  // railing gap at x≈[-0.7, 0.7] lets you walk into the deck interior.
-  addStaircase(-3.6, 2.4, 0.45, 3.45, 3.6, 1);
+  // Main access staircase — runs PERPENDICULAR to the deck along the z-axis,
+  // ascending from the ground (foreground) up to the deck. Centered at x=0
+  // so the top tread lands inside the railing gap (x≈[-0.7, 0.7]). Bottom
+  // tread rests on the ground in front of the kerb; top tread lands inside
+  // the deck so the user steps straight onto the platform.
+  addStaircase(0, 6.0, 0, 3.45, 4.5);
 }
 
 function addRailing(x1, x2, baseY, z) {
@@ -1166,66 +1163,73 @@ function addTopPlatform(x, z, topY, vesselR) {
 }
 
 /* ============================ STAIRCASE ============================
- * Diagonal industrial staircase from ground (y=0.45) up to deck top
- * (y=3.45). Stringer beams on both sides, treads in between, and yellow
- * handrails. Placed in front of the deck so it reads as the main access
- * to the platform level.
+ * Perpendicular industrial staircase running along the z-axis: bottom rests
+ * on the ground in front of the platform; top tread lands inside the deck
+ * (z < 2.2) so the climber steps straight onto the platform through the
+ * railing gap. Built in a canonical local frame (stride along +x, rise
+ * along +y) then rotated 90° about Y so canonical +x becomes world -z.
  */
-function addStaircase(x, z, fromY, toY, runLength, dir = 1) {
-  // dir = +1: stairs ascend toward +x; -1: ascend toward -x
+function addStaircase(x, zBottom, fromY, toY, runLength) {
   const rise = toY - fromY;
   const steps = 10;
   const stepRun = runLength / steps;
   const stepRise = rise / steps;
 
+  const stair = new THREE.Group();
+
   // Stringer beams (left + right) — diagonal box
   const stringerLen = Math.hypot(runLength, rise);
-  const stringerAngle = Math.atan2(rise, runLength * dir);
+  const stringerAngle = Math.atan2(rise, runLength);
   for (const dz of [-0.45, 0.45]) {
     const s = new THREE.Mesh(
       new THREE.BoxGeometry(stringerLen, 0.16, 0.08),
       MAT.deckSteel
     );
-    s.position.set(x + (dir * runLength) / 2, (fromY + toY) / 2, z + dz);
+    s.position.set(runLength / 2, rise / 2, dz);
     s.rotation.z = stringerAngle;
-    plant.add(s);
+    stair.add(s);
   }
 
   // Treads (one per step) — flat horizontal planks
   for (let i = 0; i < steps; i++) {
-    const tx = x + dir * (i * stepRun + stepRun / 2);
-    const ty = fromY + i * stepRise + stepRise / 2;
+    const tx = i * stepRun + stepRun / 2;
+    const ty = i * stepRise + stepRise / 2;
     const tread = new THREE.Mesh(
       new THREE.BoxGeometry(stepRun * 0.95, 0.04, 0.85),
       MAT.deckSteel
     );
-    tread.position.set(tx, ty, z);
+    tread.position.set(tx, ty, 0);
     tread.castShadow = true;
-    plant.add(tread);
+    stair.add(tread);
   }
 
   // Yellow handrail (top + posts) — both sides
   for (const dz of [-0.50, 0.50]) {
-    // Top rail (diagonal)
     const top = new THREE.Mesh(
       new THREE.CylinderGeometry(0.04, 0.04, stringerLen, 8),
       MAT.yellowRail
     );
-    top.position.set(x + (dir * runLength) / 2, (fromY + toY) / 2 + 0.95, z + dz);
+    top.position.set(runLength / 2, rise / 2 + 0.95, dz);
     top.rotation.z = stringerAngle + Math.PI / 2;
-    plant.add(top);
-    // Vertical posts at top, middle, bottom
+    stair.add(top);
     for (const t of [0.05, 0.5, 0.95]) {
-      const px = x + dir * runLength * t;
-      const py = fromY + rise * t;
+      const px = runLength * t;
+      const py = rise * t;
       const post = new THREE.Mesh(
         new THREE.CylinderGeometry(0.04, 0.04, 0.95, 8),
         MAT.yellowRail
       );
-      post.position.set(px, py + 0.475, z + dz);
-      plant.add(post);
+      post.position.set(px, py + 0.475, dz);
+      stair.add(post);
     }
   }
+
+  // Rotate so local +x stride direction becomes world -z (stair ascends
+  // toward the deck along -z). Translate origin (bottom of stairs) to the
+  // requested world position.
+  stair.rotation.y = Math.PI / 2;
+  stair.position.set(x, fromY, zBottom);
+  plant.add(stair);
 }
 
 /* ============================ LADDERS ============================ */
@@ -1414,6 +1418,14 @@ function addPump(x, y, z, rotY = 0) {
   );
   dischargePipe.position.set(0.77, 0.60, 0);
   group.add(dischargePipe);
+  // Blind flange cap on top — closes the pipe so it doesn't read as an
+  // open-ended floating pipe (front-row pumps have no plinth above them).
+  const dischargeCap = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.10, 0.10, 0.05, 16),
+    MAT.steelDark
+  );
+  dischargeCap.position.set(0.77, 0.90, 0);
+  group.add(dischargeCap);
 
   // Suction stub continuing backward from suction flange — short cylinder
   // that runs into the plinth wall behind the pump.
@@ -1564,6 +1576,7 @@ if (document.querySelector(`.slide[data-slide="9"]`)?.classList.contains('active
 
 /* ============================ EXTERNAL MOUNT API (slide 8 atlas) ============================ */
 function _disposeForMount() {
+  try { window.removeEventListener('resize', onResize); } catch (e) {}
   if (frameId !== null) {
     cancelAnimationFrame(frameId);
     frameId = null;

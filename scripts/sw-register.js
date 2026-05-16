@@ -27,6 +27,7 @@
   function finishLoading(skipAnimation) {
     const overlay = document.getElementById('app-loader');
     if (!overlay) return;
+    window.dispatchEvent(new Event('hcg-loader-done'));
     if (skipAnimation) {
       overlay.style.display = 'none';
     } else {
