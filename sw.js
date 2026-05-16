@@ -3,7 +3,7 @@
  * Tüm static asset'ler pre-cache edilir, HTML için network-first
  */
 
-const CACHE_VERSION = 'nte-v14-2026-05-16-cleanup';
+const CACHE_VERSION = 'nte-v16-2026-05-16-sharp';
 const CACHE_NAME = `nte-presentation-${CACHE_VERSION}`;
 const CACHE_PREFIX = 'nte-presentation-';
 

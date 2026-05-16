@@ -3179,141 +3179,423 @@
 .unlock-scene svg { width: 100%; height: 100%; display: block; }
 .unlock-step--gold .unlock-scene { color: var(--dna-gold-bright); }
 
-/* ----- KAVURMA SAHNESİ — ısı dalgaları + parçalanan kafes ----- */
-.u-scene-heat .u-heat {
-  transform-origin: bottom center;
-  opacity: 0;
-}
-.slide.active .u-scene-heat .u-heat--a { animation: u-heat-rise 2.4s var(--dna-ease-inout) infinite; animation-delay: 0s; }
-.slide.active .u-scene-heat .u-heat--b { animation: u-heat-rise 2.4s var(--dna-ease-inout) infinite; animation-delay: 0.4s; }
-.slide.active .u-scene-heat .u-heat--c { animation: u-heat-rise 2.4s var(--dna-ease-inout) infinite; animation-delay: 0.8s; }
-@keyframes u-heat-rise {
-  0%   { opacity: 0; transform: translateY(8px) scaleY(0.8); }
-  35%  { opacity: 0.7; }
-  100% { opacity: 0; transform: translateY(-10px) scaleY(1.1); }
+/* ----- KAVURMA SAHNESİ — alev · pirit kristali · çatlak · SO₂ · Au ----- */
+
+/* Alev şeritleri — alt zeminde sürekli titreşim */
+.u-flame { opacity: 0; transform-origin: bottom center; }
+.slide.active .u-flame--a { animation: u-flame-flicker 1.7s var(--dna-ease-inout) infinite; animation-delay: 0s;    }
+.slide.active .u-flame--b { animation: u-flame-flicker 1.5s var(--dna-ease-inout) infinite; animation-delay: 0.2s;  }
+.slide.active .u-flame--c { animation: u-flame-flicker 1.9s var(--dna-ease-inout) infinite; animation-delay: 0.05s; }
+.slide.active .u-flame--d { animation: u-flame-flicker 1.6s var(--dna-ease-inout) infinite; animation-delay: 0.35s; }
+.slide.active .u-flame--e { animation: u-flame-flicker 1.8s var(--dna-ease-inout) infinite; animation-delay: 0.5s;  }
+@keyframes u-flame-flicker {
+  0%   { opacity: 0.25; transform: translateY(3px)  scaleY(0.82); }
+  50%  { opacity: 0.9;  transform: translateY(-3px) scaleY(1.12); }
+  100% { opacity: 0.25; transform: translateY(3px)  scaleY(0.82); }
 }
 
-/* Kafes parçacıkları — slayt aktif olunca patlayıp geri toplanır */
-.u-scene-cage .u-cage-frag {
-  opacity: 0.7;
-  transform-origin: 70px 32px;
+/* Yan ısı dalgaları (subtle) */
+.u-scene-heat .u-heat { transform-origin: bottom center; opacity: 0; }
+.slide.active .u-scene-heat .u-heat--a { animation: u-heat-rise 3.2s var(--dna-ease-inout) infinite; animation-delay: 0s;   }
+.slide.active .u-scene-heat .u-heat--b { animation: u-heat-rise 3.2s var(--dna-ease-inout) infinite; animation-delay: 1.1s; }
+.slide.active .u-scene-heat .u-heat--c { animation: u-heat-rise 3.2s var(--dna-ease-inout) infinite; animation-delay: 2.0s; }
+@keyframes u-heat-rise {
+  0%   { opacity: 0;    transform: translateY(8px)  scaleY(0.8); }
+  40%  { opacity: 0.55; }
+  100% { opacity: 0;    transform: translateY(-14px) scaleY(1.1); }
 }
-.slide.active .u-cage-frag--l { animation: u-cage-pop-l 5.2s var(--dna-ease-inout) infinite; }
-.slide.active .u-cage-frag--r { animation: u-cage-pop-r 5.2s var(--dna-ease-inout) infinite; }
-.slide.active .u-cage-frag--t { animation: u-cage-pop-t 5.2s var(--dna-ease-inout) infinite; }
-.slide.active .u-cage-frag--b { animation: u-cage-pop-b 5.2s var(--dna-ease-inout) infinite; }
+
+/* Pirit kristali yüzleri — merkezden patlar, geri toplanır */
+.u-cage-frag { transform-origin: 110px 70px; }
+.slide.active .u-cage-frag--l { animation: u-cage-pop-l 5.6s var(--dna-ease-inout) infinite; }
+.slide.active .u-cage-frag--r { animation: u-cage-pop-r 5.6s var(--dna-ease-inout) infinite; }
+.slide.active .u-cage-frag--t { animation: u-cage-pop-t 5.6s var(--dna-ease-inout) infinite; }
+.slide.active .u-cage-frag--b { animation: u-cage-pop-b 5.6s var(--dna-ease-inout) infinite; }
 @keyframes u-cage-pop-l {
-  0%, 30%   { transform: translateX(0); opacity: 0.75; }
-  55%       { transform: translateX(-14px); opacity: 0.25; }
-  85%, 100% { transform: translateX(0); opacity: 0.75; }
+  0%, 28%   { transform: translate(0,0) rotate(0);             opacity: 0.85; }
+  56%       { transform: translate(-18px, 6px) rotate(-12deg); opacity: 0.18; }
+  85%, 100% { transform: translate(0,0) rotate(0);             opacity: 0.85; }
 }
 @keyframes u-cage-pop-r {
-  0%, 30%   { transform: translateX(0); opacity: 0.75; }
-  55%       { transform: translateX(14px); opacity: 0.25; }
-  85%, 100% { transform: translateX(0); opacity: 0.75; }
+  0%, 28%   { transform: translate(0,0) rotate(0);             opacity: 0.85; }
+  56%       { transform: translate(18px, 6px) rotate(12deg);   opacity: 0.18; }
+  85%, 100% { transform: translate(0,0) rotate(0);             opacity: 0.85; }
 }
 @keyframes u-cage-pop-t {
-  0%, 30%   { transform: translateY(0); opacity: 0.7; }
-  55%       { transform: translateY(-6px); opacity: 0.2; }
-  85%, 100% { transform: translateY(0); opacity: 0.7; }
+  0%, 28%   { transform: translateY(0);     opacity: 0.85; }
+  56%       { transform: translateY(-12px); opacity: 0.15; }
+  85%, 100% { transform: translateY(0);     opacity: 0.85; }
 }
 @keyframes u-cage-pop-b {
-  0%, 30%   { transform: translateY(0); opacity: 0.7; }
-  55%       { transform: translateY(6px); opacity: 0.2; }
-  85%, 100% { transform: translateY(0); opacity: 0.7; }
+  0%, 28%   { transform: translateY(0);    opacity: 0.85; }
+  56%       { transform: translateY(10px); opacity: 0.18; }
+  85%, 100% { transform: translateY(0);    opacity: 0.85; }
 }
 
-/* Altın çekirdek — kafes parçalanırken parlar */
-.u-au-dot, .u-au-core { transform-origin: 70px 32px; }
-.slide.active .u-au-dot {
-  animation: u-au-pulse 5.2s var(--dna-ease-inout) infinite;
-  filter: drop-shadow(0 0 4px rgba(245,215,110,0.6));
+/* Kafes içi atomlar — Fe sabit, S kavruldukça kaybolur */
+.u-atom { transform-origin: 110px 76px; }
+.slide.active .u-atom--fe { animation: u-atom-fe-fade 5.6s var(--dna-ease-inout) infinite; }
+.slide.active .u-atom--s  { animation: u-atom-s-fade  5.6s var(--dna-ease-inout) infinite; }
+@keyframes u-atom-fe-fade {
+  0%, 28%   { opacity: 0.9; }
+  56%       { opacity: 0.35; }
+  85%, 100% { opacity: 0.9; }
+}
+@keyframes u-atom-s-fade {
+  0%, 28%   { opacity: 0.95; transform: scale(1); }
+  56%       { opacity: 0;    transform: scale(0.3) translateY(-12px); }
+  85%, 100% { opacity: 0.95; transform: scale(1); }
+}
+
+/* Çatlaklar — patlamadan hemen önce belirir, sonra söner */
+.u-crack { opacity: 0; stroke-dasharray: 70; stroke-dashoffset: 70; }
+.slide.active .u-crack--1 { animation: u-crack-grow 5.6s var(--dna-ease-inout) infinite; animation-delay: 0s;   }
+.slide.active .u-crack--2 { animation: u-crack-grow 5.6s var(--dna-ease-inout) infinite; animation-delay: 0.2s; }
+@keyframes u-crack-grow {
+  0%, 28%   { opacity: 0;    stroke-dashoffset: 70; }
+  44%       { opacity: 0.9;  stroke-dashoffset: 0;  }
+  58%       { opacity: 0;    stroke-dashoffset: 0;  }
+  100%      { opacity: 0;    stroke-dashoffset: 70; }
+}
+
+/* SO₂ kıvrımları — kafes açıldıkça yükselir */
+.u-so2 { opacity: 0; transform-origin: bottom center; }
+.slide.active .u-so2--1 { animation: u-so2-rise 5.6s var(--dna-ease-inout) infinite; animation-delay: 0s;    }
+.slide.active .u-so2--2 { animation: u-so2-rise 5.6s var(--dna-ease-inout) infinite; animation-delay: 0.15s; }
+.slide.active .u-so2--3 { animation: u-so2-rise 5.6s var(--dna-ease-inout) infinite; animation-delay: 0.3s;  }
+@keyframes u-so2-rise {
+  0%, 28%   { opacity: 0;    transform: translateY(18px) scaleY(0.6); }
+  52%       { opacity: 0.7;  transform: translateY(-2px) scaleY(1);   }
+  75%       { opacity: 0.5;  transform: translateY(-14px) scaleY(1.12);}
+  100%      { opacity: 0;    transform: translateY(-26px) scaleY(1.2);}
+}
+.u-so2-lbl { opacity: 0; }
+.slide.active .u-so2-lbl--1 { animation: u-so2-lbl-rise 5.6s var(--dna-ease-inout) infinite; animation-delay: 0.45s; }
+.slide.active .u-so2-lbl--2 { animation: u-so2-lbl-rise 5.6s var(--dna-ease-inout) infinite; animation-delay: 0.75s; }
+@keyframes u-so2-lbl-rise {
+  0%, 32%   { opacity: 0;    transform: translateY(10px); }
+  50%       { opacity: 0.85; transform: translateY(0); }
+  68%       { opacity: 0.5;  transform: translateY(-10px); }
+  100%      { opacity: 0;    transform: translateY(-24px); }
+}
+
+/* Au merkezi — kafes patladıkça parlar */
+.u-au-dot, .u-au-core { transform-origin: 110px 74px; }
+.slide.active .u-au-dot--1 {
+  animation: u-au-pulse 5.6s var(--dna-ease-inout) infinite;
+  filter: drop-shadow(0 0 7px rgba(245,215,110,0.75));
+}
+.slide.active .u-au-dot--2 {
+  animation: u-au-pulse 5.6s var(--dna-ease-inout) infinite;
+  animation-delay: 0.15s;
+  filter: drop-shadow(0 0 5px rgba(245,215,110,0.65));
 }
 .slide.active .u-au-core {
-  animation: u-au-core-pulse 5.2s var(--dna-ease-inout) infinite;
+  animation: u-au-core-pulse 5.6s var(--dna-ease-inout) infinite;
 }
 @keyframes u-au-pulse {
-  0%, 30%   { transform: scale(0.9); opacity: 0.5; }
-  55%       { transform: scale(1.6); opacity: 1; }
-  85%, 100% { transform: scale(0.9); opacity: 0.5; }
+  0%, 28%   { transform: scale(0.5); opacity: 0.15; }
+  56%       { transform: scale(1.9); opacity: 1;    }
+  85%, 100% { transform: scale(0.5); opacity: 0.15; }
 }
 @keyframes u-au-core-pulse {
-  0%, 30%   { opacity: 0.5; }
-  55%       { opacity: 1; }
-  85%, 100% { opacity: 0.5; }
+  0%, 28%   { transform: scale(0.6); opacity: 0.3; }
+  56%       { transform: scale(1.3); opacity: 1;   }
+  85%, 100% { transform: scale(0.6); opacity: 0.3; }
+}
+
+/* Kıvılcımlar — kafes açıldığında çakar */
+.u-spk { opacity: 0; transform-origin: center; transform-box: fill-box; }
+.slide.active .u-spk--1 { animation: u-spark 5.6s var(--dna-ease-out) infinite; animation-delay: 0.42s; }
+.slide.active .u-spk--2 { animation: u-spark 5.6s var(--dna-ease-out) infinite; animation-delay: 0.55s; }
+.slide.active .u-spk--3 { animation: u-spark 5.6s var(--dna-ease-out) infinite; animation-delay: 0.68s; }
+.slide.active .u-spk--4 { animation: u-spark 5.6s var(--dna-ease-out) infinite; animation-delay: 0.80s; }
+@keyframes u-spark {
+  0%, 30%   { opacity: 0; transform: scale(0); }
+  45%       { opacity: 1; transform: scale(1.4); }
+  62%       { opacity: 0; transform: scale(0.5); }
+  100%      { opacity: 0; transform: scale(0.5); }
 }
 
 
-/* ----- CIL SAHNESİ — kabarcıklar + altın akışı + karbon kolonu ----- */
-.u-tank { transform-origin: 62px 56px; }
+/* ----- CIL SAHNESİ — gelişmiş: tank · pulp · CN⁻ · Au akışı · karbon kolonu ----- */
 
-/* Karıştırıcı sürekli döner gibi göstermek için sallanır */
+/* Dalga yüzeyi — iki katman zıt yönde sürüklenir */
+.u-wave { transform-box: fill-box; transform-origin: center; }
+.slide.active .u-wave--a { animation: u-wave-drift-a 6.5s ease-in-out infinite; }
+.slide.active .u-wave--b { animation: u-wave-drift-b 5.2s ease-in-out infinite; }
+@keyframes u-wave-drift-a {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(-12px); }
+}
+@keyframes u-wave-drift-b {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(10px); }
+}
+
+/* Pervane — yatay dönüş illüzyonu (scaleX 1 → 0 → -1) */
+.u-stirrer { transform-origin: 73px 76px; }
 .slide.active .u-stirrer {
-  transform-origin: 62px 20px;
-  animation: u-stir 1.6s linear infinite;
+  animation: u-stir-rotate 1.5s linear infinite;
 }
-@keyframes u-stir {
-  0%   { transform: scaleY(1); }
-  50%  { transform: scaleY(0.25); }
-  100% { transform: scaleY(1); }
+@keyframes u-stir-rotate {
+  0%   { transform: scaleX(1); }
+  25%  { transform: scaleX(0.08); }
+  50%  { transform: scaleX(-1); }
+  75%  { transform: scaleX(-0.08); }
+  100% { transform: scaleX(1); }
 }
 
-/* Kabarcıklar yukarı yükselir, kaybolur */
+/* Şaft minik salınım — gerçekçi titreşim hissi */
+.u-shaft { transform-origin: 73px 18px; }
+.slide.active .u-shaft {
+  animation: u-shaft-wobble 3s ease-in-out infinite;
+}
+@keyframes u-shaft-wobble {
+  0%, 100% { transform: rotate(-0.5deg); }
+  50%      { transform: rotate(0.5deg); }
+}
+
+/* Pulp / cevher parçacıkları — yavaş türbülans driftı */
+.u-ore { transform-box: fill-box; transform-origin: center; }
+.slide.active .u-ore--1  { animation: u-ore-drift 3.2s ease-in-out infinite; animation-delay: 0s;   }
+.slide.active .u-ore--2  { animation: u-ore-drift 3.8s ease-in-out infinite; animation-delay: 0.4s; }
+.slide.active .u-ore--3  { animation: u-ore-drift 3.4s ease-in-out infinite; animation-delay: 0.9s; }
+.slide.active .u-ore--4  { animation: u-ore-drift 3.6s ease-in-out infinite; animation-delay: 1.3s; }
+.slide.active .u-ore--5  { animation: u-ore-drift 4.0s ease-in-out infinite; animation-delay: 1.7s; }
+.slide.active .u-ore--6  { animation: u-ore-drift 3.5s ease-in-out infinite; animation-delay: 2.1s; }
+.slide.active .u-ore--7  { animation: u-ore-drift 3.7s ease-in-out infinite; animation-delay: 2.4s; }
+.slide.active .u-ore--8  { animation: u-ore-drift 4.2s ease-in-out infinite; animation-delay: 0.7s; }
+.slide.active .u-ore--9  { animation: u-ore-drift 3.9s ease-in-out infinite; animation-delay: 1.1s; }
+.slide.active .u-ore--10 { animation: u-ore-drift 3.3s ease-in-out infinite; animation-delay: 1.5s; }
+@keyframes u-ore-drift {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(3px, -2px); }
+}
+
+/* O₂ sparger — dipten mikro hava boncukları yükselir */
+.u-spg { opacity: 0; }
+.slide.active .u-spg--1 { animation: u-spg-rise 2.2s linear infinite; animation-delay: 0s; }
+.slide.active .u-spg--2 { animation: u-spg-rise 2.2s linear infinite; animation-delay: 0.55s; }
+.slide.active .u-spg--3 { animation: u-spg-rise 2.2s linear infinite; animation-delay: 1.1s; }
+.slide.active .u-spg--4 { animation: u-spg-rise 2.2s linear infinite; animation-delay: 1.65s; }
+@keyframes u-spg-rise {
+  0%   { transform: translateY(0); opacity: 0; }
+  18%  { opacity: 0.65; }
+  100% { transform: translateY(-55px); opacity: 0; }
+}
+
+/* Ana kabarcıklar — daha derinden yükselir, scale büyür */
 .u-bubble { opacity: 0; transform-origin: center; }
-.slide.active .u-bubble--1 { animation: u-bubble-rise 2.6s var(--dna-ease-out) infinite; animation-delay: 0s; }
-.slide.active .u-bubble--2 { animation: u-bubble-rise 2.6s var(--dna-ease-out) infinite; animation-delay: 0.6s; }
-.slide.active .u-bubble--3 { animation: u-bubble-rise 2.6s var(--dna-ease-out) infinite; animation-delay: 1.1s; }
-.slide.active .u-bubble--4 { animation: u-bubble-rise 2.6s var(--dna-ease-out) infinite; animation-delay: 1.7s; }
+.slide.active .u-bubble--1 { animation: u-bubble-rise 2.8s var(--dna-ease-out) infinite; animation-delay: 0s;   }
+.slide.active .u-bubble--2 { animation: u-bubble-rise 3.2s var(--dna-ease-out) infinite; animation-delay: 0.4s; }
+.slide.active .u-bubble--3 { animation: u-bubble-rise 2.6s var(--dna-ease-out) infinite; animation-delay: 0.8s; }
+.slide.active .u-bubble--4 { animation: u-bubble-rise 3.4s var(--dna-ease-out) infinite; animation-delay: 1.2s; }
+.slide.active .u-bubble--5 { animation: u-bubble-rise 2.9s var(--dna-ease-out) infinite; animation-delay: 1.5s; }
+.slide.active .u-bubble--6 { animation: u-bubble-rise 3.6s var(--dna-ease-out) infinite; animation-delay: 1.9s; }
+.slide.active .u-bubble--7 { animation: u-bubble-rise 2.7s var(--dna-ease-out) infinite; animation-delay: 2.3s; }
+.slide.active .u-bubble--8 { animation: u-bubble-rise 3.1s var(--dna-ease-out) infinite; animation-delay: 0.6s; }
 @keyframes u-bubble-rise {
-  0%   { transform: translateY(0) scale(0.6); opacity: 0; }
-  20%  { opacity: 0.8; }
-  100% { transform: translateY(-28px) scale(1); opacity: 0; }
+  0%   { transform: translateY(0) scale(0.5); opacity: 0; }
+  15%  { opacity: 0.85; }
+  85%  { opacity: 0.55; }
+  100% { transform: translateY(-58px) scale(1.1); opacity: 0; }
 }
 
-/* Altın damlacıkları sağa doğru kayar (karbon kolonuna emilir) */
-.u-gold { opacity: 0; filter: drop-shadow(0 0 3px rgba(245,215,110,0.55)); }
-.slide.active .u-gold--1 { animation: u-gold-flow 3.4s var(--dna-ease-inout) infinite; animation-delay: 0s; }
-.slide.active .u-gold--2 { animation: u-gold-flow 3.4s var(--dna-ease-inout) infinite; animation-delay: 0.8s; }
-.slide.active .u-gold--3 { animation: u-gold-flow 3.4s var(--dna-ease-inout) infinite; animation-delay: 1.6s; }
+/* CN⁻ ligand jetonları — yüzer, Au'ya bağlanırken sönümlenir */
+.u-cn { opacity: 0; }
+.slide.active .u-cn--1 { animation: u-cn-bind 5.4s ease-in-out infinite; animation-delay: 0.2s; }
+.slide.active .u-cn--2 { animation: u-cn-bind 5.4s ease-in-out infinite; animation-delay: 1.6s; }
+.slide.active .u-cn--3 { animation: u-cn-bind 5.4s ease-in-out infinite; animation-delay: 2.9s; }
+.slide.active .u-cn--4 { animation: u-cn-bind 5.4s ease-in-out infinite; animation-delay: 4.1s; }
+@keyframes u-cn-bind {
+  0%, 4%   { transform: translateY(2px); opacity: 0; }
+  22%      { opacity: 0.75; }
+  60%      { opacity: 0.5; }
+  100%     { transform: translateY(-6px); opacity: 0; }
+}
+
+/* Au kompleksleri — likit içinde parlar, sağa doğru kayıp boruya yönelir */
+.u-gold { opacity: 0; filter: drop-shadow(0 0 5px rgba(245,215,110,0.7)); }
+.slide.active .u-gold--1 { animation: u-gold-flow 4.4s var(--dna-ease-inout) infinite; animation-delay: 0s;   }
+.slide.active .u-gold--2 { animation: u-gold-flow 4.4s var(--dna-ease-inout) infinite; animation-delay: 1.1s; }
+.slide.active .u-gold--3 { animation: u-gold-flow 4.4s var(--dna-ease-inout) infinite; animation-delay: 2.2s; }
+.slide.active .u-gold--4 { animation: u-gold-flow 4.4s var(--dna-ease-inout) infinite; animation-delay: 3.3s; }
 @keyframes u-gold-flow {
-  0%   { transform: translateX(0); opacity: 0; }
-  15%  { opacity: 0.9; }
-  70%  { opacity: 0.9; }
-  100% { transform: translateX(46px); opacity: 0; }
+  0%   { transform: translate(0, 0) scale(0.85); opacity: 0; }
+  12%  { transform: translate(2px, -1px) scale(1); opacity: 0.85; }
+  55%  { transform: translate(40px, -6px) scale(1.05); opacity: 0.95; }
+  82%  { transform: translate(72px, -14px) scale(0.7); opacity: 0.6; }
+  100% { transform: translate(86px, -20px) scale(0.4); opacity: 0; }
 }
 
-/* Karbon kolonu — emilim sırasında subtle "şarj" parlaması */
-.slide.active .u-carbon {
-  animation: u-carbon-charge 3.4s var(--dna-ease-inout) infinite;
+/* Boru akış göstergesi — kesikli çizgi yürür */
+.slide.active .u-pipe-flow {
+  animation: u-pipe-march 1.4s linear infinite;
+}
+@keyframes u-pipe-march {
+  0%   { stroke-dashoffset: 15; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* Au teslim patlaması — kolon girişinde her dalgada parlar */
+.u-au-burst { transform-origin: 160px 30px; }
+.slide.active .u-au-burst--a { animation: u-au-burst-a 4.4s ease-out infinite; animation-delay: 0.6s; }
+.slide.active .u-au-burst--b { animation: u-au-burst-b 4.4s ease-out infinite; animation-delay: 0.6s; }
+@keyframes u-au-burst-a {
+  0%   { transform: scale(0.4); opacity: 0; }
+  10%  { transform: scale(1.4); opacity: 0.85; }
+  35%  { transform: scale(1.2); opacity: 0; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+@keyframes u-au-burst-b {
+  0%   { transform: scale(0.4); opacity: 0; }
+  10%  { transform: scale(1.0); opacity: 1; }
+  30%  { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+/* Karbon kolonu Au doygunluğu — alttan yukarı dolan ışıltı */
+.u-carbon-fill { transform-origin: 177px 95px; transform: scaleY(0); }
+.slide.active .u-carbon-fill {
+  animation: u-carbon-load 8s var(--dna-ease-inout) infinite;
   animation-delay: 0.8s;
+}
+@keyframes u-carbon-load {
+  0%   { transform: scaleY(0); opacity: 0.4; }
+  60%  { transform: scaleY(0.85); opacity: 0.95; }
+  85%  { transform: scaleY(1); opacity: 0.7; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* Karbon kolonu dış konturu — emilim sırasında çok hafif "şarj" parlaması */
+.slide.active .u-carbon {
+  animation: u-carbon-charge 4.4s var(--dna-ease-inout) infinite;
+  animation-delay: 0.9s;
 }
 @keyframes u-carbon-charge {
   0%, 60%  { fill: rgba(255,255,255,0.04); }
-  80%      { fill: rgba(212,175,55,0.16); }
+  78%      { fill: rgba(245,215,110,0.10); }
   100%     { fill: rgba(255,255,255,0.04); }
 }
 
 
-/* ----- DORÉ SAHNESİ — külçe + ışık sweep + sparkle ----- */
-.u-shine {
-  transform: translateX(0);
+/* ----- DORÉ SAHNESİ — külçe + diyagonal sweep + yıldız parıltılar + aura + toz ----- */
+
+/* Nefes alan altın hale arkada — yumuşak büyüyüp küçülür */
+.r4-svgwrap--gold .u-aura {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0.0;
 }
-.slide.active .u-shine {
-  animation: u-shine-sweep 3.2s var(--dna-ease-inout) infinite;
+.slide.active .r4-svgwrap--gold .u-aura {
+  animation: u-aura-breath 4.4s var(--dna-ease-inout) infinite;
 }
-@keyframes u-shine-sweep {
-  0%   { transform: translateX(0); opacity: 0.55; }
-  100% { transform: translateX(180px); opacity: 0.55; }
+@keyframes u-aura-breath {
+  0%, 100% { opacity: 0.55; transform: scale(0.94); }
+  50%      { opacity: 0.95; transform: scale(1.06); }
 }
 
-.u-spk { opacity: 0; transform-origin: center; }
-.slide.active .u-spk--1 { animation: u-sparkle 2.4s var(--dna-ease-inout) infinite; animation-delay: 0.1s; }
-.slide.active .u-spk--2 { animation: u-sparkle 2.4s var(--dna-ease-inout) infinite; animation-delay: 0.7s; }
-.slide.active .u-spk--3 { animation: u-sparkle 2.4s var(--dna-ease-inout) infinite; animation-delay: 1.2s; }
-.slide.active .u-spk--4 { animation: u-sparkle 2.4s var(--dna-ease-inout) infinite; animation-delay: 1.6s; }
+/* Isı titreşimi — yeni dökülmüş külçe hissi */
+.r4-svgwrap--gold .u-shim { opacity: 0; }
+.slide.active .r4-svgwrap--gold .u-shim--a { animation: u-shim 3.8s var(--dna-ease-inout) infinite; animation-delay: 0.0s; }
+.slide.active .r4-svgwrap--gold .u-shim--b { animation: u-shim 3.8s var(--dna-ease-inout) infinite; animation-delay: 0.6s; }
+.slide.active .r4-svgwrap--gold .u-shim--c { animation: u-shim 3.8s var(--dna-ease-inout) infinite; animation-delay: 1.2s; }
+@keyframes u-shim {
+  0%   { opacity: 0; transform: translateY(4px); }
+  35%  { opacity: 0.55; }
+  70%  { opacity: 0.35; }
+  100% { opacity: 0; transform: translateY(-6px); }
+}
+
+/* Zemin yansıması — aurayla birlikte hafif solup parlar */
+.r4-svgwrap--gold .u-reflect {
+  transform-box: fill-box;
+  transform-origin: center top;
+}
+.slide.active .r4-svgwrap--gold .u-reflect {
+  animation: u-reflect-pulse 4.4s var(--dna-ease-inout) infinite;
+}
+@keyframes u-reflect-pulse {
+  0%, 100% { opacity: 0.30; transform: scaleY(0.92); }
+  50%      { opacity: 0.55; transform: scaleY(1.06); }
+}
+
+/* Diyagonal ışık sweep — pause + smooth pass */
+.r4-svgwrap--gold .u-shine {
+  transform: translateX(0) skewX(-18deg);
+  transform-box: fill-box;
+}
+.slide.active .r4-svgwrap--gold .u-shine {
+  animation: u-shine-sweep 4.6s cubic-bezier(0.65, 0.05, 0.35, 1) infinite;
+}
+@keyframes u-shine-sweep {
+  0%   { transform: translateX(0)     skewX(-18deg); opacity: 0; }
+  10%  { opacity: 0.85; }
+  55%  { opacity: 0.85; }
+  70%  { transform: translateX(210px) skewX(-18deg); opacity: 0; }
+  100% { transform: translateX(210px) skewX(-18deg); opacity: 0; }
+}
+
+/* 4-köşeli yıldız parıltılar — yanıp dönen */
+.r4-svgwrap--gold .u-spk {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.slide.active .r4-svgwrap--gold .u-spk--1 { animation: u-sparkle 2.8s var(--dna-ease-inout) infinite; animation-delay: 0.10s; }
+.slide.active .r4-svgwrap--gold .u-spk--2 { animation: u-sparkle 2.8s var(--dna-ease-inout) infinite; animation-delay: 0.55s; }
+.slide.active .r4-svgwrap--gold .u-spk--3 { animation: u-sparkle 2.8s var(--dna-ease-inout) infinite; animation-delay: 1.10s; }
+.slide.active .r4-svgwrap--gold .u-spk--4 { animation: u-sparkle 2.8s var(--dna-ease-inout) infinite; animation-delay: 1.55s; }
+.slide.active .r4-svgwrap--gold .u-spk--5 { animation: u-sparkle 2.8s var(--dna-ease-inout) infinite; animation-delay: 0.75s; }
+.slide.active .r4-svgwrap--gold .u-spk--6 { animation: u-sparkle 2.8s var(--dna-ease-inout) infinite; animation-delay: 2.00s; }
 @keyframes u-sparkle {
-  0%, 100% { opacity: 0; transform: scale(0.4); }
-  50%      { opacity: 1; transform: scale(1.4); }
+  0%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+  45%      { opacity: 1; transform: scale(1.55) rotate(45deg); }
+  55%      { opacity: 1; transform: scale(1.4) rotate(60deg); }
+  75%      { opacity: 0.2; transform: scale(0.6) rotate(90deg); }
+}
+
+/* Yukarı süzülen altın toz partikülleri — yumuşak yükseliş + sönüş */
+.r4-svgwrap--gold .u-dustp {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.slide.active .r4-svgwrap--gold .u-dustp--1 { animation: u-dust-rise 5.2s var(--dna-ease-out) infinite; animation-delay: 0.20s; }
+.slide.active .r4-svgwrap--gold .u-dustp--2 { animation: u-dust-rise 5.2s var(--dna-ease-out) infinite; animation-delay: 1.10s; }
+.slide.active .r4-svgwrap--gold .u-dustp--3 { animation: u-dust-rise 5.2s var(--dna-ease-out) infinite; animation-delay: 0.45s; }
+.slide.active .r4-svgwrap--gold .u-dustp--4 { animation: u-dust-rise 5.2s var(--dna-ease-out) infinite; animation-delay: 2.10s; }
+.slide.active .r4-svgwrap--gold .u-dustp--5 { animation: u-dust-rise 5.2s var(--dna-ease-out) infinite; animation-delay: 1.65s; }
+@keyframes u-dust-rise {
+  0%   { opacity: 0;    transform: translate(0, 0)      scale(0.7); }
+  18%  { opacity: 0.85; }
+  60%  { opacity: 0.75; transform: translate(-2px, -16px) scale(1.05); }
+  100% { opacity: 0;    transform: translate(2px, -28px) scale(0.6); }
+}
+
+/* Külçeye hafif yüzme — ağırlık + nefes hissi */
+.r4-svgwrap--gold .u-ingot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.slide.active .r4-svgwrap--gold .u-ingot {
+  animation: u-ingot-float 5.4s var(--dna-ease-inout) infinite;
+}
+@keyframes u-ingot-float {
+  0%, 100% { transform: translateY(0)    scale(1);     }
+  50%      { transform: translateY(-0.6px) scale(1.005); }
+}
+
+/* Drop shadow külçe ile senkron — yükselince hafif yayılır */
+.slide.active .r4-svgwrap--gold .u-ingot__shadow {
+  animation: u-ingot-shadow 5.4s var(--dna-ease-inout) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes u-ingot-shadow {
+  0%, 100% { transform: scale(1)    translateY(0);    opacity: 0.55; }
+  50%      { transform: scale(1.04) translateY(0.5px); opacity: 0.40; }
 }
 
 
@@ -3672,18 +3954,38 @@
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   .slide.active .u-scene-heat .u-heat,
+  .slide.active .u-flame,
   .slide.active .u-cage-frag--l,
   .slide.active .u-cage-frag--r,
   .slide.active .u-cage-frag--t,
   .slide.active .u-cage-frag--b,
+  .slide.active .u-atom--fe,
+  .slide.active .u-atom--s,
+  .slide.active .u-crack,
+  .slide.active .u-so2,
+  .slide.active .u-so2-lbl,
   .slide.active .u-au-dot,
   .slide.active .u-au-core,
   .slide.active .u-stirrer,
+  .slide.active .u-shaft,
+  .slide.active .u-wave,
+  .slide.active .u-ore,
+  .slide.active .u-spg,
   .slide.active .u-bubble,
+  .slide.active .u-cn,
   .slide.active .u-gold,
+  .slide.active .u-pipe-flow,
+  .slide.active .u-au-burst,
+  .slide.active .u-carbon-fill,
   .slide.active .u-carbon,
   .slide.active .u-shine,
   .slide.active .u-spk,
+  .slide.active .u-aura,
+  .slide.active .u-shim,
+  .slide.active .u-reflect,
+  .slide.active .u-dustp,
+  .slide.active .u-ingot,
+  .slide.active .u-ingot__shadow,
   .slide.active .unlock-arrow__particle,
   .slide.active .unlock-step::before,
   .slide.active .u-seal-shackle {
@@ -3691,8 +3993,19 @@
   }
   /* Statik son durum: parçacıklar görünmez kalmasın diye sabit opacity */
   .u-scene-heat .u-heat,
+  .u-flame,
   .u-bubble, .u-gold, .u-spk { opacity: 0.6; }
+  .u-cn { opacity: 0.55; }
+  .u-spg { opacity: 0; }
+  .u-carbon-fill { transform: scaleY(0.6); opacity: 0.7; }
+  .r4-svgwrap--gold .u-aura    { opacity: 0.8; }
+  .r4-svgwrap--gold .u-reflect { opacity: 0.45; }
+  .r4-svgwrap--gold .u-dustp   { opacity: 0.7; }
+  .r4-svgwrap--gold .u-shim    { opacity: 0.4; }
   .u-au-dot { opacity: 0.9; }
+  .u-so2 { opacity: 0.4; }
+  .u-so2-lbl { opacity: 0.6; }
+  .u-crack { opacity: 0.7; stroke-dashoffset: 0; }
   .unlock-arrow__particle:nth-child(2) { opacity: 1; left: 50%; transform: translate(-50%, -50%); }
   .unlock-arrow__particle:nth-child(3),
   .unlock-arrow__particle:nth-child(4) { opacity: 0; }
@@ -4088,13 +4401,11 @@
   background-size: cover;
   background-position: center;
   opacity: 0;
-  transform: scale(1.02);
-  filter: blur(2.5px) saturate(0.92) brightness(0.9);
+  filter: brightness(0.85);
   transition:
     opacity 750ms cubic-bezier(0.4, 0, 0.2, 1),
-    transform 1800ms cubic-bezier(0.22, 1, 0.36, 1),
     filter 750ms ease;
-  will-change: opacity, transform;
+  will-change: opacity;
 }
 .micro-slide[data-step="0"] .micro-bg__img[data-bg="rock"],
 .micro-slide[data-step="1"] .micro-bg__img[data-bg="micro"],
@@ -4103,11 +4414,10 @@
 .micro-slide[data-step="4"] .micro-bg__img[data-bg="quartz"],
 .micro-slide[data-step="5"] .micro-bg__img[data-bg="quartz"] {
   opacity: 1;
-  transform: scale(1.06);
 }
-/* Klimaks: arka planı tamamen söndür, donut tek başına sahnede */
+/* Klimaks: arka planı koyulaştır, donut tek başına sahnede */
 .micro-slide[data-step="5"] .micro-bg__img {
-  filter: blur(6px) saturate(0.7) brightness(0.5);
+  filter: brightness(0.5);
 }
 
 .micro-bg__overlay {
@@ -4522,7 +4832,6 @@
   .micro-slide[data-step="5"] .micro-yield__ring { animation: none; --mp: var(--p); }
   .micro-slide[data-step="5"] .micro-yield__tick::after { opacity: 1; animation: none; }
 }
-
 
 /* ============================================================
    SLIDE 04 — REAKSİYON SAHNELERİ (yeni tasarım)
@@ -5694,7 +6003,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(120px, 18vh, 180px) clamp(32px, 5vw, 80px) clamp(48px, 7vh, 80px);
+  padding: clamp(96px, 14vh, 150px) clamp(32px, 5vw, 80px) clamp(64px, 9vh, 100px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 600ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -5708,6 +6017,13 @@
 }
 
 /* --- Sahne 0: Açılış sorusu ------------------------------------- */
+.s7-question-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px, 2.6vh, 32px);
+  text-align: center;
+}
 .s7-question {
   margin: 0;
   font-family: var(--dna-font);
@@ -5716,7 +6032,6 @@
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--dna-text);
-  text-align: center;
   max-width: min(1100px, 92vw);
   text-shadow: 0 3px 28px rgba(0,0,0,0.7);
 }
@@ -5726,14 +6041,39 @@
   font-style: italic;
   font-weight: var(--dna-w-semi);
 }
+.s7-question__sub {
+  margin: 0;
+  font-family: var(--dna-font);
+  font-size: clamp(16px, 1.55vw, 22px);
+  font-weight: var(--dna-w-regular);
+  letter-spacing: 0.02em;
+  color: var(--dna-text-2);
+  text-shadow: 0 2px 14px rgba(0,0,0,0.6);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.s7-slide[data-step="0"] .s7-question__sub {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 420ms;
+}
+.s7-question__sub strong {
+  font-weight: var(--dna-w-semi);
+  font-style: italic;
+  color: var(--dna-gold-bright);
+  letter-spacing: 0;
+}
 
-/* --- Sahne 1+2: Klasik vs NTE karşılaştırma --------------------- */
+/* --- Sahne 1+2: Klasik vs NTE karşılaştırma (yığın silüetleri) -- */
 .s7-compare {
   display: grid;
-  grid-template-columns: 1fr 1.25fr;
-  gap: clamp(32px, 5vw, 88px);
-  align-items: center;
-  max-width: min(1280px, 94vw);
+  grid-template-columns: 1fr 1.35fr;
+  gap: clamp(40px, 6vw, 96px);
+  align-items: end;
+  max-width: min(1320px, 95vw);
   width: 100%;
 }
 .s7-compare-col {
@@ -5741,16 +6081,15 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: clamp(12px, 1.4vh, 20px);
-  padding: clamp(20px, 2.5vh, 32px) clamp(16px, 2vw, 28px);
-  border-radius: 4px;
+  gap: clamp(14px, 1.6vh, 22px);
+  padding: clamp(8px, 1vh, 16px) clamp(12px, 1.8vw, 24px);
   transition: opacity 500ms ease;
 }
 .s7-compare-col--classic {
-  opacity: 0.55;
+  opacity: 0.5;
 }
 .s7-slide[data-step="2"] .s7-compare-col--classic {
-  opacity: 0.35;
+  opacity: 0.32;
 }
 .s7-compare-col__label {
   font-family: var(--dna-font-mono);
@@ -5763,35 +6102,36 @@
 .s7-compare-col--ours .s7-compare-col__label {
   color: var(--dna-gold-bright);
 }
-.s7-drop-wrap {
+
+/* Yığın silüeti */
+.s7-heap-wrap {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  min-height: 160px;
+  width: 100%;
 }
-.s7-drop-wrap--sm { min-height: 60px; }
-.s7-drop-wrap--xl { min-height: 160px; }
-.s7-drop {
+.s7-heap-wrap--sm {
+  height: clamp(60px, 9vh, 100px);
+}
+.s7-heap-wrap--xl {
+  height: clamp(150px, 24vh, 240px);
+}
+.s7-heap {
   display: block;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
 }
-.s7-drop--sm {
-  width: 36px;
-  height: 45px;
-  color: var(--dna-text-3);
+.s7-heap--sm {
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.45));
 }
-.s7-drop--xl {
-  width: 130px;
-  height: 162px;
-  filter: drop-shadow(0 6px 24px rgba(212,175,55,0.35));
+.s7-heap--xl {
+  filter: drop-shadow(0 14px 36px rgba(212,175,55,0.30));
 }
-.s7-drop--ag {
-  width: 26px;
-  height: 32px;
-  filter: drop-shadow(0 2px 8px rgba(220,220,228,0.35));
-}
+
 .s7-compare-col__value {
   font-family: var(--dna-font);
-  font-size: clamp(48px, 6.5vw, 96px);
+  font-size: clamp(56px, 7.4vw, 108px);
   font-weight: var(--dna-w-bold);
   letter-spacing: -0.02em;
   line-height: 1;
@@ -5805,7 +6145,7 @@
 .s7-compare-col__unit {
   display: inline-block;
   margin-left: 6px;
-  font-size: 0.40em;
+  font-size: 0.36em;
   font-weight: var(--dna-w-medium);
   letter-spacing: 0.04em;
   color: var(--dna-text-3);
@@ -5814,7 +6154,7 @@
 .s7-compare-col__sub {
   margin: 0;
   font-family: var(--dna-font);
-  font-size: clamp(13px, 1.1vw, 16px);
+  font-size: clamp(13px, 1.15vw, 17px);
   color: var(--dna-text-2);
   letter-spacing: 0.01em;
 }
@@ -5826,188 +6166,271 @@
   color: var(--dna-gold-bright);
 }
 
-/* Gümüş bonusu (step 2'de pop-in) */
-.s7-silver {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: clamp(8px, 1vh, 16px);
-  padding: 10px 18px;
-  border: 1px solid rgba(220, 220, 228, 0.25);
+/* Gümüş bonusu (sayının yanına inline yapışır, step 2'de pop-in) */
+.s7-silver-inline {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-left: clamp(14px, 1.8vw, 28px);
+  padding: 4px 12px 5px;
+  border: 1px solid rgba(220, 220, 228, 0.30);
   border-radius: 999px;
-  background: rgba(20, 22, 28, 0.6);
-  opacity: 0;
-  transform: translateY(8px);
-  transition:
-    opacity 480ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 480ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.s7-slide[data-step="2"] .s7-silver {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 200ms;
-}
-.s7-silver__text {
+  background: rgba(20, 22, 28, 0.55);
   font-family: var(--dna-font);
-  font-size: clamp(14px, 1.2vw, 18px);
+  font-size: 0.32em;
   font-weight: var(--dna-w-medium);
-  color: var(--dna-text);
-  letter-spacing: 0.01em;
-}
-.s7-silver__text strong {
-  font-weight: var(--dna-w-bold);
+  letter-spacing: 0.02em;
   color: #e8e8ee;
-}
-.s7-silver__sub {
-  display: inline-block;
-  margin-left: 8px;
-  color: var(--dna-text-3);
-  font-style: italic;
-  font-size: 0.85em;
-}
-
-/* --- Sahne 3: Gelir akışı --------------------------------------- */
-.s7-rev {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(14px, 2vh, 24px);
-  text-align: center;
-}
-.s7-rev__row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  white-space: nowrap;
+  vertical-align: middle;
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateX(-8px) scale(0.92);
   transition:
     opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.s7-rev__row--input {
-  flex-direction: row;
-  gap: 16px;
-}
-.s7-slide[data-step="3"] .s7-rev__row { opacity: 1; transform: translateY(0); }
-.s7-slide[data-step="3"] .s7-rev__row:nth-of-type(1) { transition-delay: 180ms; }
-.s7-slide[data-step="3"] .s7-rev__row:nth-of-type(2) { transition-delay: 380ms; }
-.s7-slide[data-step="3"] .s7-rev__row:nth-of-type(3) { transition-delay: 580ms; }
-
-.s7-rev__arrow {
-  font-size: 28px;
-  color: var(--dna-text-3);
-  opacity: 0;
-  transition: opacity 400ms ease;
-}
-.s7-slide[data-step="3"] .s7-rev__arrow { opacity: 0.6; }
-.s7-slide[data-step="3"] .s7-rev__arrow:nth-of-type(1) { transition-delay: 280ms; }
-.s7-slide[data-step="3"] .s7-rev__arrow:nth-of-type(2) { transition-delay: 480ms; }
-
-.s7-rev__chip {
-  display: inline-block;
-  padding: 10px 22px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 999px;
-  font-family: var(--dna-font);
-  font-size: clamp(16px, 1.6vw, 22px);
-  font-weight: var(--dna-w-medium);
-  color: var(--dna-text);
-  background: rgba(20, 22, 28, 0.55);
-}
-.s7-rev__plus {
-  font-size: 22px;
-  color: var(--dna-text-3);
-  align-self: center;
-}
-.s7-rev__big {
-  font-family: var(--dna-font);
-  font-size: clamp(56px, 7vw, 110px);
+.s7-silver-inline strong {
   font-weight: var(--dna-w-bold);
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--dna-text);
+  color: #f2f2f6;
 }
-.s7-rev__big--final {
-  font-size: clamp(72px, 9vw, 140px);
-  text-shadow: 0 4px 32px rgba(212, 175, 55, 0.35);
-}
-.s7-rev__unit {
-  display: inline-block;
-  margin-left: 6px;
-  font-size: 0.42em;
-  font-weight: var(--dna-w-medium);
+.s7-silver-inline__unit {
+  margin-left: 3px;
   color: var(--dna-text-3);
-  vertical-align: middle;
+  letter-spacing: 0.05em;
 }
-.s7-rev__label {
+.s7-slide[data-step="2"] .s7-silver-inline {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  transition-delay: 220ms;
+}
+
+/* --- Sahne 3: Gelir akışı (dev sayı + tek cümle) ---------------- */
+.s7-rev {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(12px, 2vh, 22px);
+  text-align: center;
+}
+.s7-rev__hero-label {
   font-family: var(--dna-font-mono);
   font-size: 12px;
-  font-weight: var(--dna-w-medium);
-  letter-spacing: 0.22em;
+  font-weight: var(--dna-w-semi);
+  letter-spacing: 0.32em;
   text-transform: uppercase;
+  color: var(--dna-gold-bright);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 480ms ease,
+    transform 480ms ease;
+}
+.s7-slide[data-step="3"] .s7-rev__hero-label {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 80ms;
+}
+.s7-rev__hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.s7-rev__hero-num {
+  display: inline-block;
+  font-family: var(--dna-font);
+  font-size: clamp(96px, 14vw, 220px);
+  font-weight: var(--dna-w-bold);
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  text-shadow: 0 6px 56px rgba(212, 175, 55, 0.40);
+  opacity: 0;
+  transform: scale(1.35);
+  transform-origin: 50% 60%;
+  transition:
+    opacity 480ms ease,
+    transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.s7-slide[data-step="3"] .s7-rev__hero-num {
+  opacity: 1;
+  transform: scale(1);
+  transition-delay: 220ms;
+}
+.s7-rev__hero-unit {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.40em;
+  font-weight: var(--dna-w-medium);
+  color: var(--dna-text-2);
+  letter-spacing: 0;
+  vertical-align: middle;
+}
+.s7-rev__cap {
+  margin: 0;
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(8px, 1vw, 14px);
+  font-family: var(--dna-font);
+  font-size: clamp(15px, 1.4vw, 21px);
+  font-weight: var(--dna-w-regular);
+  color: var(--dna-text-2);
+  letter-spacing: 0.01em;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 560ms ease,
+    transform 560ms ease;
+}
+.s7-slide[data-step="3"] .s7-rev__cap {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 820ms;
+}
+.s7-rev__cap-chip {
+  display: inline-block;
+  padding: 5px 14px;
+  border: 1px solid rgba(212, 175, 55, 0.30);
+  border-radius: 999px;
+  background: rgba(20, 22, 28, 0.55);
+  font-weight: var(--dna-w-medium);
+  color: var(--dna-text);
+}
+.s7-rev__cap-plus,
+.s7-rev__cap-minus,
+.s7-rev__cap-arrow {
+  color: var(--dna-text-3);
+  font-weight: var(--dna-w-medium);
+}
+.s7-rev__cap-arrow {
+  margin: 0 4px;
+  color: var(--dna-gold-bright);
+  opacity: 0.7;
+}
+.s7-rev__cap-segment {
+  font-weight: var(--dna-w-medium);
+  color: var(--dna-text);
+}
+.s7-rev__cap-segment strong {
+  font-weight: var(--dna-w-bold);
+  color: var(--dna-text);
+}
+.s7-rev__cap-segment--muted {
   color: var(--dna-text-3);
 }
-.s7-rev__label--final {
-  color: var(--dna-gold-bright);
+.s7-rev__cap-segment--muted strong {
+  color: var(--dna-text-2);
 }
 
-/* --- Sahne 4: ESG ----------------------------------------------- */
+/* --- Sahne 4: ESG (kart yok, sinematik 3-sütun satır) ----------- */
 .s7-esg {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(24px, 3vw, 56px);
-  max-width: min(1280px, 94vw);
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  gap: clamp(28px, 3.6vw, 64px);
+  max-width: min(1320px, 95vw);
   width: 100%;
 }
-.s7-esg-card {
+.s7-esg-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: clamp(12px, 1.6vh, 22px);
-  padding: clamp(20px, 2.5vh, 32px) clamp(18px, 2vw, 28px);
-  border: 1px solid rgba(120, 200, 150, 0.18);
-  border-radius: 4px;
-  background: rgba(8, 16, 12, 0.45);
+  gap: clamp(12px, 1.6vh, 20px);
+  padding: 0 clamp(8px, 1vw, 16px);
+  flex: 1 1 0;
+  max-width: 28ch;
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateY(14px);
   transition:
-    opacity 560ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.s7-slide[data-step="4"] .s7-esg-card { opacity: 1; transform: translateY(0); }
-.s7-slide[data-step="4"] .s7-esg-card:nth-of-type(1) { transition-delay: 180ms; }
-.s7-slide[data-step="4"] .s7-esg-card:nth-of-type(2) { transition-delay: 320ms; }
-.s7-slide[data-step="4"] .s7-esg-card:nth-of-type(3) { transition-delay: 460ms; }
+.s7-slide[data-step="4"] .s7-esg-item { opacity: 1; transform: translateY(0); }
+.s7-slide[data-step="4"] .s7-esg-item:nth-of-type(1) { transition-delay: 160ms; }
+.s7-slide[data-step="4"] .s7-esg-item:nth-of-type(3) { transition-delay: 320ms; }
+.s7-slide[data-step="4"] .s7-esg-item:nth-of-type(5) { transition-delay: 480ms; }
 
-.s7-esg-card__icon {
-  width: 56px;
-  height: 56px;
+.s7-esg-divider {
+  align-self: center;
+  width: 1px;
+  height: clamp(60px, 10vh, 110px);
+  background: linear-gradient(
+    180deg,
+    rgba(154, 217, 180, 0) 0%,
+    rgba(154, 217, 180, 0.28) 50%,
+    rgba(154, 217, 180, 0) 100%
+  );
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+.s7-slide[data-step="4"] .s7-esg-divider {
+  opacity: 1;
+  transition-delay: 360ms;
+}
+
+.s7-esg-item__icon {
+  width: clamp(44px, 4.4vw, 64px);
+  height: clamp(44px, 4.4vw, 64px);
   color: #9ad9b4;
   opacity: 0.92;
 }
-.s7-esg-card__title {
+.s7-esg-item__title {
   margin: 0;
   font-family: var(--dna-font-mono);
-  font-size: 12px;
+  font-size: clamp(11px, 0.95vw, 13px);
   font-weight: var(--dna-w-bold);
-  letter-spacing: 0.22em;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: #c0e8d2;
 }
-.s7-esg-card__desc {
+.s7-esg-item__desc {
   margin: 0;
   font-family: var(--dna-font);
-  font-size: clamp(14px, 1.2vw, 17px);
+  font-size: clamp(15px, 1.35vw, 20px);
   font-weight: var(--dna-w-regular);
-  line-height: 1.5;
+  line-height: 1.4;
   color: var(--dna-text-2);
-  max-width: 28ch;
+  letter-spacing: -0.005em;
 }
-.s7-esg-card__desc strong {
+.s7-esg-item__desc strong {
   font-weight: var(--dna-w-semi);
   color: var(--dna-text);
+}
+
+/* --- Sabit alt mikro-satır -------------------------------------- */
+.s7-microfooter {
+  position: absolute;
+  bottom: clamp(20px, 3vh, 36px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+  opacity: 0.55;
+}
+.s7-microfooter__text {
+  font-family: var(--dna-font-mono);
+  font-size: 10px;
+  font-weight: var(--dna-w-semi);
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  color: var(--dna-text-3);
+  white-space: nowrap;
+}
+.s7-microfooter__dot {
+  display: inline-block;
+  width: clamp(28px, 4vw, 56px);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0) 0%,
+    rgba(212, 175, 55, 0.45) 50%,
+    rgba(212, 175, 55, 0) 100%
+  );
 }
 
 /* --- Responsive -------------------------------------------------- */
@@ -6017,11 +6440,23 @@
     gap: 32px;
   }
   .s7-esg {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+  }
+  .s7-esg-divider {
+    width: clamp(80px, 30vw, 160px);
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(154, 217, 180, 0) 0%,
+      rgba(154, 217, 180, 0.28) 50%,
+      rgba(154, 217, 180, 0) 100%
+    );
   }
   .s7-stage {
-    padding-top: clamp(100px, 14vh, 140px);
+    padding-top: clamp(80px, 12vh, 120px);
+    padding-bottom: clamp(56px, 8vh, 80px);
   }
 }
 
@@ -6031,11 +6466,17 @@
   .s7-bg__overlay--esg,
   .s7-topline__line,
   .s7-stage,
-  .s7-silver,
-  .s7-rev__row,
-  .s7-rev__arrow,
-  .s7-esg-card {
+  .s7-question__sub,
+  .s7-silver-inline,
+  .s7-rev__hero-label,
+  .s7-rev__hero-num,
+  .s7-rev__cap,
+  .s7-esg-item,
+  .s7-esg-divider {
     transition-duration: 100ms !important;
+  }
+  .s7-rev__hero-num {
+    transform: scale(1) !important;
   }
 }
 

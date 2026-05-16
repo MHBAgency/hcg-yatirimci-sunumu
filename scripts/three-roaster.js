@@ -74,6 +74,23 @@ const MAT = {
   }),
 };
 
+/* Soft top-to-bottom industrial-illustration sky (canvas texture). */
+function makeSkyTexture() {
+  const c = document.createElement('canvas');
+  c.width = 16;
+  c.height = 256;
+  const ctx = c.getContext('2d');
+  const g = ctx.createLinearGradient(0, 0, 0, 256);
+  g.addColorStop(0.00, '#f5efde');   // pale sky
+  g.addColorStop(0.55, '#e6dec7');   // mid haze
+  g.addColorStop(1.00, '#c9c0a8');   // horizon dust
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 16, 256);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 /* ============================ INIT ============================ */
 function init(targetCanvas) {
   if (initialized) return;
@@ -99,8 +116,10 @@ function init(targetCanvas) {
   renderer.shadowMap.type = THREE.PCFShadowMap;
 
   scene = new THREE.Scene();
-  scene.background = null;
-  scene.fog = new THREE.FogExp2(0xece6d4, 0.006);
+  // Soft warm-beige sky matching the reference illustration (replaces the
+  // harsh black canvas background that made the smoke read as dark dots).
+  scene.background = new THREE.Color(0xe6dec7);
+  scene.fog = new THREE.FogExp2(0xdcd3bc, 0.010);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -209,23 +228,49 @@ function buildPlatform() {
   kerb.position.set(0, 0.09, 4.0);
   plant.add(kerb);
 
-  // Left plinth pedestal — taller block under the reactor
+  // Left plinth pedestal — low, wide concrete pad. The reactor sits on a
+  // steel-column support frame ABOVE this pad so its conical hopper hangs
+  // free in the open (matching reference).
   const leftPlinth = new THREE.Mesh(
-    new THREE.BoxGeometry(5.2, 0.7, 5.4),
+    new THREE.BoxGeometry(5.4, 0.30, 5.4),
     MAT.concrete
   );
-  leftPlinth.position.set(-11.3, 0.35 + 0.45, 0);
+  leftPlinth.position.set(-11.3, 0.45 + 0.15, 0);
   leftPlinth.receiveShadow = true;
   leftPlinth.castShadow = true;
   plant.add(leftPlinth);
 
-  // Left plinth — second stepped tier (slightly narrower, taller block on top)
-  const leftStep = new THREE.Mesh(
-    new THREE.BoxGeometry(3.6, 0.25, 4.2),
-    MAT.concreteDark
-  );
-  leftStep.position.set(-11.6, 0.7 + 0.45 + 0.125, 0);
-  plant.add(leftStep);
+  // Four steel support columns under reactor (frame the cone)
+  const reactorBaseY = 2.1;            // reactor body bottom Y
+  const columnTopY   = reactorBaseY;   // columns reach the body bottom
+  const columnBaseY  = 0.45 + 0.30;    // top of leftPlinth
+  const colH = columnTopY - columnBaseY;
+  const colOff = 1.45;                 // distance from reactor axis to column
+  for (const [cx, cz] of [[-colOff, -colOff], [colOff, -colOff], [-colOff, colOff], [colOff, colOff]]) {
+    const col = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, colH, 0.22),
+      MAT.deckSteel
+    );
+    col.position.set(-12.0 + cx, columnBaseY + colH / 2, cz);
+    col.castShadow = true;
+    plant.add(col);
+  }
+  // Horizontal ring beam at top of columns (front + back + sides) that the
+  // reactor body sits on — makes the support frame read as a built structure.
+  const ringBeamMat = MAT.deckSteel;
+  for (const [dx, dz, lx, lz] of [
+    [0, -colOff, 2 * colOff + 0.22, 0.18],
+    [0,  colOff, 2 * colOff + 0.22, 0.18],
+    [-colOff, 0, 0.18, 2 * colOff + 0.22],
+    [ colOff, 0, 0.18, 2 * colOff + 0.22],
+  ]) {
+    const beam = new THREE.Mesh(
+      new THREE.BoxGeometry(lx, 0.18, lz),
+      ringBeamMat
+    );
+    beam.position.set(-12.0 + dx, columnTopY - 0.09, dz);
+    plant.add(beam);
+  }
 
   // Right plinth — under absorption + acid tank (bigger, taller in reference)
   const rightPlinth = new THREE.Mesh(
@@ -244,15 +289,6 @@ function buildPlatform() {
   );
   acidPlinth.position.set(11.2, 0.7 + 0.45 + 0.15, 0);
   plant.add(acidPlinth);
-
-  // Centre concrete pad gap between left + right plinths (slightly recessed,
-  // creates the trench look in the reference)
-  const trenchKerb = new THREE.Mesh(
-    new THREE.BoxGeometry(15.6, 0.12, 0.25),
-    MAT.concreteDark
-  );
-  trenchKerb.position.set(-0.4, 0.06, 3.85);
-  plant.add(trenchKerb);
 
   // Steel deck spanning the middle (between left & right plinths) at
   // mid-height — holds cyclone/gas cooler/drying tower/converter.
@@ -299,6 +335,10 @@ function buildPlatform() {
   addRailing(-7.2, 8.5, 3.45, 1.4);
   // Yellow handrails along the deck back
   addRailing(-7.2, 8.5, 3.45, -1.4);
+
+  // Main access staircase — rises from ground level up to deck top, in
+  // front of the deck (between cyclone and gas-cooler positions).
+  addStaircase(-3.6, 3.2, 0.45, 3.45, 3.6, 1);
 }
 
 function addRailing(x1, x2, baseY, z) {
@@ -359,9 +399,13 @@ function buildVessels() {
   buildAcidTank(POS.acidTank);
 }
 
-/* 1. AKISKAN YATAK REAKTÖRÜ — big silver cylinder + cone bottom on left plinth */
+/* 1. AKISKAN YATAK REAKTÖRÜ — big silver cylinder + cone bottom on left plinth
+ * Now sits on a steel column support frame (see buildPlatform) so the
+ * conical bottom hopper hangs in the open. baseY must match
+ * `reactorBaseY` in buildPlatform.
+ */
 function buildReactor(x) {
-  const baseY = 0.7 + 0.45 + 0.25; // top of stepped left plinth
+  const baseY = 2.1; // top of column support frame
   // Main cylindrical body — wider/taller, dominant on left side
   const body = new THREE.Mesh(
     new THREE.CylinderGeometry(1.65, 1.65, 4.4, 40),
@@ -371,7 +415,17 @@ function buildReactor(x) {
   body.castShadow = true;
   plant.add(body);
 
-  // Rounded top dome
+  // Dark upper band — characteristic visible exposed section between body
+  // and dome (matches reference's darker top strip on the reactor).
+  const upperBand = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.66, 1.66, 0.55, 40),
+    MAT.steelDark
+  );
+  upperBand.position.set(x, baseY + 4.15, 0);
+  upperBand.castShadow = true;
+  plant.add(upperBand);
+
+  // Rounded top dome (sits ABOVE the dark band)
   const dome = new THREE.Mesh(
     new THREE.SphereGeometry(1.65, 36, 18, 0, Math.PI * 2, 0, Math.PI / 2.2),
     MAT.steel
@@ -379,6 +433,15 @@ function buildReactor(x) {
   dome.position.set(x, baseY + 4.4, 0);
   dome.castShadow = true;
   plant.add(dome);
+
+  // Vertical dark strip on front of reactor body (cable trough / conveyor
+  // chase visible in the reference illustration).
+  const frontStrip = new THREE.Mesh(
+    new THREE.BoxGeometry(0.18, 4.4, 0.05),
+    MAT.steelDark
+  );
+  frontStrip.position.set(x, baseY + 2.2, 1.65);
+  plant.add(frontStrip);
 
   // Conical bottom hopper — wider opening
   const cone = new THREE.Mesh(
@@ -432,24 +495,32 @@ function buildHeatBox(x) {
   box.castShadow = true;
   plant.add(box);
 
-  // Top hood — trapezoidal cap (wider top, narrower bottom inverted) using 4-sided
-  // cylinder. Reference shows a clear slanted hood above the grid.
+  // Top hood — tall slanted trapezoid (much more prominent in reference).
+  // 4-sided cylinder rotated so flat faces front/back/sides.
   const hood = new THREE.Mesh(
-    new THREE.CylinderGeometry(1.20, 1.55, 0.7, 4),
+    new THREE.CylinderGeometry(0.85, 1.80, 1.35, 4),
     MAT.steel
   );
   hood.rotation.y = Math.PI / 4;
-  hood.position.set(x, baseY + 5.75, 0);
+  hood.position.set(x, baseY + 6.10, 0);
   hood.castShadow = true;
   plant.add(hood);
 
   // Hood top flat lid
   const hoodLid = new THREE.Mesh(
-    new THREE.BoxGeometry(1.65, 0.12, 1.65),
+    new THREE.BoxGeometry(1.30, 0.14, 1.30),
     MAT.steelDark
   );
-  hoodLid.position.set(x, baseY + 6.16, 0);
+  hoodLid.position.set(x, baseY + 6.85, 0);
   plant.add(hoodLid);
+
+  // Small exhaust stub on top of the lid (ducting interface)
+  const hoodVent = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.30, 0.30, 0.45, 18),
+    MAT.steel
+  );
+  hoodVent.position.set(x, baseY + 7.15, 0);
+  plant.add(hoodVent);
 
   // Front-face grid panels — vertical fin look
   const fin = new THREE.MeshStandardMaterial({
@@ -540,7 +611,8 @@ function buildCyclone(x) {
   outlet.position.set(x, baseY + 2.95, 0);
   plant.add(outlet);
 
-  // Side tangential inlet (where yellow pipe enters)
+  // Side tangential inlet (where yellow pipe enters) + blind flange so it
+  // doesn't read as an orphan nozzle when no pipe is connected here.
   const inlet = new THREE.Mesh(
     new THREE.CylinderGeometry(0.28, 0.28, 0.8, 16),
     MAT.steel
@@ -548,6 +620,13 @@ function buildCyclone(x) {
   inlet.rotation.z = Math.PI / 2;
   inlet.position.set(x - 1.15, baseY + 2.2, 0);
   plant.add(inlet);
+  const inletFlange = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.36, 0.36, 0.08, 18),
+    MAT.steelDark
+  );
+  inletFlange.rotation.z = Math.PI / 2;
+  inletFlange.position.set(x - 1.55, baseY + 2.2, 0);
+  plant.add(inletFlange);
 }
 
 /* 4. GAZ SOĞUTUCU — domed-top cylindrical gas cooler */
@@ -578,7 +657,7 @@ function buildGasCooler(x) {
   bottom.position.set(x, baseY, 0);
   plant.add(bottom);
 
-  // Side stub for incoming yellow pipe at upper area
+  // Side stub + blind flange (manhole / spare inlet)
   const stub = new THREE.Mesh(
     new THREE.CylinderGeometry(0.28, 0.28, 0.6, 16),
     MAT.steel
@@ -586,6 +665,13 @@ function buildGasCooler(x) {
   stub.rotation.z = Math.PI / 2;
   stub.position.set(x - 1.05, baseY + 2.8, 0);
   plant.add(stub);
+  const stubFlange = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.38, 0.38, 0.08, 18),
+    MAT.steelDark
+  );
+  stubFlange.rotation.z = Math.PI / 2;
+  stubFlange.position.set(x - 1.35, baseY + 2.8, 0);
+  plant.add(stubFlange);
 
   // Top stub
   const topStub = new THREE.Mesh(
@@ -596,6 +682,9 @@ function buildGasCooler(x) {
   plant.add(topStub);
 
   addLadder(x + 0.9, baseY, 3.4, 0);
+
+  // Top access platform around the dome
+  addTopPlatform(x, 0, baseY + 3.4, 0.9);
 }
 
 /* 5. KURUTMA KULESİ — slim tower with green band */
@@ -670,7 +759,7 @@ function buildSlimTower(x, baseY, radius, bodyH, hasGreenBand) {
   topStub.position.set(x, baseY + bodyH + 0.5, 0);
   plant.add(topStub);
 
-  // Side inlet stub
+  // Side inlet stub + blind flange cap (not a free-floating nozzle)
   const sideStub = new THREE.Mesh(
     new THREE.CylinderGeometry(0.22, 0.22, 0.6, 16),
     MAT.steel
@@ -678,8 +767,26 @@ function buildSlimTower(x, baseY, radius, bodyH, hasGreenBand) {
   sideStub.rotation.z = Math.PI / 2;
   sideStub.position.set(x - radius - 0.18, baseY + bodyH * 0.78, 0);
   plant.add(sideStub);
+  // Blind flange — wider disc + bolt ring
+  const flangeOuter = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.32, 0.32, 0.08, 18),
+    MAT.steelDark
+  );
+  flangeOuter.rotation.z = Math.PI / 2;
+  flangeOuter.position.set(x - radius - 0.50, baseY + bodyH * 0.78, 0);
+  plant.add(flangeOuter);
+  const flangeCap = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.30, 0.30, 0.04, 18),
+    MAT.steel
+  );
+  flangeCap.rotation.z = Math.PI / 2;
+  flangeCap.position.set(x - radius - 0.55, baseY + bodyH * 0.78, 0);
+  plant.add(flangeCap);
 
   addLadder(x + radius + 0.02, baseY, bodyH, 0);
+
+  // Small access platform around the top of the tower
+  addTopPlatform(x, 0, baseY + bodyH, radius);
 }
 
 /* 7. ABSORPSİYON KULESİ — short squat tower on right plinth */
@@ -721,7 +828,7 @@ function buildAbsorber(x) {
     plant.add(ring);
   }
 
-  // Side inlet
+  // Side inlet + blind flange cap (absorber)
   const inlet = new THREE.Mesh(
     new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16),
     MAT.steel
@@ -729,6 +836,13 @@ function buildAbsorber(x) {
   inlet.rotation.z = Math.PI / 2;
   inlet.position.set(x - radius - 0.18, baseY + bodyH * 0.7, 0);
   plant.add(inlet);
+  const inletFlange = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.34, 0.34, 0.08, 18),
+    MAT.steelDark
+  );
+  inletFlange.rotation.z = Math.PI / 2;
+  inletFlange.position.set(x - radius - 0.45, baseY + bodyH * 0.7, 0);
+  plant.add(inletFlange);
 }
 
 /* 8. SÜLFÜRİK ASİT TANKI — tallest tower with green bands */
@@ -781,17 +895,39 @@ function buildAcidTank(x) {
     plant.add(ring);
   }
 
-  // Tall full-height ladder with safety cage hoops (signature visual)
-  addLadder(x + radius + 0.02, baseY, bodyH, 0);
-  // Safety hoops on the ladder
-  for (let i = 0; i < 9; i++) {
+  // Tall full-height ladder with proper safety cage (signature visual).
+  // Cage = full circular hoops centered on the ladder + 3 vertical rail bars
+  // that tie the hoops together. Hoops touch the tank surface so the cage
+  // reads as a built structure, not free-floating arcs.
+  const ladderX = x + radius + 0.02;
+  addLadder(ladderX, baseY, bodyH, 0);
+
+  const cageR    = 0.34;        // cage radius around ladder
+  const cageCx   = ladderX + 0.04;
+  const cageCz   = 0;
+  const cageSegs = 10;          // number of hoops up the ladder
+  const cageY0   = baseY + 0.7;
+  const cageY1   = baseY + bodyH - 0.3;
+  const dy       = (cageY1 - cageY0) / (cageSegs - 1);
+  for (let i = 0; i < cageSegs; i++) {
     const hoop = new THREE.Mesh(
-      new THREE.TorusGeometry(0.32, 0.022, 6, 18, Math.PI),
+      new THREE.TorusGeometry(cageR, 0.022, 6, 22),  // full ring
       MAT.yellowRail
     );
-    hoop.rotation.y = -Math.PI / 2;
-    hoop.position.set(x + radius + 0.3, baseY + 0.5 + i * 0.8, 0);
+    hoop.rotation.x = Math.PI / 2;
+    hoop.position.set(cageCx, cageY0 + i * dy, cageCz);
     plant.add(hoop);
+  }
+  // Three vertical rail bars (outer side, half-ring side, top/bottom)
+  for (const ang of [0, Math.PI * 0.33, -Math.PI * 0.33]) {
+    const railZ = Math.sin(ang) * cageR;
+    const railXoff = Math.cos(ang) * cageR;
+    const rail = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.022, 0.022, cageY1 - cageY0, 8),
+      MAT.yellowRail
+    );
+    rail.position.set(cageCx + railXoff, (cageY0 + cageY1) / 2, cageCz + railZ);
+    plant.add(rail);
   }
 
   // Top vent
@@ -802,14 +938,8 @@ function buildAcidTank(x) {
   vent.position.set(x, baseY + bodyH + 0.6, 0);
   plant.add(vent);
 
-  // Top side platform railing (small rectangle around the top dome)
-  const platRail = new THREE.Mesh(
-    new THREE.TorusGeometry(radius + 0.05, 0.025, 6, 36),
-    MAT.yellowRail
-  );
-  platRail.rotation.x = Math.PI / 2;
-  platRail.position.set(x, baseY + bodyH + 0.05, 0);
-  plant.add(platRail);
+  // Full access platform around the top dome (grating + rail + posts)
+  addTopPlatform(x, 0, baseY + bodyH, radius);
 }
 
 /* ============================ ROOF PIPING ============================
@@ -856,7 +986,7 @@ function buildRoofPiping() {
   //   converter:  baseY 3.32 + 4.7 + 0.5 ≈ 8.52
   //   absorber:   baseY 1.15 + 2.6 + dome 1.05 ≈ 4.80
   //   acid tank:  baseY 1.45 + 7.4 ≈ 8.85
-  arch(POS.reactor, 6.45, POS.box, 6.4, 7.55);
+  arch(POS.reactor, 7.20, POS.box, 6.4, 8.55);
   arch(POS.box, 6.4, POS.cyclone, 6.55, 7.55);
   arch(POS.cyclone, 6.55, POS.gasCool, 7.50, 8.30);
   arch(POS.gasCool, 7.50, POS.dryTower, 8.20, 8.95);
@@ -892,19 +1022,38 @@ function addQuarterElbow(px, py, pz, bendR, pipeR, dirX) {
 function buildDeckPiping() {
   const y = 1.6;
   const r = 0.28;
-  // Long horizontal yellow pipe across whole deck
-  addHorizPipe(POS.reactor + 1.6, POS.absorber - 1.0, y, 0, r);
+  // Long horizontal yellow pipe across whole deck — ends one elbow-radius
+  // short of the acid tank so we can terminate with a proper elbow + drop.
+  const elbR = 0.45;
+  const pipeEndX = POS.acidTank - 1.4;       // horizontal terminus
+  const dropX    = pipeEndX + elbR;          // elbow centre x
+  addHorizPipe(POS.reactor + 1.6, pipeEndX, y, 0, r);
 
-  // Tee-down to acid tank base
-  addHorizPipe(POS.absorber - 1.0, POS.acidTank - 1.4, y, 0, r);
+  // Elbow down at the acid-tank end (bends from +X horizontal into −Y vertical)
+  // Default torus arc is [0, π/2] in XY plane; for a horizontal-to-down bend
+  // on the +X-incoming side, we rotate so arc occupies [−π/2, 0].
+  const elbow = new THREE.Mesh(
+    new THREE.TorusGeometry(elbR, r, 10, 18, Math.PI / 2),
+    MAT.yellowPipe
+  );
+  elbow.position.set(dropX, y - elbR, 0);
+  elbow.rotation.z = -Math.PI / 2;           // arc occupies [-π/2, 0]
+  elbow.castShadow = true;
+  plant.add(elbow);
+
+  // Vertical drop into the acid tank base flange
+  addVertPipe(dropX, 0.85, y - elbR, 0, r);
+
+  // Short horizontal stub from drop into the acid tank wall (at base)
+  addHorizPipe(dropX, POS.acidTank - 1.32, 0.85, 0, r);
 
   // Pipe supports
-  for (let x = POS.reactor + 2; x < POS.acidTank - 1.5; x += 3.0) {
+  for (let x = POS.reactor + 2; x < pipeEndX - 0.3; x += 3.0) {
     addPipeSupport(x, y, 0);
   }
 
   // Animated flow marker along the long deck pipe
-  addFlow(POS.reactor + 1.6, POS.acidTank - 1.4, y, 0, r);
+  addFlow(POS.reactor + 1.6, pipeEndX, y, 0, r);
 }
 
 function addVertPipe(x, y1, y2, z, radius) {
@@ -975,6 +1124,107 @@ function addFlow(x1, x2, y, z, radius) {
   plant.add(fm);
 }
 
+/* ============================ TOP PLATFORM ============================
+ * Small circular access platform around the top of a tall vessel — grating
+ * ring (steel) + yellow circumferential rail + a few vertical posts.
+ */
+function addTopPlatform(x, z, topY, vesselR) {
+  const platR = vesselR + 0.42;
+  // Grating ring — thin disc with a hole in the middle, approximated as a
+  // short TorusGeometry of major radius = (vesselR + platR)/2.
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry((vesselR + platR) / 2, (platR - vesselR) / 2, 4, 36),
+    MAT.deckSteel
+  );
+  ring.rotation.x = Math.PI / 2;
+  ring.position.set(x, topY + 0.04, z);
+  ring.scale.y = 0.18; // flatten to a disc-like ring
+  plant.add(ring);
+
+  // Circumferential rail — full torus at rail height
+  const rail = new THREE.Mesh(
+    new THREE.TorusGeometry(platR, 0.025, 6, 40),
+    MAT.yellowRail
+  );
+  rail.rotation.x = Math.PI / 2;
+  rail.position.set(x, topY + 0.95, z);
+  plant.add(rail);
+
+  // 6 vertical posts around the ring
+  for (let i = 0; i < 6; i++) {
+    const ang = (i / 6) * Math.PI * 2;
+    const post = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.95, 8),
+      MAT.yellowRail
+    );
+    post.position.set(x + Math.cos(ang) * platR, topY + 0.475, z + Math.sin(ang) * platR);
+    plant.add(post);
+  }
+}
+
+/* ============================ STAIRCASE ============================
+ * Diagonal industrial staircase from ground (y=0.45) up to deck top
+ * (y=3.45). Stringer beams on both sides, treads in between, and yellow
+ * handrails. Placed in front of the deck so it reads as the main access
+ * to the platform level.
+ */
+function addStaircase(x, z, fromY, toY, runLength, dir = 1) {
+  // dir = +1: stairs ascend toward +x; -1: ascend toward -x
+  const rise = toY - fromY;
+  const steps = 10;
+  const stepRun = runLength / steps;
+  const stepRise = rise / steps;
+
+  // Stringer beams (left + right) — diagonal box
+  const stringerLen = Math.hypot(runLength, rise);
+  const stringerAngle = Math.atan2(rise, runLength * dir);
+  for (const dz of [-0.45, 0.45]) {
+    const s = new THREE.Mesh(
+      new THREE.BoxGeometry(stringerLen, 0.16, 0.08),
+      MAT.deckSteel
+    );
+    s.position.set(x + (dir * runLength) / 2, (fromY + toY) / 2, z + dz);
+    s.rotation.z = stringerAngle;
+    plant.add(s);
+  }
+
+  // Treads (one per step) — flat horizontal planks
+  for (let i = 0; i < steps; i++) {
+    const tx = x + dir * (i * stepRun + stepRun / 2);
+    const ty = fromY + i * stepRise + stepRise / 2;
+    const tread = new THREE.Mesh(
+      new THREE.BoxGeometry(stepRun * 0.95, 0.04, 0.85),
+      MAT.deckSteel
+    );
+    tread.position.set(tx, ty, z);
+    tread.castShadow = true;
+    plant.add(tread);
+  }
+
+  // Yellow handrail (top + posts) — both sides
+  for (const dz of [-0.50, 0.50]) {
+    // Top rail (diagonal)
+    const top = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, stringerLen, 8),
+      MAT.yellowRail
+    );
+    top.position.set(x + (dir * runLength) / 2, (fromY + toY) / 2 + 0.95, z + dz);
+    top.rotation.z = stringerAngle + Math.PI / 2;
+    plant.add(top);
+    // Vertical posts at top, middle, bottom
+    for (const t of [0.05, 0.5, 0.95]) {
+      const px = x + dir * runLength * t;
+      const py = fromY + rise * t;
+      const post = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.04, 0.95, 8),
+        MAT.yellowRail
+      );
+      post.position.set(px, py + 0.475, z + dz);
+      plant.add(post);
+    }
+  }
+}
+
 /* ============================ LADDERS ============================ */
 function addLadder(x, baseY, height, z) {
   const railMat = MAT.yellowRail;
@@ -1041,34 +1291,53 @@ function buildAuxiliaries() {
   cap2.position.set(-7.6, 1.0, 2.6);
   plant.add(cap2);
 
-  // Saddle supports for the drum
+  // Saddle supports for the drum — extend from ground UP to drum bottom so
+  // the drum visibly rests on its feet (not hovering above small blocks).
+  const drumBottomY = 1.0 - 0.55;  // drum y minus radius
+  const groundY     = 0.0;
+  const saddleH     = drumBottomY - groundY;
   for (const sx of [-5.4, -7.4]) {
-    const saddle = new THREE.Mesh(
-      new THREE.BoxGeometry(0.35, 0.5, 0.7),
+    // Concrete pier
+    const pier = new THREE.Mesh(
+      new THREE.BoxGeometry(0.55, saddleH, 0.9),
+      MAT.concreteDark
+    );
+    pier.position.set(sx, groundY + saddleH / 2, 2.6);
+    pier.castShadow = true;
+    pier.receiveShadow = true;
+    plant.add(pier);
+    // Steel saddle cap (curved-ish — a wide short block) on top
+    const cap = new THREE.Mesh(
+      new THREE.BoxGeometry(0.45, 0.08, 0.75),
       MAT.deckSteel
     );
-    saddle.position.set(sx, 0.7, 2.6);
-    plant.add(saddle);
+    cap.position.set(sx, drumBottomY + 0.04, 2.6);
+    plant.add(cap);
   }
 
-  // A small valve assembly near the deck centre (forward of converter)
-  const valveBody = new THREE.Mesh(
-    new THREE.SphereGeometry(0.18, 16, 12),
-    MAT.steelDark
-  );
-  valveBody.position.set(4.6, 2.2, 1.6);
-  plant.add(valveBody);
-  const valveHandle = new THREE.Mesh(
-    new THREE.TorusGeometry(0.18, 0.025, 6, 24),
-    new THREE.MeshStandardMaterial({ color: 0xc04444, roughness: 0.5, metalness: 0.3 })
-  );
-  valveHandle.position.set(4.6, 2.45, 1.6);
-  valveHandle.rotation.x = Math.PI / 2;
-  plant.add(valveHandle);
 }
 
 function addPump(x, y, z, rotY = 0) {
   const group = new THREE.Group();
+
+  // Concrete skid pad UNDER the pump — bolt the pump to a real foundation
+  // so it doesn't read as "pump dropped on the ground".
+  const skid = new THREE.Mesh(
+    new THREE.BoxGeometry(1.45, 0.18, 0.85),
+    MAT.concreteDark
+  );
+  skid.position.set(0.10, -0.58, 0);
+  skid.receiveShadow = true;
+  skid.castShadow = true;
+  group.add(skid);
+  // Steel base plate on top of skid (pump bolts into this)
+  const basePlate = new THREE.Mesh(
+    new THREE.BoxGeometry(1.30, 0.05, 0.72),
+    MAT.deckSteel
+  );
+  basePlate.position.set(0.10, -0.46, 0);
+  group.add(basePlate);
+
   // Blue motor body (horizontal cylinder)
   const body = new THREE.Mesh(
     new THREE.CylinderGeometry(0.32, 0.32, 0.9, 20),
@@ -1124,6 +1393,35 @@ function addPump(x, y, z, rotY = 0) {
   cap.position.x = -0.55;
   group.add(cap);
 
+  // Discharge elbow + vertical pipe up — pump head → rises and disappears
+  // into the plinth top above (i.e. into the process). Gives the pump a
+  // visible "destination" instead of an orphan flange in air.
+  const dischargeElbow = new THREE.Mesh(
+    new THREE.TorusGeometry(0.12, 0.06, 8, 14, Math.PI / 2),
+    MAT.steelDark
+  );
+  // Elbow centre sits 0.12 above the pump head top (y=0.32), bending the
+  // axial flow into a +Y vertical flow.
+  dischargeElbow.position.set(0.65, 0.32, 0);
+  dischargeElbow.rotation.z = Math.PI / 2;
+  group.add(dischargeElbow);
+  const dischargePipe = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.06, 0.06, 0.55, 14),
+    MAT.steelDark
+  );
+  dischargePipe.position.set(0.77, 0.60, 0);
+  group.add(dischargePipe);
+
+  // Suction stub continuing backward from suction flange — short cylinder
+  // that runs into the plinth wall behind the pump.
+  const suctionStub = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.10, 0.10, 0.35, 14),
+    MAT.steelDark
+  );
+  suctionStub.rotation.z = Math.PI / 2;
+  suctionStub.position.set(1.05, 0.0, 0);
+  group.add(suctionStub);
+
   group.position.set(x, y, z);
   group.rotation.y = rotY;
   plant.add(group);
@@ -1133,22 +1431,34 @@ function addPump(x, y, z, rotY = 0) {
  * Soft smoke wisps from acid tank vent + cyclone outlet
  */
 function buildAtmospherics() {
-  spawnSmoke(POS.acidTank, 9.45, 0, 6, 0xeeeeee, 0.5);
-  spawnSmoke(POS.cyclone, 6.85, 0, 4, 0xdadada, 0.3);
+  spawnSmoke(POS.acidTank, 9.45, 0, 4, 0xfafafa, 0.45);
+  spawnSmoke(POS.cyclone,  6.85, 0, 3, 0xe8e8e8, 0.35);
 }
 
 function spawnSmoke(x, y, z, count, color, baseScale) {
-  const mat = new THREE.MeshBasicMaterial({
-    color, transparent: true, opacity: 0.5, depthWrite: false,
-  });
   for (let i = 0; i < count; i++) {
-    const s = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 8), mat.clone());
-    s.position.set(x, y + i * 0.4, z);
+    // Per-particle material so each fades independently. Start fully
+    // transparent so the puff doesn't pop in as a dark dot before it
+    // rises and grows.
+    // Normal alpha blending — puffs are off-white over the beige sky so
+    // they read as subtle steam rather than glowing white dots.
+    const mat = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+    });
+    const s = new THREE.Mesh(new THREE.SphereGeometry(0.36, 14, 10), mat);
+    // Distribute particles along the lifecycle so the column is continuous
+    // rather than all puffs starting at y=0 together.
+    const stagger = i / count;
+    s.position.set(x, y + stagger * 4.0, z);
     s.userData = {
       baseX: x, baseY: y, baseZ: z,
-      offsetY: i * 0.4,
-      speed: 0.005 + Math.random() * 0.004,
-      scaleBase: baseScale + Math.random() * 0.15,
+      lifeT: stagger,                  // 0..1 across the lifecycle
+      speed: 0.0025 + Math.random() * 0.0015,
+      scaleBase: baseScale + Math.random() * 0.18,
+      jitterPhase: Math.random() * Math.PI * 2,
     };
     s.scale.setScalar(s.userData.scaleBase);
     smokeParticles.push(s);
@@ -1183,18 +1493,19 @@ function animate() {
     fm.material.emissiveIntensity = 0.6 + Math.sin(t * 5 + fm.userData.progress * 10) * 0.3;
   }
 
-  // Animate smoke wisps
+  // Animate smoke wisps — sinusoidal fade (0 → peak → 0) so puffs never
+  // appear as opaque dots. lifeT cycles 0..1; reset when complete.
   for (const s of smokeParticles) {
-    s.userData.offsetY += s.userData.speed;
-    s.position.y = s.userData.baseY + s.userData.offsetY;
-    s.position.x = s.userData.baseX + Math.sin(t * 0.6 + s.userData.offsetY * 0.5) * 0.25;
-    const lifeT = (s.position.y - s.userData.baseY) / 5.0;
-    s.material.opacity = Math.max(0, 0.5 * (1 - lifeT));
-    s.scale.setScalar(s.userData.scaleBase * (1 + lifeT * 1.2));
-    if (lifeT > 1) {
-      s.userData.offsetY = 0;
-      s.position.set(s.userData.baseX, s.userData.baseY, s.userData.baseZ);
+    s.userData.lifeT += s.userData.speed;
+    if (s.userData.lifeT >= 1) {
+      s.userData.lifeT -= 1;
     }
+    const lt = s.userData.lifeT;
+    s.position.y = s.userData.baseY + lt * 4.5;
+    s.position.x = s.userData.baseX + Math.sin(t * 0.6 + s.userData.jitterPhase) * 0.35 * lt;
+    // sin(πt) gives a smooth 0→1→0 curve — no pop-in.
+    s.material.opacity = Math.sin(lt * Math.PI) * 0.45;
+    s.scale.setScalar(s.userData.scaleBase * (1 + lt * 1.6));
   }
 
   // Idle auto-rotate

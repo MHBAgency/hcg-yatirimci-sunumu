@@ -15,7 +15,7 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
 <link rel="stylesheet" href="styles/main.css?v=23" />
-<link rel="stylesheet" href="styles/dna.css?v=25" />
+<link rel="stylesheet" href="styles/dna.css?v=26" />
 </head>
 <body>
 
@@ -415,26 +415,119 @@
       </div>
       <div class="r4-scene__panel">
         <div class="r4-svgwrap r4-svgwrap--roast" aria-hidden="true">
-          <svg viewBox="0 0 140 64" preserveAspectRatio="xMidYMid meet">
+          <svg viewBox="0 0 220 110" preserveAspectRatio="xMidYMid meet">
             <defs>
               <radialGradient id="r4-au-roast" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#fbe79a"/>
+                <stop offset="0%"   stop-color="#fff1ba"/>
+                <stop offset="45%"  stop-color="#fbe79a"/>
                 <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
               </radialGradient>
+              <linearGradient id="r4-flame" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%"   stop-color="#ff7a1a" stop-opacity="0.85"/>
+                <stop offset="55%"  stop-color="#ffb347" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#fbe79a" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="r4-pyrite" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"   stop-color="#c7b282"/>
+                <stop offset="55%"  stop-color="#8a7345"/>
+                <stop offset="100%" stop-color="#4d3e22"/>
+              </linearGradient>
+              <linearGradient id="r4-pyrite-top" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="#d8c590"/>
+                <stop offset="100%" stop-color="#9a8350"/>
+              </linearGradient>
+              <linearGradient id="r4-so2" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%"   stop-color="rgba(180,200,210,0)"/>
+                <stop offset="45%"  stop-color="rgba(190,210,220,0.55)"/>
+                <stop offset="100%" stop-color="rgba(190,210,220,0)"/>
+              </linearGradient>
             </defs>
-            <g class="u-scene-heat" stroke="currentColor" fill="none" stroke-width="1.1" stroke-linecap="round" opacity="0.55">
-              <path class="u-heat u-heat--a" d="M44 56 Q42 44 46 36 Q50 28 46 20"/>
-              <path class="u-heat u-heat--b" d="M70 58 Q68 44 72 34 Q76 24 72 14"/>
-              <path class="u-heat u-heat--c" d="M96 56 Q94 44 98 36 Q102 28 98 20"/>
+
+            <!-- Fırın taban çizgisi -->
+            <line x1="10" y1="98" x2="210" y2="98" stroke="currentColor" stroke-width="0.6" opacity="0.35"/>
+            <path d="M14 102 Q110 110 206 102" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.22"/>
+
+            <!-- Alt-zemin alev şeritleri -->
+            <g class="u-scene-flames" fill="none" stroke-linecap="round">
+              <path class="u-flame u-flame--a" d="M52 98 Q50 86 54 78 Q58 72 54 64" stroke="url(#r4-flame)" stroke-width="2"/>
+              <path class="u-flame u-flame--b" d="M78 98 Q76 84 80 74 Q84 66 80 56" stroke="url(#r4-flame)" stroke-width="2.4"/>
+              <path class="u-flame u-flame--c" d="M110 98 Q108 80 112 68 Q116 58 112 46" stroke="url(#r4-flame)" stroke-width="2.8"/>
+              <path class="u-flame u-flame--d" d="M142 98 Q140 84 144 74 Q148 66 144 56" stroke="url(#r4-flame)" stroke-width="2.4"/>
+              <path class="u-flame u-flame--e" d="M168 98 Q166 86 170 78 Q174 72 170 64" stroke="url(#r4-flame)" stroke-width="2"/>
             </g>
-            <g class="u-scene-cage" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon class="u-cage-frag u-cage-frag--l" points="22,40 14,32 22,24 30,24 30,40"/>
-              <polygon class="u-cage-frag u-cage-frag--r" points="118,40 126,32 118,24 110,24 110,40"/>
-              <line class="u-cage-frag u-cage-frag--t" x1="30" y1="24" x2="110" y2="24"/>
-              <line class="u-cage-frag u-cage-frag--b" x1="30" y1="40" x2="110" y2="40"/>
+
+            <!-- Yan ısı dalgaları (subtle) -->
+            <g class="u-scene-heat" stroke="currentColor" fill="none" stroke-width="0.9" stroke-linecap="round" opacity="0.5">
+              <path class="u-heat u-heat--a" d="M34 92 Q32 78 36 66 Q40 56 36 48"/>
+              <path class="u-heat u-heat--b" d="M186 92 Q184 78 188 66 Q192 56 188 48"/>
+              <path class="u-heat u-heat--c" d="M24 88 Q22 74 26 62"/>
             </g>
-            <circle class="u-au-dot" cx="70" cy="32" r="3.4" fill="url(#r4-au-roast)"/>
-            <circle class="u-au-core" cx="70" cy="32" r="1.6" fill="#f5d76e"/>
+
+            <!-- SO₂ kıvrımları + etiketler — kafes açılınca yükselir -->
+            <g class="u-scene-so2" fill="none" stroke-linecap="round">
+              <path class="u-so2 u-so2--1" d="M92 60 Q94 46 90 32 Q86 20 92 8"  stroke="url(#r4-so2)" stroke-width="2.6"/>
+              <path class="u-so2 u-so2--2" d="M118 60 Q120 44 116 28 Q112 14 118 2" stroke="url(#r4-so2)" stroke-width="3"/>
+              <path class="u-so2 u-so2--3" d="M138 60 Q140 46 136 32 Q132 20 138 10" stroke="url(#r4-so2)" stroke-width="2.4"/>
+              <text class="u-so2-lbl u-so2-lbl--1" x="96"  y="34" font-family="JetBrains Mono, monospace"
+                    font-size="5.2" fill="rgba(190,210,220,0.78)" letter-spacing="0.06em">SO₂</text>
+              <text class="u-so2-lbl u-so2-lbl--2" x="122" y="20" font-family="JetBrains Mono, monospace"
+                    font-size="5.2" fill="rgba(190,210,220,0.78)" letter-spacing="0.06em">SO₂</text>
+            </g>
+
+            <!-- Pirit kristali (FeS₂) — 3D-vari kübik, parçalanır -->
+            <g class="u-pyrite">
+              <!-- Sol yüz -->
+              <polygon class="u-cage-frag u-cage-frag--l"
+                       points="80,52 80,88 96,96 96,60"
+                       fill="url(#r4-pyrite)" fill-opacity="0.55"
+                       stroke="currentColor" stroke-width="1.05" stroke-linejoin="round"/>
+              <!-- Sağ yüz -->
+              <polygon class="u-cage-frag u-cage-frag--r"
+                       points="124,60 124,96 140,88 140,52"
+                       fill="url(#r4-pyrite)" fill-opacity="0.7"
+                       stroke="currentColor" stroke-width="1.05" stroke-linejoin="round"/>
+              <!-- Üst yüz -->
+              <polygon class="u-cage-frag u-cage-frag--t"
+                       points="80,52 96,44 124,44 140,52 124,60 96,60"
+                       fill="url(#r4-pyrite-top)" fill-opacity="0.8"
+                       stroke="currentColor" stroke-width="1.05" stroke-linejoin="round"/>
+              <!-- Ön yüz -->
+              <polygon class="u-cage-frag u-cage-frag--b"
+                       points="96,60 124,60 124,96 96,96"
+                       fill="url(#r4-pyrite)" fill-opacity="0.4"
+                       stroke="currentColor" stroke-width="1.05" stroke-linejoin="round"/>
+
+              <!-- Kafes-içi atomlar: Fe (gri) · S (kükürt-sarısı) -->
+              <g class="u-lattice">
+                <circle class="u-atom u-atom--fe" cx="96"  cy="60" r="1.5" fill="#c8c0b0"/>
+                <circle class="u-atom u-atom--fe" cx="124" cy="60" r="1.5" fill="#c8c0b0"/>
+                <circle class="u-atom u-atom--fe" cx="96"  cy="96" r="1.5" fill="#c8c0b0"/>
+                <circle class="u-atom u-atom--fe" cx="124" cy="96" r="1.5" fill="#c8c0b0"/>
+                <circle class="u-atom u-atom--s"  cx="110" cy="68" r="1.3" fill="#d6c95a"/>
+                <circle class="u-atom u-atom--s"  cx="110" cy="86" r="1.3" fill="#d6c95a"/>
+              </g>
+
+              <!-- Çatlaklar — patlamadan hemen önce belirir -->
+              <g class="u-cracks" stroke="currentColor" fill="none" stroke-linecap="round">
+                <path class="u-crack u-crack--1" d="M86 60 L104 74 L116 70 L132 82" stroke-width="0.55"/>
+                <path class="u-crack u-crack--2" d="M98 84 L108 78 L118 86 L130 80" stroke-width="0.5"/>
+              </g>
+            </g>
+
+            <!-- Au — kafes patladıkça merkezde parlar -->
+            <g class="u-au-flow">
+              <circle class="u-au-dot u-au-dot--1" cx="110" cy="74" r="4.6" fill="url(#r4-au-roast)"/>
+              <circle class="u-au-dot u-au-dot--2" cx="110" cy="74" r="3.0" fill="url(#r4-au-roast)"/>
+              <circle class="u-au-core" cx="110" cy="74" r="1.6" fill="#f5d76e"/>
+            </g>
+
+            <!-- Kıvılcımlar — kafes açıldığında çakar -->
+            <g class="u-au-spark" fill="#fbe79a">
+              <circle class="u-spk u-spk--1" cx="88"  cy="66" r="0.8"/>
+              <circle class="u-spk u-spk--2" cx="132" cy="62" r="0.7"/>
+              <circle class="u-spk u-spk--3" cx="114" cy="50" r="0.6"/>
+              <circle class="u-spk u-spk--4" cx="104" cy="94" r="0.55"/>
+            </g>
           </svg>
         </div>
         <div class="r4-scene__info">
@@ -454,40 +547,264 @@
       </div>
       <div class="r4-scene__panel">
         <div class="r4-svgwrap r4-svgwrap--leach" aria-hidden="true">
-          <svg viewBox="0 0 140 64" preserveAspectRatio="xMidYMid meet">
+          <svg viewBox="0 0 220 110" preserveAspectRatio="xMidYMid meet">
             <defs>
               <linearGradient id="r4-liquid-leach" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="rgba(212,175,55,0.06)"/>
-                <stop offset="100%" stop-color="rgba(212,175,55,0.18)"/>
+                <stop offset="0%"   stop-color="rgba(212,175,55,0.05)"/>
+                <stop offset="55%"  stop-color="rgba(212,175,55,0.16)"/>
+                <stop offset="100%" stop-color="rgba(212,175,55,0.30)"/>
+              </linearGradient>
+              <linearGradient id="r4-tank-rim" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="rgba(212,175,55,0.50)"/>
+                <stop offset="100%" stop-color="rgba(212,175,55,0)"/>
               </linearGradient>
               <radialGradient id="r4-au-leach" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#fbe79a"/>
+                <stop offset="0%"   stop-color="#fff1ba"/>
+                <stop offset="45%"  stop-color="#fbe79a"/>
                 <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
               </radialGradient>
+              <linearGradient id="r4-carbon-fill" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%"   stop-color="rgba(245,215,110,0.62)"/>
+                <stop offset="55%"  stop-color="rgba(245,215,110,0.30)"/>
+                <stop offset="100%" stop-color="rgba(245,215,110,0)"/>
+              </linearGradient>
+              <clipPath id="r4-tank-clip">
+                <path d="M18 22 L18 86 Q18 96 28 96 L118 96 Q128 96 128 86 L128 22 Z"/>
+              </clipPath>
+              <clipPath id="r4-carbon-clip">
+                <rect x="157" y="29" width="40" height="66" rx="1.6"/>
+              </clipPath>
             </defs>
-            <path class="u-tank" d="M30 14 L30 50 Q30 56 36 56 L88 56 Q94 56 94 50 L94 14"
-                  fill="url(#r4-liquid-leach)" stroke="currentColor" stroke-width="1.1"
-                  stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
-            <line x1="62" y1="6" x2="62" y2="18" stroke="currentColor" stroke-width="1.1" opacity="0.55"/>
-            <ellipse class="u-stirrer" cx="62" cy="20" rx="10" ry="2" fill="none"
-                     stroke="currentColor" stroke-width="1.1" opacity="0.65"/>
-            <g class="u-bubbles" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6">
-              <circle class="u-bubble u-bubble--1" cx="42" cy="48" r="2"/>
-              <circle class="u-bubble u-bubble--2" cx="54" cy="50" r="1.6"/>
-              <circle class="u-bubble u-bubble--3" cx="68" cy="48" r="2.2"/>
-              <circle class="u-bubble u-bubble--4" cx="80" cy="50" r="1.8"/>
+
+            <!-- Zemin çizgisi -->
+            <line x1="10" y1="100" x2="210" y2="100" stroke="currentColor"
+                  stroke-width="0.6" opacity="0.30"/>
+            <path d="M14 104 Q110 110 206 104" stroke="currentColor"
+                  stroke-width="0.5" fill="none" opacity="0.22"/>
+
+            <!-- ============ TANK ============ -->
+            <rect x="14" y="20" width="118" height="4" fill="url(#r4-tank-rim)" opacity="0.55"/>
+            <line x1="14" y1="22" x2="132" y2="22"
+                  stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" opacity="0.8"/>
+            <line x1="18" y1="18" x2="128" y2="18"
+                  stroke="currentColor" stroke-width="0.6"
+                  stroke-linecap="round" opacity="0.4"/>
+
+            <!-- Likit + iç sahne -->
+            <g clip-path="url(#r4-tank-clip)">
+              <rect x="18" y="32" width="110" height="64" fill="url(#r4-liquid-leach)"/>
+
+              <path class="u-wave u-wave--a"
+                    d="M-2 32 Q24 28 50 32 T98 32 T146 32 T194 32 L194 40 L-2 40 Z"
+                    fill="rgba(212,175,55,0.10)"/>
+              <path class="u-wave u-wave--b"
+                    d="M-2 33 Q24 30 50 33 T98 33 T146 33 T194 33 L194 38 L-2 38 Z"
+                    fill="rgba(245,215,110,0.20)" opacity="0.6"/>
+
+              <rect x="116" y="32" width="12" height="64" fill="rgba(0,0,0,0.20)"/>
+              <ellipse cx="73" cy="92" rx="50" ry="3" fill="rgba(0,0,0,0.18)"/>
+
+              <!-- Cevher (pulp) parçacıkları -->
+              <g fill="currentColor">
+                <circle class="u-ore u-ore--1"  cx="32"  cy="80" r="1.1"  opacity="0.55"/>
+                <circle class="u-ore u-ore--2"  cx="44"  cy="82" r="0.85" opacity="0.55"/>
+                <circle class="u-ore u-ore--3"  cx="58"  cy="78" r="1.15" opacity="0.55"/>
+                <circle class="u-ore u-ore--4"  cx="68"  cy="84" r="0.8"  opacity="0.5"/>
+                <circle class="u-ore u-ore--5"  cx="82"  cy="80" r="1.0"  opacity="0.55"/>
+                <circle class="u-ore u-ore--6"  cx="96"  cy="84" r="0.85" opacity="0.5"/>
+                <circle class="u-ore u-ore--7"  cx="110" cy="80" r="1.0"  opacity="0.55"/>
+                <circle class="u-ore u-ore--8"  cx="40"  cy="70" r="0.7"  opacity="0.4"/>
+                <circle class="u-ore u-ore--9"  cx="90"  cy="68" r="0.8"  opacity="0.45"/>
+                <circle class="u-ore u-ore--10" cx="106" cy="72" r="0.7"  opacity="0.4"/>
+              </g>
+
+              <!-- O₂ sparger — dipten mikro hava akışı -->
+              <g class="u-sparge" fill="none" stroke="currentColor"
+                 stroke-width="0.7" opacity="0.55">
+                <circle class="u-spg u-spg--1" cx="28"  cy="93" r="0.55"/>
+                <circle class="u-spg u-spg--2" cx="50"  cy="93" r="0.6"/>
+                <circle class="u-spg u-spg--3" cx="96"  cy="93" r="0.55"/>
+                <circle class="u-spg u-spg--4" cx="118" cy="93" r="0.6"/>
+              </g>
+
+              <!-- Ana kabarcıklar -->
+              <g class="u-bubbles" fill="none" stroke="currentColor"
+                 stroke-width="0.9" opacity="0.75">
+                <circle class="u-bubble u-bubble--1" cx="36"  cy="86" r="2.0"/>
+                <circle class="u-bubble u-bubble--2" cx="52"  cy="88" r="1.4"/>
+                <circle class="u-bubble u-bubble--3" cx="68"  cy="86" r="2.4"/>
+                <circle class="u-bubble u-bubble--4" cx="84"  cy="88" r="1.6"/>
+                <circle class="u-bubble u-bubble--5" cx="100" cy="86" r="2.0"/>
+                <circle class="u-bubble u-bubble--6" cx="116" cy="88" r="1.3"/>
+                <circle class="u-bubble u-bubble--7" cx="60"  cy="92" r="1.5"/>
+                <circle class="u-bubble u-bubble--8" cx="92"  cy="92" r="1.8"/>
+              </g>
+
+              <!-- CN⁻ ligand jetonları -->
+              <g font-family="JetBrains Mono, monospace" font-size="5"
+                 font-weight="600" fill="currentColor" letter-spacing="0.04em">
+                <text class="u-cn u-cn--1" x="32"  y="58">CN⁻</text>
+                <text class="u-cn u-cn--2" x="56"  y="50">CN⁻</text>
+                <text class="u-cn u-cn--3" x="86"  y="60">CN⁻</text>
+                <text class="u-cn u-cn--4" x="108" y="54">CN⁻</text>
+              </g>
+
+              <!-- Au kompleksleri -->
+              <g class="u-gold-flow">
+                <circle class="u-gold u-gold--1" cx="38"  cy="48" r="4.0" fill="url(#r4-au-leach)"/>
+                <circle class="u-gold u-gold--2" cx="62"  cy="56" r="3.4" fill="url(#r4-au-leach)"/>
+                <circle class="u-gold u-gold--3" cx="86"  cy="50" r="4.4" fill="url(#r4-au-leach)"/>
+                <circle class="u-gold u-gold--4" cx="108" cy="58" r="3.0" fill="url(#r4-au-leach)"/>
+              </g>
             </g>
-            <g class="u-gold-flow">
-              <circle class="u-gold u-gold--1" cx="44" cy="36" r="2.2" fill="url(#r4-au-leach)"/>
-              <circle class="u-gold u-gold--2" cx="58" cy="40" r="1.8" fill="url(#r4-au-leach)"/>
-              <circle class="u-gold u-gold--3" cx="74" cy="34" r="2.4" fill="url(#r4-au-leach)"/>
+
+            <!-- Tank dış konturu -->
+            <path class="u-tank"
+                  d="M18 22 L18 86 Q18 96 28 96 L118 96 Q128 96 128 86 L128 22"
+                  fill="none" stroke="currentColor" stroke-width="1.4"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="22" y1="34" x2="22" y2="78"
+                  stroke="rgba(255,255,255,0.32)" stroke-width="0.7"
+                  stroke-linecap="round"/>
+
+            <!-- Servis merdiveni basamakları -->
+            <g stroke="currentColor" stroke-width="0.5" opacity="0.32">
+              <line x1="20" y1="48" x2="24" y2="48"/>
+              <line x1="20" y1="60" x2="24" y2="60"/>
+              <line x1="20" y1="72" x2="24" y2="72"/>
             </g>
-            <rect class="u-carbon" x="104" y="22" width="14" height="34" rx="2"
-                  fill="rgba(255,255,255,0.04)" stroke="currentColor" stroke-width="1.1" opacity="0.7"/>
-            <line x1="108" y1="28" x2="114" y2="28" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
-            <line x1="108" y1="34" x2="114" y2="34" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
-            <line x1="108" y1="40" x2="114" y2="40" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
-            <line x1="108" y1="46" x2="114" y2="46" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
+
+            <!-- ============ KARIŞTIRICI ============ -->
+            <rect class="u-motor" x="64" y="4" width="18" height="10" rx="1.5"
+                  fill="rgba(255,255,255,0.06)" stroke="currentColor"
+                  stroke-width="1.0" opacity="0.8"/>
+            <line x1="67" y1="6"  x2="79" y2="6"  stroke="currentColor" stroke-width="0.45" opacity="0.55"/>
+            <line x1="67" y1="8"  x2="79" y2="8"  stroke="currentColor" stroke-width="0.45" opacity="0.5"/>
+            <line x1="67" y1="10" x2="79" y2="10" stroke="currentColor" stroke-width="0.45" opacity="0.55"/>
+            <line x1="67" y1="12" x2="79" y2="12" stroke="currentColor" stroke-width="0.45" opacity="0.5"/>
+
+            <rect x="70" y="14" width="6" height="4"
+                  fill="rgba(255,255,255,0.04)" stroke="currentColor"
+                  stroke-width="0.7" opacity="0.65"/>
+
+            <line class="u-shaft" x1="73" y1="18" x2="73" y2="76"
+                  stroke="currentColor" stroke-width="1.1" opacity="0.7"/>
+
+            <g class="u-stirrer">
+              <ellipse cx="73" cy="76" rx="22" ry="3.4" fill="none"
+                       stroke="currentColor" stroke-width="1.2" opacity="0.8"/>
+              <line x1="51" y1="76" x2="95" y2="76"
+                    stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+              <ellipse cx="73" cy="76" rx="22" ry="1.2"
+                       fill="rgba(212,175,55,0.10)" opacity="0.8"/>
+            </g>
+
+            <!-- ============ TRANSFER BORUSU ============ -->
+            <path class="u-pipe"
+                  d="M128 44 L142 44 L142 30 L156 30"
+                  fill="none" stroke="currentColor" stroke-width="1.4"
+                  stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
+            <path d="M128 42.6 L141 42.6 L141 30"
+                  fill="none" stroke="rgba(255,255,255,0.22)"
+                  stroke-width="0.4" opacity="0.8"/>
+            <path class="u-pipe-flow"
+                  d="M128 44 L142 44 L142 30 L156 30"
+                  fill="none" stroke="#f5d76e" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round"
+                  stroke-dasharray="2.5 5" opacity="0.9"/>
+
+            <circle cx="142" cy="38" r="2.2"
+                    fill="rgba(255,255,255,0.04)" stroke="currentColor"
+                    stroke-width="0.7" opacity="0.6"/>
+            <line x1="142" y1="38" x2="143.2" y2="36.6"
+                  stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+
+            <!-- ============ AKTİF KARBON KOLONU ============ -->
+            <line x1="156" y1="28" x2="200" y2="28"
+                  stroke="currentColor" stroke-width="1.2"
+                  stroke-linecap="round" opacity="0.8"/>
+
+            <rect class="u-carbon" x="156" y="28" width="42" height="68" rx="2"
+                  fill="rgba(255,255,255,0.04)" stroke="currentColor"
+                  stroke-width="1.3" opacity="0.85"/>
+
+            <text x="177" y="24" text-anchor="middle"
+                  font-family="JetBrains Mono, monospace" font-size="4.6"
+                  fill="currentColor" letter-spacing="0.14em" opacity="0.55">CARBON</text>
+
+            <g clip-path="url(#r4-carbon-clip)">
+              <rect class="u-carbon-fill" x="157" y="29" width="40" height="66"
+                    fill="url(#r4-carbon-fill)"/>
+            </g>
+
+            <!-- Karbon granülleri (paketlenmiş yatak) -->
+            <g class="u-grains" fill="currentColor">
+              <circle cx="161"   cy="34" r="1.4" opacity="0.55"/>
+              <circle cx="167.5" cy="36" r="1.6" opacity="0.6"/>
+              <circle cx="174"   cy="34" r="1.4" opacity="0.55"/>
+              <circle cx="181"   cy="36" r="1.5" opacity="0.6"/>
+              <circle cx="188"   cy="34" r="1.4" opacity="0.55"/>
+              <circle cx="194"   cy="36" r="1.5" opacity="0.6"/>
+
+              <circle cx="163"   cy="42" r="1.5" opacity="0.55"/>
+              <circle cx="171"   cy="44" r="1.4" opacity="0.6"/>
+              <circle cx="178"   cy="42" r="1.6" opacity="0.55"/>
+              <circle cx="185"   cy="44" r="1.4" opacity="0.6"/>
+              <circle cx="192"   cy="42" r="1.5" opacity="0.55"/>
+
+              <circle cx="160"   cy="50" r="1.4" opacity="0.55"/>
+              <circle cx="168"   cy="52" r="1.5" opacity="0.6"/>
+              <circle cx="175"   cy="50" r="1.4" opacity="0.55"/>
+              <circle cx="182"   cy="52" r="1.6" opacity="0.6"/>
+              <circle cx="189"   cy="50" r="1.4" opacity="0.55"/>
+              <circle cx="195"   cy="52" r="1.5" opacity="0.6"/>
+
+              <circle cx="163"   cy="58" r="1.5" opacity="0.55"/>
+              <circle cx="171"   cy="60" r="1.4" opacity="0.6"/>
+              <circle cx="178"   cy="58" r="1.6" opacity="0.55"/>
+              <circle cx="185"   cy="60" r="1.4" opacity="0.6"/>
+              <circle cx="192"   cy="58" r="1.5" opacity="0.55"/>
+
+              <circle cx="161"   cy="66" r="1.4" opacity="0.55"/>
+              <circle cx="168"   cy="68" r="1.5" opacity="0.6"/>
+              <circle cx="175"   cy="66" r="1.4" opacity="0.55"/>
+              <circle cx="182"   cy="68" r="1.6" opacity="0.6"/>
+              <circle cx="190"   cy="66" r="1.4" opacity="0.55"/>
+              <circle cx="195"   cy="68" r="1.4" opacity="0.55"/>
+
+              <circle cx="163"   cy="74" r="1.5" opacity="0.55"/>
+              <circle cx="171"   cy="76" r="1.4" opacity="0.6"/>
+              <circle cx="178"   cy="74" r="1.6" opacity="0.55"/>
+              <circle cx="185"   cy="76" r="1.4" opacity="0.6"/>
+              <circle cx="192"   cy="74" r="1.5" opacity="0.55"/>
+
+              <circle cx="161"   cy="82" r="1.4" opacity="0.55"/>
+              <circle cx="168"   cy="84" r="1.5" opacity="0.6"/>
+              <circle cx="175"   cy="82" r="1.4" opacity="0.55"/>
+              <circle cx="182"   cy="84" r="1.6" opacity="0.6"/>
+              <circle cx="189"   cy="82" r="1.4" opacity="0.55"/>
+              <circle cx="195"   cy="84" r="1.5" opacity="0.6"/>
+
+              <circle cx="163"   cy="90" r="1.5" opacity="0.55"/>
+              <circle cx="171"   cy="92" r="1.4" opacity="0.6"/>
+              <circle cx="178"   cy="90" r="1.6" opacity="0.55"/>
+              <circle cx="185"   cy="92" r="1.4" opacity="0.6"/>
+              <circle cx="192"   cy="90" r="1.5" opacity="0.55"/>
+            </g>
+
+            <!-- Au teslim patlaması -->
+            <g class="u-au-charge">
+              <circle class="u-au-burst u-au-burst--a" cx="160" cy="30" r="4.0"
+                      fill="url(#r4-au-leach)" opacity="0"/>
+              <circle class="u-au-burst u-au-burst--b" cx="160" cy="30" r="1.8"
+                      fill="#f5d76e" opacity="0"/>
+            </g>
+
+            <line x1="177" y1="96" x2="177" y2="104"
+                  stroke="currentColor" stroke-width="1.0" opacity="0.55"/>
+            <line x1="172" y1="104" x2="182" y2="104"
+                  stroke="currentColor" stroke-width="0.9" opacity="0.5"/>
           </svg>
         </div>
         <div class="r4-scene__info">
@@ -513,42 +830,126 @@
         <div class="r4-svgwrap r4-svgwrap--gold" aria-hidden="true">
           <svg viewBox="0 0 140 64" preserveAspectRatio="xMidYMid meet">
             <defs>
+              <!-- Alın yüzü — derin altın, alta doğru gölgeli -->
               <linearGradient id="r4-bar" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"  stop-color="#fbe79a"/>
-                <stop offset="50%" stop-color="#d4af37"/>
-                <stop offset="100%" stop-color="#8a6f1c"/>
+                <stop offset="0%"   stop-color="#fbe79a"/>
+                <stop offset="38%"  stop-color="#e3c054"/>
+                <stop offset="72%"  stop-color="#b8902a"/>
+                <stop offset="100%" stop-color="#6f5510"/>
               </linearGradient>
+              <!-- Üst yüzey — ışık alan açık altın -->
               <linearGradient id="r4-bar-top" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#fff1ba"/>
-                <stop offset="100%" stop-color="#e7c662"/>
+                <stop offset="0%"   stop-color="#fff4c4"/>
+                <stop offset="55%"  stop-color="#f1cc5e"/>
+                <stop offset="100%" stop-color="#c89a2c"/>
               </linearGradient>
+              <!-- Alın yüzüne sıcak sheen overlay -->
+              <linearGradient id="r4-bar-sheen" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="rgba(255,243,200,0)"/>
+                <stop offset="35%"  stop-color="rgba(255,243,200,0.42)"/>
+                <stop offset="55%"  stop-color="rgba(255,243,200,0.08)"/>
+                <stop offset="100%" stop-color="rgba(255,243,200,0)"/>
+              </linearGradient>
+              <!-- Diyagonal hareketli parlama -->
               <linearGradient id="r4-shine" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%"   stop-color="rgba(255,255,255,0)"/>
-                <stop offset="50%"  stop-color="rgba(255,255,255,0.85)"/>
+                <stop offset="42%"  stop-color="rgba(255,255,255,0.05)"/>
+                <stop offset="50%"  stop-color="rgba(255,255,255,0.92)"/>
+                <stop offset="58%"  stop-color="rgba(255,255,255,0.05)"/>
                 <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
               </linearGradient>
+              <!-- Arka plan altın hale -->
+              <radialGradient id="r4-aura" cx="50%" cy="58%" r="55%">
+                <stop offset="0%"   stop-color="rgba(255,210,110,0.50)"/>
+                <stop offset="55%"  stop-color="rgba(212,175,55,0.16)"/>
+                <stop offset="100%" stop-color="rgba(212,175,55,0)"/>
+              </radialGradient>
+              <!-- Zemin yansıması -->
+              <linearGradient id="r4-floor" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="rgba(212,175,55,0.55)"/>
+                <stop offset="100%" stop-color="rgba(212,175,55,0)"/>
+              </linearGradient>
+              <!-- Altın toz partikül -->
+              <radialGradient id="r4-dust" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"   stop-color="#fff4c4"/>
+                <stop offset="60%"  stop-color="rgba(245,215,110,0.55)"/>
+                <stop offset="100%" stop-color="rgba(212,175,55,0)"/>
+              </radialGradient>
               <clipPath id="r4-bar-clip">
                 <path d="M30 38 L42 22 L98 22 L110 38 L110 56 L30 56 Z"/>
               </clipPath>
             </defs>
-            <g class="u-ingot">
-              <polygon points="42,22 98,22 110,38 30,38" fill="url(#r4-bar-top)" opacity="0.95"/>
-              <polygon points="30,38 110,38 110,56 30,56" fill="url(#r4-bar)"/>
-              <path d="M30 38 L42 22 L98 22 L110 38 L110 56 L30 56 Z"
-                    fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="0.8"/>
-              <path d="M30 38 L110 38" stroke="rgba(0,0,0,0.18)" stroke-width="0.8"/>
-              <text x="70" y="51" text-anchor="middle"
-                    font-family="JetBrains Mono, monospace" font-size="8"
-                    font-weight="600" fill="rgba(0,0,0,0.55)"
-                    letter-spacing="0.15em">Au · Ag</text>
-              <rect class="u-shine" x="-40" y="20" width="36" height="40"
-                    fill="url(#r4-shine)" clip-path="url(#r4-bar-clip)" opacity="0.55"/>
+
+            <!-- Nefes alan altın hale (arkada) -->
+            <ellipse class="u-aura" cx="70" cy="40" rx="50" ry="22" fill="url(#r4-aura)"/>
+
+            <!-- Isı titreşimi — yeni dökülmüş külçe hissi -->
+            <g class="u-heatshim" stroke="rgba(255,210,110,0.42)" fill="none"
+               stroke-width="0.55" stroke-linecap="round">
+              <path class="u-shim u-shim--a" d="M50 18 Q52.5 14 50 10 Q47.5 6 50 2"/>
+              <path class="u-shim u-shim--b" d="M70 18 Q72.5 14 70 10 Q67.5 6 70 2"/>
+              <path class="u-shim u-shim--c" d="M90 18 Q92.5 14 90 10 Q87.5 6 90 2"/>
             </g>
-            <g class="u-sparkles" fill="#fbe79a">
-              <circle class="u-spk u-spk--1" cx="22" cy="16" r="0.9"/>
-              <circle class="u-spk u-spk--2" cx="118" cy="14" r="1.1"/>
-              <circle class="u-spk u-spk--3" cx="58" cy="10" r="0.8"/>
-              <circle class="u-spk u-spk--4" cx="96" cy="8"  r="0.7"/>
+
+            <!-- Zemin yansıması -->
+            <polygon class="u-reflect" points="32,56 108,56 100,63 40,63"
+                     fill="url(#r4-floor)" opacity="0.45"/>
+
+            <!-- Külçe gövdesi -->
+            <g class="u-ingot">
+              <ellipse class="u-ingot__shadow" cx="70" cy="57.5" rx="44" ry="2.2"
+                       fill="rgba(0,0,0,0.55)"/>
+
+              <polygon points="42,22 98,22 110,38 30,38" fill="url(#r4-bar-top)"/>
+              <polygon points="30,38 110,38 110,56 30,56" fill="url(#r4-bar)"/>
+              <polygon points="30,38 110,38 110,56 30,56" fill="url(#r4-bar-sheen)"/>
+
+              <line x1="30" y1="38" x2="110" y2="38"
+                    stroke="rgba(255,250,220,0.65)" stroke-width="0.45"/>
+              <line x1="42" y1="22" x2="30" y2="38"
+                    stroke="rgba(0,0,0,0.22)" stroke-width="0.4"/>
+              <line x1="98" y1="22" x2="110" y2="38"
+                    stroke="rgba(0,0,0,0.22)" stroke-width="0.4"/>
+
+              <path d="M30 38 L42 22 L98 22 L110 38 L110 56 L30 56 Z"
+                    fill="none" stroke="rgba(45,30,0,0.45)" stroke-width="0.65"/>
+
+              <!-- Kabartmalı yazı: alt katman koyu, üst katman highlight -->
+              <g class="u-ingot__stamp">
+                <text x="70" y="51" text-anchor="middle"
+                      font-family="JetBrains Mono, monospace" font-size="7"
+                      font-weight="700" fill="rgba(40,25,0,0.55)"
+                      letter-spacing="0.22em">Au · Ag</text>
+                <text x="70" y="50.4" text-anchor="middle"
+                      font-family="JetBrains Mono, monospace" font-size="7"
+                      font-weight="700" fill="rgba(255,250,220,0.22)"
+                      letter-spacing="0.22em">Au · Ag</text>
+              </g>
+
+              <!-- Diyagonal ışık sweep -->
+              <g clip-path="url(#r4-bar-clip)">
+                <rect class="u-shine" x="-60" y="14" width="42" height="56"
+                      fill="url(#r4-shine)" transform="skewX(-18)"/>
+              </g>
+            </g>
+
+            <!-- Yukarı süzülen altın toz partikülleri -->
+            <g class="u-dust">
+              <circle class="u-dustp u-dustp--1" cx="40"  cy="44" r="1"   fill="url(#r4-dust)"/>
+              <circle class="u-dustp u-dustp--2" cx="54"  cy="50" r="0.8" fill="url(#r4-dust)"/>
+              <circle class="u-dustp u-dustp--3" cx="68"  cy="46" r="1.1" fill="url(#r4-dust)"/>
+              <circle class="u-dustp u-dustp--4" cx="84"  cy="52" r="0.7" fill="url(#r4-dust)"/>
+              <circle class="u-dustp u-dustp--5" cx="100" cy="44" r="0.9" fill="url(#r4-dust)"/>
+            </g>
+
+            <!-- 4-köşeli yıldız parıltılar -->
+            <g class="u-sparkles" fill="#fff4c4">
+              <path class="u-spk u-spk--1" d="M22 16 L22.6 14.4 L24.2 13.8 L22.6 13.2 L22 11.6 L21.4 13.2 L19.8 13.8 L21.4 14.4 Z"/>
+              <path class="u-spk u-spk--2" d="M118 14 L118.8 11.8 L121 11 L118.8 10.2 L118 8 L117.2 10.2 L115 11 L117.2 11.8 Z"/>
+              <path class="u-spk u-spk--3" d="M58 10 L58.5 8.7 L59.8 8.2 L58.5 7.7 L58 6.4 L57.5 7.7 L56.2 8.2 L57.5 8.7 Z"/>
+              <path class="u-spk u-spk--4" d="M96 8 L96.5 6.7 L97.8 6.2 L96.5 5.7 L96 4.4 L95.5 5.7 L94.2 6.2 L95.5 6.7 Z"/>
+              <path class="u-spk u-spk--5" d="M36 12 L36.5 10.6 L37.9 10.1 L36.5 9.6 L36 8.2 L35.5 9.6 L34.1 10.1 L35.5 10.6 Z"/>
+              <path class="u-spk u-spk--6" d="M110 28 L110.5 26.7 L111.8 26.2 L110.5 25.7 L110 24.4 L109.5 25.7 L108.2 26.2 L109.5 26.7 Z"/>
             </g>
           </svg>
         </div>
@@ -1208,21 +1609,28 @@
 
     <!-- Sahne 0: Açılış sorusu (tam ekran) -->
     <div class="s7-stage s7-stage--question" data-stage="question">
-      <h2 class="s7-question">
-        Atık dediğin şey,
-        <em class="dna-italic dna-accent">ne kadar zengin?</em>
-      </h2>
+      <div class="s7-question-wrap">
+        <h2 class="s7-question">
+          Atık dediğin şey,
+          <em class="dna-italic dna-accent">ne kadar zengin?</em>
+        </h2>
+        <p class="s7-question__sub">
+          Klasik madenler buna <strong>çöp</strong> der.
+        </p>
+      </div>
     </div>
 
-    <!-- Sahne 1+2: Klasik vs NTE karşılaştırma -->
+    <!-- Sahne 1+2: Klasik vs NTE karşılaştırma (yığın silüetleri) -->
     <div class="s7-stage s7-stage--compare" data-stage="compare">
       <div class="s7-compare">
         <div class="s7-compare-col s7-compare-col--classic">
           <span class="s7-compare-col__label">KLASİK ALTIN MADENİ</span>
-          <div class="s7-drop-wrap s7-drop-wrap--sm">
-            <svg class="s7-drop s7-drop--sm" viewBox="0 0 32 40" aria-hidden="true">
-              <path d="M16 2 C 8 14, 4 22, 4 28 a 12 12 0 0 0 24 0 c 0 -6 -4 -14 -12 -26 Z"
-                    fill="#5a5a5a" opacity="0.7"/>
+          <div class="s7-heap-wrap s7-heap-wrap--sm">
+            <svg class="s7-heap s7-heap--sm" viewBox="0 0 240 120"
+                 preserveAspectRatio="xMidYEnd meet" aria-hidden="true">
+              <path d="M14 116 C 60 106, 100 96, 120 90 C 140 96, 180 106, 226 116 Z"
+                    fill="#5a5a5a" opacity="0.55"/>
+              <path d="M14 116 L 226 116" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
             </svg>
           </div>
           <div class="s7-compare-col__value">
@@ -1233,104 +1641,117 @@
 
         <div class="s7-compare-col s7-compare-col--ours">
           <span class="s7-compare-col__label">NTE PARS METAL · ATIK</span>
-          <div class="s7-drop-wrap s7-drop-wrap--xl">
-            <svg class="s7-drop s7-drop--xl" viewBox="0 0 32 40" aria-hidden="true">
+          <div class="s7-heap-wrap s7-heap-wrap--xl">
+            <svg class="s7-heap s7-heap--xl" viewBox="0 0 360 220"
+                 preserveAspectRatio="xMidYEnd meet" aria-hidden="true">
               <defs>
-                <linearGradient id="s7-drop-gold" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="s7-heap-gold" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#fbe79a"/>
-                  <stop offset="55%" stop-color="#d4af37"/>
-                  <stop offset="100%" stop-color="#8a6a14"/>
+                  <stop offset="48%" stop-color="#d4af37"/>
+                  <stop offset="100%" stop-color="#6b4f0e"/>
                 </linearGradient>
+                <radialGradient id="s7-heap-glow" cx="50%" cy="100%" r="65%">
+                  <stop offset="0%" stop-color="rgba(212,175,55,0.32)"/>
+                  <stop offset="100%" stop-color="rgba(212,175,55,0)"/>
+                </radialGradient>
               </defs>
-              <path d="M16 2 C 8 14, 4 22, 4 28 a 12 12 0 0 0 24 0 c 0 -6 -4 -14 -12 -26 Z"
-                    fill="url(#s7-drop-gold)"/>
+              <ellipse cx="180" cy="214" rx="170" ry="14" fill="url(#s7-heap-glow)"/>
+              <path d="M10 214 C 70 168, 130 100, 180 30 C 230 90, 290 162, 350 214 Z"
+                    fill="url(#s7-heap-gold)"/>
+              <circle cx="140" cy="130" r="2" fill="#fff7d0" opacity="0.85"/>
+              <circle cx="200" cy="90" r="1.5" fill="#fff7d0" opacity="0.7"/>
+              <circle cx="230" cy="160" r="1.8" fill="#fff7d0" opacity="0.6"/>
+              <circle cx="100" cy="180" r="1.2" fill="#fff7d0" opacity="0.5"/>
+              <circle cx="270" cy="180" r="1.4" fill="#fff7d0" opacity="0.55"/>
             </svg>
           </div>
           <div class="s7-compare-col__value s7-gold">
             10<span class="s7-compare-col__unit">g/t Au</span>
-          </div>
-          <p class="s7-compare-col__sub">5–20× daha zengin</p>
-
-          <!-- Gümüş bonusu (step 2'de görünür) -->
-          <div class="s7-silver">
-            <svg class="s7-drop s7-drop--ag" viewBox="0 0 32 40" aria-hidden="true">
-              <path d="M16 2 C 8 14, 4 22, 4 28 a 12 12 0 0 0 24 0 c 0 -6 -4 -14 -12 -26 Z"
-                    fill="#d8d8de"/>
-            </svg>
-            <span class="s7-silver__text">
-              + <strong>100 g/t Ag</strong>
-              <em class="s7-silver__sub">gümüş yan ürünü</em>
+            <span class="s7-silver-inline">
+              + <strong>100</strong><span class="s7-silver-inline__unit">g/t Ag</span>
             </span>
           </div>
+          <p class="s7-compare-col__sub">5–20× daha zengin · gümüş bonusu dahil</p>
         </div>
       </div>
     </div>
 
-    <!-- Sahne 3: Gelir akışı -->
+    <!-- Sahne 3: Gelir akışı (dev sayı + tek cümle) -->
     <div class="s7-stage s7-stage--revenue" data-stage="revenue">
       <div class="s7-rev">
-        <div class="s7-rev__row s7-rev__row--input">
-          <span class="s7-rev__chip">10 g/t Au</span>
-          <span class="s7-rev__plus">+</span>
-          <span class="s7-rev__chip">100 g/t Ag</span>
+        <span class="s7-rev__hero-label">yıllık net kâr</span>
+        <div class="s7-rev__hero">
+          <span class="s7-rev__hero-num s7-gold">
+            $22<span class="s7-rev__hero-unit">M</span>
+          </span>
         </div>
-        <span class="s7-rev__arrow" aria-hidden="true">↓</span>
-        <div class="s7-rev__row">
-          <div class="s7-rev__big">
-            ~$25<span class="s7-rev__unit">M</span>
-          </div>
-          <span class="s7-rev__label">yıllık gelir</span>
-        </div>
-        <span class="s7-rev__arrow" aria-hidden="true">↓</span>
-        <div class="s7-rev__row">
-          <div class="s7-rev__big s7-rev__big--final s7-gold">
-            ~$22<span class="s7-rev__unit">M</span>
-          </div>
-          <span class="s7-rev__label s7-rev__label--final">net kâr</span>
-        </div>
+        <p class="s7-rev__cap">
+          <span class="s7-rev__cap-chip">10 g/t Au</span>
+          <span class="s7-rev__cap-plus">+</span>
+          <span class="s7-rev__cap-chip">100 g/t Ag</span>
+          <span class="s7-rev__cap-arrow" aria-hidden="true">→</span>
+          <span class="s7-rev__cap-segment">
+            <strong>$25M</strong> gelir
+          </span>
+          <span class="s7-rev__cap-minus" aria-hidden="true">−</span>
+          <span class="s7-rev__cap-segment s7-rev__cap-segment--muted">
+            <strong>$3M</strong> işletme
+          </span>
+        </p>
       </div>
     </div>
 
-    <!-- Sahne 4: ESG -->
+    <!-- Sahne 4: ESG (kart yok, sinematik 3-sütun satır) -->
     <div class="s7-stage s7-stage--esg" data-stage="esg">
       <div class="s7-esg">
-        <article class="s7-esg-card">
-          <svg class="s7-esg-card__icon" viewBox="0 0 32 32" aria-hidden="true">
+        <div class="s7-esg-item">
+          <svg class="s7-esg-item__icon" viewBox="0 0 32 32" aria-hidden="true">
             <path d="M16 4 L22 12 L19 12 L19 18 L13 18 L13 12 L10 12 Z"
                   fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
             <path d="M4 22 L10 30 L7 30 L7 26 L4 26 Z M28 22 L22 30 L25 30 L25 26 L28 26 Z"
                   fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
           </svg>
-          <h3 class="s7-esg-card__title">ATIK DEĞERLENDİRME</h3>
-          <p class="s7-esg-card__desc">
-            Linear ekonomiyi kapatıyoruz — <strong>ölü atık, üretken kaynak.</strong>
+          <h3 class="s7-esg-item__title">ATIK DEĞERLENDİRME</h3>
+          <p class="s7-esg-item__desc">
+            Ölü atık, <strong>üretken kaynak.</strong>
           </p>
-        </article>
+        </div>
 
-        <article class="s7-esg-card">
-          <svg class="s7-esg-card__icon" viewBox="0 0 32 32" aria-hidden="true">
+        <div class="s7-esg-divider" aria-hidden="true"></div>
+
+        <div class="s7-esg-item">
+          <svg class="s7-esg-item__icon" viewBox="0 0 32 32" aria-hidden="true">
             <path d="M27 5 C 13 5 5 13 5 27 C 19 27 27 19 27 5 Z"
                   fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
             <path d="M5 27 L20 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
           </svg>
-          <h3 class="s7-esg-card__title">ÇEVRE REHABİLİTASYONU</h3>
-          <p class="s7-esg-card__desc">
-            Atık alanı <strong>işlenirken temizleniyor.</strong>
+          <h3 class="s7-esg-item__title">ÇEVRE REHABİLİTASYONU</h3>
+          <p class="s7-esg-item__desc">
+            Saha <strong>işlenirken temizleniyor.</strong>
           </p>
-        </article>
+        </div>
 
-        <article class="s7-esg-card">
-          <svg class="s7-esg-card__icon" viewBox="0 0 32 32" aria-hidden="true">
+        <div class="s7-esg-divider" aria-hidden="true"></div>
+
+        <div class="s7-esg-item">
+          <svg class="s7-esg-item__icon" viewBox="0 0 32 32" aria-hidden="true">
             <circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/>
             <path d="M9 16 L14 21 L23 11" fill="none" stroke="currentColor"
                   stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <h3 class="s7-esg-card__title">DÜŞÜK KARBON AYAK İZİ</h3>
-          <p class="s7-esg-card__desc">
-            Yeni saha açımı yok — <strong>ekipman atık üzerinde yerleşiyor.</strong>
+          <h3 class="s7-esg-item__title">DÜŞÜK KARBON</h3>
+          <p class="s7-esg-item__desc">
+            Yeni saha açımı yok — <strong>ekipman atık üzerinde.</strong>
           </p>
-        </article>
+        </div>
       </div>
+    </div>
+
+    <!-- Sabit alt mikro-satır (slayt boyu görünür) -->
+    <div class="s7-microfooter" aria-hidden="true">
+      <span class="s7-microfooter__dot"></span>
+      <span class="s7-microfooter__text">HAMMADDE FARKIMIZ · ATIK → HAMMADDE</span>
+      <span class="s7-microfooter__dot"></span>
     </div>
   </section>
 

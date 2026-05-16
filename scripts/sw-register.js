@@ -46,10 +46,21 @@
     }
   });
 
+  // Yeni SW aktive olduğunda sayfayı bir kez yenile — eski CSS/JS önbelleğini hızla devre dışı bırak
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloaded) return;
+    reloaded = true;
+    window.location.reload();
+  });
+
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js', { scope: './' })
       .then((reg) => {
         console.log('[SW] Kayıt başarılı', reg.scope);
+
+        // Periyodik güncelleme tetikleyici
+        reg.update().catch(() => {});
 
         if (reg.installing) {
           // İlk açılış — install olayını bekle

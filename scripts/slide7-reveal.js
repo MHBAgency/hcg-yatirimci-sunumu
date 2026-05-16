@@ -18,7 +18,7 @@
   const SLIDE_INDEX = 6; // data-slide="7" → 0-indexed = 6
   const TOTAL_STEPS = 4;
   const STEP_LOCK_MS = 480;
-  const REV_LOCK_MS = 700;   // step 3 — cascade animasyonu otursun
+  const REV_LOCK_MS = 1200;  // step 3 — dev sayı + caption cascade otursun
 
   let step = 0;
   let busy = false;
