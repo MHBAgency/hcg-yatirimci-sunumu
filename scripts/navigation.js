@@ -1,18 +1,42 @@
 (function () {
   const slides = document.querySelectorAll('.slide');
   const indicator = document.getElementById('nav-indicator');
+  const progressFill = document.getElementById('dna-progress-fill');
   const total = slides.length;
   let current = 0;
   let transitioning = false;
 
-  // Build dot indicator
-  for (let i = 0; i < total; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-    dot.dataset.index = i;
-    dot.addEventListener('click', () => goTo(i));
-    indicator.appendChild(dot);
+  // Eski nokta indikatörü artık gizli (CSS) — yine de DOM'da kuruyoruz ki
+  // mevcut goTo() referansları kırılmasın.
+  if (indicator) {
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+      dot.dataset.index = i;
+      dot.addEventListener('click', () => goTo(i));
+      indicator.appendChild(dot);
+    }
   }
+
+  // Üst progress bar'ı başlangıç değerine ayarla
+  function updateProgress(index) {
+    if (!progressFill) return;
+    const pct = ((index + 1) / total) * 100;
+    progressFill.style.width = pct + '%';
+  }
+  updateProgress(0);
+
+  // Sayfa indikatörlerini dinamik olarak güncelle (her slaytta "01 / 14" gibi)
+  // — total her zaman gerçek slayt sayısını yansıtır, ileride slayt eklenirse otomatik fix.
+  slides.forEach((slide, i) => {
+    const frame = slide.querySelector('.dna-frame__page');
+    if (!frame) return;
+    const current = frame.querySelector('.dna-frame__page-current');
+    const spans = frame.querySelectorAll('span');
+    const totalSpan = spans[spans.length - 1];
+    if (current) current.textContent = String(i + 1).padStart(2, '0');
+    if (totalSpan && totalSpan !== current) totalSpan.textContent = String(total).padStart(2, '0');
+  });
 
   function goTo(index) {
     if (transitioning) return;
@@ -40,6 +64,8 @@
     document.querySelectorAll('.nav-dot').forEach((d, i) => {
       d.classList.toggle('active', i === index);
     });
+
+    updateProgress(index);
 
     current = index;
 

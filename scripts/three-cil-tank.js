@@ -27,11 +27,11 @@ const slurrySurfaces = [];
 let lastUserInteraction = Date.now();
 let autoRotateEnabled = true;
 
-function init() {
+function init(targetCanvas) {
   if (initialized) return;
   initialized = true;
 
-  canvas = document.getElementById('three-canvas');
+  canvas = targetCanvas || document.getElementById('three-canvas');
   const rect = canvas.getBoundingClientRect();
   const width = Math.max(rect.width, 800);
   const height = Math.max(rect.height, 600);
@@ -97,7 +97,7 @@ function init() {
 
   window.addEventListener('resize', onResize);
   window.addEventListener('slidechange', (e) => {
-    if (e.detail.index === 2) onResize();
+    if (e.detail.index === 13) onResize();
   });
 }
 
@@ -2027,17 +2027,82 @@ function onResize() {
 }
 
 window.addEventListener('slidechange', (e) => {
-  if (e.detail.index === 2) {
+  if (e.detail.index === 13) {  // Slide 14 (data-slide="14"), 0-based DOM index = 13
     init();
     setTimeout(onResize, 50);
     startRendering();
   } else {
-    // User left slide 3 — pause render loop to free up CPU/GPU
+    // User left CIL slide — pause render loop to free up CPU/GPU
     stopRendering();
   }
 });
 
-if (document.querySelector('.slide[data-slide="3"]')?.classList.contains('active')) {
+if (document.querySelector('.slide[data-slide="14"]')?.classList.contains('active')) {
   init();
   startRendering();
 }
+
+/* ============================ EXTERNAL MOUNT API (slide 8 atlas) ============================ */
+function _disposeForMount() {
+  if (frameId !== null) {
+    cancelAnimationFrame(frameId);
+    frameId = null;
+  }
+  if (controls) {
+    try { controls.dispose(); } catch (e) {}
+  }
+  if (scene) {
+    scene.traverse((obj) => {
+      if (obj.geometry) { try { obj.geometry.dispose(); } catch (e) {} }
+      if (obj.material) {
+        const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+        mats.forEach((m) => {
+          for (const k in m) {
+            const v = m[k];
+            if (v && v.isTexture) { try { v.dispose(); } catch (e) {} }
+          }
+          try { m.dispose(); } catch (e) {}
+        });
+      }
+    });
+    while (scene.children.length) scene.remove(scene.children[0]);
+  }
+  if (renderer) {
+    try { renderer.dispose(); } catch (e) {}
+    try { renderer.forceContextLoss && renderer.forceContextLoss(); } catch (e) {}
+  }
+  animatedShafts.length = 0;
+  animatedBubbles.length = 0;
+  flowMarkers.length = 0;
+  slurrySurfaces.length = 0;
+  renderer = null;
+  scene = null;
+  camera = null;
+  controls = null;
+  canvas = null;
+  initialized = false;
+}
+
+window.threeCilTank = {
+  mount(canvasEl) {
+    if (!canvasEl) return;
+    if (initialized && canvas === canvasEl) {
+      startRendering();
+      setTimeout(onResize, 50);
+      return;
+    }
+    if (initialized) _disposeForMount();
+    init(canvasEl);
+    setTimeout(onResize, 50);
+    startRendering();
+  },
+  unmount() {
+    if (!initialized) {
+      if (frameId !== null) { cancelAnimationFrame(frameId); frameId = null; }
+      return;
+    }
+    _disposeForMount();
+  },
+  get isMounted() { return initialized; },
+  get currentCanvas() { return canvas; },
+};

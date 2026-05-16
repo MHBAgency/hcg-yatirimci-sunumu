@@ -1,0 +1,22 @@
+<!doctype html><html lang="tr"><head>
+<meta charset="utf-8" />
+<title>Electrowinning + Doré 3D Test</title>
+<style>
+  html,body{margin:0;padding:0;background:#0a1628;color:#d4af37;font-family:system-ui;height:100%;}
+  #three-canvas-ew{display:block;width:100vw;height:100vh;}
+  .label{position:fixed;top:14px;left:18px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/three.module.js",
+  "three/addons/": "./vendor/three/addons/"
+}}
+</script>
+</head><body>
+<div class="label">Electrowinning + Doré 3D — test sayfası</div>
+<canvas id="three-canvas-ew"></canvas>
+<script type="module">
+  import './scripts/three-electrowinning.js';
+  window.dispatchEvent(new CustomEvent('slidechange', { detail: { index: 16 } }));
+</script>
+</body></html>

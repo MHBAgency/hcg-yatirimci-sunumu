@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Roaster 3D Test — Akışkan Yataklı Kavurma Fırını</title>
+<style>
+  html,body{margin:0;padding:0;background:#0a1628;color:#d4af37;font-family:system-ui;height:100%;}
+  #three-canvas-roaster{display:block;width:100vw;height:100vh;}
+  .label{position:fixed;top:14px;left:18px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;}
+  .hint{position:fixed;bottom:14px;right:18px;font-size:11px;letter-spacing:.06em;opacity:.5;}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/three.module.js",
+  "three/addons/": "./vendor/three/addons/"
+}}
+</script>
+</head>
+<body>
+<div class="label">Roaster 3D — test sayfası · Akışkan Yataklı Kavurma Fırını</div>
+<canvas id="three-canvas-roaster"></canvas>
+<div class="hint">Sürükle: döndür · Tekerlek: yaklaş</div>
+<script type="module">
+  import './scripts/three-roaster.js';
+  // Fire slidechange to start rendering (matches main app behavior).
+  // Slide index 999 = test/standalone mode; real integration will change this.
+  window.dispatchEvent(new CustomEvent('slidechange', { detail: { index: 11 } }));
+</script>
+</body>
+</html>

@@ -3,356 +3,2607 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hikmet Çetin Gold — Yatırımcı Sunumu</title>
+<meta name="theme-color" content="#0a1628" />
+<title>HİKMET ÇETİN GOLD — Yatırımcı Sunumu · NTE PARS METAL</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg" />
+<link rel="apple-touch-icon" href="assets/icons/icon-192.svg" />
 
+<!-- Leaflet (slide 7 dünya haritası — demo'daki sevilen versiyon) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-<link rel="stylesheet" href="styles/main.css" />
+<link rel="stylesheet" href="styles/main.css?v=22" />
+<link rel="stylesheet" href="styles/dna.css?v=24" />
 </head>
 <body>
 
+<!-- ================ LOADING OVERLAY ================ -->
+<div id="app-loader" class="app-loader">
+  <div class="loader-emblem">
+    <div class="loader-au">Au</div>
+    <div class="loader-brand">HİKMET ÇETİN GOLD</div>
+    <div class="loader-sub">NTE PARS METAL</div>
+  </div>
+  <div class="loader-bar">
+    <div class="loader-fill" id="loader-fill"></div>
+  </div>
+  <div class="loader-status">
+    <span class="loader-msg">Sunum hazırlanıyor</span>
+    <span class="loader-pct" id="loader-pct">0%</span>
+  </div>
+  <div class="loader-hint">İlk yükleme sonrası internet olmadan da çalışır</div>
+</div>
+
+<!-- ================ TOP PROGRESS BAR ================ -->
+<div class="dna-progress-top" aria-hidden="true">
+  <div class="dna-progress-top__fill" id="dna-progress-fill"></div>
+</div>
+
+<!-- ================ BRAND WATERMARK ================ -->
 <div class="brand-watermark">
-  <strong>HİKMET ÇETİN GOLD</strong>
+  <strong>NTE PARS METAL PROJESİ</strong>
+  <span class="brand-sub">Hikmet ÇETİN</span>
 </div>
 
 <div class="presentation" id="presentation">
 
-  <!-- ============ SLIDE 1: COVER ============ -->
+  <!-- ============================================================
+       SLIDE 01 — COVER
+       ============================================================ -->
   <section class="slide cover active" data-slide="1">
     <div class="gold-flecks"></div>
-    <div class="cover-content">
-      <div class="cover-emblem">SÜLFÜRLÜ ALTIN İŞLEME TESİSİ</div>
-      <h1 class="cover-title">HİKMET ÇETİN<br/>GOLD</h1>
-      <p class="cover-subtitle">Yatırımcı Sunumu · 2026</p>
-      <div class="cover-divider"></div>
-      <div class="cover-meta">
-        <div class="cover-meta-item">
-          <div class="cover-meta-label">Lokasyon</div>
-          <div class="cover-meta-value">Safadaşt, İran</div>
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__live">LIVE · 2026</span>
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">01</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+      <span class="dna-frame__corner dna-frame__corner--tl"></span>
+      <span class="dna-frame__corner dna-frame__corner--tr"></span>
+      <span class="dna-frame__corner dna-frame__corner--bl"></span>
+      <span class="dna-frame__corner dna-frame__corner--br"></span>
+      <span class="dna-eyebrow dna-frame__eyebrow">
+        <span class="dna-eyebrow__num">01</span>
+        <span>ANTİMON ATIĞINDAN ALTIN + GÜMÜŞ KAZANIM TESİSİ</span>
+      </span>
+    </div>
+    <div class="dna-cover">
+
+      <h1 class="dna-cover__title">
+        <span class="dna-reveal-word">NTE Pars</span>
+        <span class="dna-reveal-word">Metal</span><br/>
+        <span class="dna-reveal-word dna-cover__title-strong">Projesi.</span>
+      </h1>
+
+      <span class="dna-cover__sub dna-anim-fade-up dna-delay-4">
+        <span>Yatırımcı Sunumu</span>
+        <span class="sep"></span>
+        <span>2026</span>
+      </span>
+
+      <div class="dna-cover-meta dna-stagger">
+        <div class="dna-cover-meta__item">
+          <span class="dna-cover-meta__icon-wrap">
+            <svg class="dna-cover-meta__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22s-7-7.5-7-12a7 7 0 1 1 14 0c0 4.5-7 12-7 12Z"/>
+              <circle cx="12" cy="10" r="2.5"/>
+            </svg>
+          </span>
+          <span class="dna-cover-meta__label">Lokasyon</span>
+          <span class="dna-cover-meta__value">Safadaşt, İran</span>
         </div>
-        <div class="cover-meta-item">
-          <div class="cover-meta-label">Cevher Tipi</div>
-          <div class="cover-meta-value">Refrakter Sülfürlü Altın</div>
+        <div class="dna-cover-meta__item">
+          <span class="dna-cover-meta__icon-wrap">
+            <svg class="dna-cover-meta__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 7l9-4 9 4-9 4-9-4Z"/>
+              <path d="M3 12l9 4 9-4"/>
+              <path d="M3 17l9 4 9-4"/>
+            </svg>
+          </span>
+          <span class="dna-cover-meta__label">Hammadde</span>
+          <span class="dna-cover-meta__value">Antimon Atığı</span>
         </div>
-        <div class="cover-meta-item">
-          <div class="cover-meta-label">Proses</div>
-          <div class="cover-meta-value">Kavurma + CIL + Electrowinning</div>
+        <div class="dna-cover-meta__item">
+          <span class="dna-cover-meta__icon-wrap">
+            <svg class="dna-cover-meta__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2 L14.25 8.91 L21.51 8.91 L15.63 13.18 L17.88 20.09 L12 15.82 L6.12 20.09 L8.37 13.18 L2.49 8.91 L9.75 8.91 Z"/>
+            </svg>
+          </span>
+          <span class="dna-cover-meta__label">Ürün</span>
+          <span class="dna-cover-meta__value dna-cover-meta__value--accent">Doré Au + Ag</span>
         </div>
+        <div class="dna-cover-meta__item">
+          <span class="dna-cover-meta__icon-wrap">
+            <svg class="dna-cover-meta__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="5" cy="12" r="2.4"/>
+              <circle cx="19" cy="12" r="2.4"/>
+              <circle cx="12" cy="5" r="2.4"/>
+              <circle cx="12" cy="19" r="2.4"/>
+              <path d="M7.4 12h9.2M12 7.4v9.2"/>
+            </svg>
+          </span>
+          <span class="dna-cover-meta__label">Proses</span>
+          <span class="dna-cover-meta__value">Kavurma · CIL · EW</span>
+        </div>
+      </div>
+
+      <span class="dna-cover__footer dna-anim-fade dna-delay-5">
+        NTE PARS METAL'in tescilli projesidir
+      </span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 02 — EXECUTIVE SUMMARY
+       ============================================================ -->
+  <section class="slide story2-slide" data-slide="2" data-step="0">
+    <div class="dna-frame dna-frame--bare" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">02</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+    </div>
+
+    <div class="story2__bg" aria-hidden="true"></div>
+    <div class="story2__vignette" aria-hidden="true"></div>
+
+    <div class="story2">
+      <p class="story2__sentence">
+        <span class="story2__chunk">Antimon atığından,</span>
+        <span class="story2__slot" data-slot="1">
+          <span class="story2__placeholder" aria-hidden="true"></span>
+          <span class="story2__filled">$10M</span>
+        </span>
+        <span class="story2__chunk">yatırımla, yılda</span>
+        <span class="story2__slot" data-slot="2">
+          <span class="story2__placeholder" aria-hidden="true"></span>
+          <span class="story2__filled">342 kg</span>
+        </span>
+        <span class="story2__chunk">altın üreten, kendisini</span>
+        <span class="story2__slot" data-slot="3">
+          <span class="story2__placeholder" aria-hidden="true"></span>
+          <span class="story2__filled">6 ay</span>
+        </span>
+        <span class="story2__chunk">geri ödeyen bir <em class="story2__em">hidrometalurjik tesis.</em></span>
+      </p>
+
+      <div class="story2__stage" aria-hidden="true">
+        <div class="story2__big" data-big="1">
+          <span class="story2__big-num">$10M</span>
+          <span class="story2__big-sub">YATIRIM TALEBİ · CAPEX DAHİL</span>
+        </div>
+        <div class="story2__big" data-big="2">
+          <span class="story2__big-num">342 kg</span>
+          <span class="story2__big-sub">+ 3.4 t Ag/YIL</span>
+        </div>
+        <div class="story2__big" data-big="3">
+          <span class="story2__big-num">6 AY</span>
+          <span class="story2__big-sub">SEKTÖR ORTALAMASI 3–5 YIL</span>
+        </div>
+      </div>
+
+      <div class="story2__support">
+        <span class="story2__support-line" aria-hidden="true"></span>
+        <div class="story2__support-items">
+          <span>TETHYAN KUŞAĞI</span>
+          <span class="story2__support-sep" aria-hidden="true"></span>
+          <span>3.4 t Ag / YIL</span>
+          <span class="story2__support-sep" aria-hidden="true"></span>
+          <span>~$22M / YIL NET KÂR</span>
+        </div>
+        <div class="story2__support-loc">SAFADAŞT · İRAN</div>
+      </div>
+
+      <div class="story2__hint" aria-hidden="true">
+        <span class="story2__hint-key">→</span>
+        <span>devam</span>
       </div>
     </div>
   </section>
 
-  <!-- ============ SLIDE 2: GLOBAL MAP ============ -->
-  <section class="slide map-slide" data-slide="2">
-    <div class="slide-header">
-      <div class="slide-kicker">Küresel Konum · 01</div>
-      <h2 class="slide-title">Dünya Sülfürlü Altın Haritası</h2>
-      <p class="slide-subtitle">
-        Refrakter sülfürlü altın cevheri, dünyada sınırlı sayıda jeolojik kuşakta bulunur.
-        Sahamız Tethyan kuşağı üzerinde — dünyanın en zengin sülfürlü altın hattında.
+  <!-- ============================================================
+       SLIDE 03 — CEVHER ANATOMİSİ & ÇÖZÜM REAKSİYONU
+       Tag system + SVG kayaç anatomisi + reaksiyon journey + yöntem matrisi
+       Bilgi korundu: 5 mineral, 4 yöntem, 3 mikrofoto (kanıt olarak)
+       ============================================================ -->
+  <section class="slide micro-slide" data-slide="3" data-step="0">
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">03</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+    </div>
+
+    <!-- Katman 1: Arka plan görsel istifi (her step'te bir görsel öne çıkar) -->
+    <div class="micro-bg" aria-hidden="true">
+      <div class="micro-bg__img" data-bg="rock"   style="background-image:url('assets/images/ore-samples.jpeg');"></div>
+      <div class="micro-bg__img" data-bg="micro"  style="background-image:url('assets/images/ore-microphoto-1.jpeg');"></div>
+      <div class="micro-bg__img" data-bg="pyrite" style="background-image:url('assets/images/pyrite-crystals.jpeg');"></div>
+      <div class="micro-bg__img" data-bg="arseno" style="background-image:url('assets/images/pyrite-quartz.jpeg');"></div>
+      <div class="micro-bg__img" data-bg="quartz" style="background-image:url('assets/images/pyrite-quartz.jpeg');"></div>
+      <div class="micro-bg__overlay"></div>
+    </div>
+
+    <!-- Katman 2: Anlatı cümlesi (her adımda bir satır görünür) -->
+    <div class="micro-caption" aria-live="polite">
+      <p class="micro-caption__line" data-line="0">Çıplak gözle: gri-siyah bir kaya.</p>
+      <p class="micro-caption__line" data-line="1">Mikroskop altında: kuvars damarı içinde sülfid kristalleri.</p>
+      <p class="micro-caption__line" data-line="2">Pirit — altının ana kafesi.</p>
+      <p class="micro-caption__line" data-line="3">Arsenopirit — ikincil, ince taneli taşıyıcı.</p>
+      <p class="micro-caption__line" data-line="4">Kuvars matrisi — sülfürleri taşıyan ev sahibi.</p>
+      <p class="micro-caption__line micro-caption__line--climax" data-line="5">
+        Siyanür bu kafese giremez.<br/>
+        <em class="dna-italic">Kafesi kırmamız gerekiyor.</em>
       </p>
     </div>
-    <div class="map-container">
-      <div id="map"></div>
-      <div class="legend-card">
-        <h4>Lejant</h4>
-        <div class="legend-item">
-          <div class="legend-dot primary"></div>
-          <span>Hikmet Çetin Gold sahası</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot standard"></div>
-          <span>Dünya'nın aktif sülfürlü altın madenleri</span>
+
+    <!-- Tenör rozeti (steps 1-4) -->
+    <span class="micro-tenor" aria-hidden="true">
+      <i></i>10 g/t Au · 100 g/t Ag
+    </span>
+
+    <!-- Katman 3: Merkezde mineral spotlight (kristal kafes overlay'leri) -->
+    <div class="micro-stage" aria-hidden="true">
+
+      <!-- PİRİT — kübik kafes + kilitli Au çekirdek -->
+      <div class="micro-stage__svg" data-svg="pyrite">
+        <svg viewBox="0 0 200 140" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <radialGradient id="micro-au-pyrite" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fbe79a"/>
+              <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <g stroke="currentColor" fill="none" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" opacity="0.95">
+            <rect x="30" y="25" width="140" height="90" rx="3"/>
+            <line x1="65"  y1="25" x2="65"  y2="115"/>
+            <line x1="100" y1="25" x2="100" y2="115"/>
+            <line x1="135" y1="25" x2="135" y2="115"/>
+            <line x1="30" y1="55" x2="170" y2="55"/>
+            <line x1="30" y1="85" x2="170" y2="85"/>
+          </g>
+          <g fill="currentColor" opacity="0.75">
+            <circle cx="30"  cy="25" r="2.2"/><circle cx="65"  cy="25" r="2.2"/>
+            <circle cx="100" cy="25" r="2.2"/><circle cx="135" cy="25" r="2.2"/><circle cx="170" cy="25" r="2.2"/>
+            <circle cx="30"  cy="115" r="2.2"/><circle cx="65"  cy="115" r="2.2"/>
+            <circle cx="100" cy="115" r="2.2"/><circle cx="135" cy="115" r="2.2"/><circle cx="170" cy="115" r="2.2"/>
+          </g>
+          <circle cx="100" cy="70" r="22" fill="url(#micro-au-pyrite)" opacity="0.85"/>
+          <circle cx="100" cy="70" r="10" fill="#f5d76e"/>
+          <text x="100" y="74" text-anchor="middle" font-family="system-ui, sans-serif"
+                font-size="10" font-weight="700" fill="#1a1208" letter-spacing="0.05em">Au</text>
+        </svg>
+      </div>
+
+      <!-- ARSENOPİRİT — monoklin (eğri) kafes + ince Au tanecikleri -->
+      <div class="micro-stage__svg" data-svg="arseno">
+        <svg viewBox="0 0 200 140" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <radialGradient id="micro-au-arseno" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fbe79a"/>
+              <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <g stroke="currentColor" fill="none" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" opacity="0.95">
+            <polygon points="38,28 172,28 162,112 28,112"/>
+            <line x1="70"  y1="28" x2="63"  y2="112"/>
+            <line x1="105" y1="28" x2="98"  y2="112"/>
+            <line x1="140" y1="28" x2="132" y2="112"/>
+            <line x1="33"  y1="70" x2="167" y2="70"/>
+          </g>
+          <g fill="currentColor" opacity="0.75">
+            <circle cx="38"  cy="28"  r="2.2"/><circle cx="105" cy="28"  r="2.2"/>
+            <circle cx="172" cy="28"  r="2.2"/>
+            <circle cx="28"  cy="112" r="2.2"/><circle cx="98"  cy="112" r="2.2"/>
+            <circle cx="162" cy="112" r="2.2"/>
+          </g>
+          <circle cx="80"  cy="55" r="9" fill="url(#micro-au-arseno)"/>
+          <circle cx="120" cy="85" r="8" fill="url(#micro-au-arseno)"/>
+          <circle cx="95"  cy="92" r="6" fill="url(#micro-au-arseno)"/>
+          <circle cx="80"  cy="55" r="3.2" fill="#f5d76e"/>
+          <circle cx="120" cy="85" r="2.8" fill="#f5d76e"/>
+          <circle cx="95"  cy="92" r="2.2" fill="#f5d76e"/>
+        </svg>
+      </div>
+
+      <!-- KUVARS — damar + sülfid inklüzyonları -->
+      <div class="micro-stage__svg" data-svg="quartz">
+        <svg viewBox="0 0 200 140" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="micro-vein" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%"   stop-color="rgba(255,255,255,0.05)"/>
+              <stop offset="50%"  stop-color="rgba(212,175,55,0.14)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+            </linearGradient>
+          </defs>
+          <path d="M22 112 L70 22 L172 26 L176 36 L82 32 L34 118 Z"
+                fill="url(#micro-vein)" stroke="currentColor" stroke-width="1.3"
+                stroke-linejoin="round" opacity="0.9"/>
+          <g stroke="currentColor" fill="none" stroke-width="0.9" stroke-linecap="round" opacity="0.5">
+            <path d="M44 112 L100 22"/>
+            <path d="M66 116 L122 26"/>
+            <path d="M90 118 L148 28"/>
+          </g>
+          <g>
+            <circle cx="78"  cy="60" r="6"   fill="#f5d76e" opacity="0.85"/>
+            <circle cx="118" cy="74" r="4.5" fill="#f5d76e" opacity="0.75"/>
+            <circle cx="146" cy="48" r="5"   fill="#f5d76e" opacity="0.8"/>
+            <circle cx="100" cy="92" r="3.5" fill="#f5d76e" opacity="0.7"/>
+          </g>
+        </svg>
+      </div>
+
+    </div>
+
+    <!-- Katman 4: Sağ panel — mineral kimliği -->
+    <aside class="micro-panel" aria-hidden="true">
+      <div class="micro-panel__card" data-card="pyrite">
+        <span class="micro-panel__no">TAŞIYICI 01</span>
+        <h3 class="micro-panel__title">PİRİT</h3>
+        <span class="micro-panel__formula">FeS₂ · Kübik · Mohs 6.5</span>
+        <p class="micro-panel__load"><strong>%95</strong><span>Au yükü</span></p>
+        <span class="micro-panel__role">ana taşıyıcı</span>
+      </div>
+      <div class="micro-panel__card" data-card="arseno">
+        <span class="micro-panel__no">TAŞIYICI 02</span>
+        <h3 class="micro-panel__title">ARSENOPİRİT</h3>
+        <span class="micro-panel__formula">FeAsS · Monoklin · Mohs 5.5</span>
+        <p class="micro-panel__load"><strong>%70</strong><span>Au yükü</span></p>
+        <span class="micro-panel__role">ikincil taşıyıcı</span>
+      </div>
+      <div class="micro-panel__card" data-card="quartz">
+        <span class="micro-panel__no">EV SAHİBİ</span>
+        <h3 class="micro-panel__title">KUVARS MATRİSİ</h3>
+        <span class="micro-panel__formula">SiO₂ · Trigonal · Mohs 7</span>
+        <p class="micro-panel__load"><strong>%88</strong><span>kaya payı</span></p>
+        <span class="micro-panel__role">ev sahibi · pasif matris</span>
+      </div>
+    </aside>
+
+    <!-- Katman 5: Klimaks — büyük donut ring -->
+    <div class="micro-climax" aria-hidden="true">
+      <div class="micro-yield" role="img" aria-label="Au kilitlenme oranı: yüzde 85">
+        <div class="micro-yield__ring" style="--p:85;">
+          <div class="micro-yield__center">
+            <span class="micro-yield__num">%85</span>
+            <span class="micro-yield__lbl">SÜLFÜRDE KİLİTLİ</span>
+          </div>
+          <div class="micro-yield__tick" style="transform: rotate(306deg);" aria-hidden="true"></div>
         </div>
       </div>
     </div>
+
   </section>
 
-  <!-- ============ SLIDE 3: 3D VIEWER ============ -->
-  <section class="slide viewer-slide" data-slide="3">
-    <div class="viewer-stage">
-      <canvas id="three-canvas"></canvas>
-      <div class="viewer-hint">
-        <span class="icon">◉</span> Fareyle Tutup Döndürün · Tekerlek Yakınlaştırır
-      </div>
+
+  <!-- ============================================================
+       SLIDE 04 — KİLİDİ AÇMAK (3-fazlı reaksiyon yolculuğu)
+       Kavurma (500-650°C · O₂) → Serbest Au → CIL Liçi (CN⁻) → Doré Au+Ag
+       ============================================================ -->
+  <section class="slide reaction-slide r4-stage" data-slide="4" data-step="0">
+    <!-- Bare frame: only page number kept (no LIVE, no corners, no eyebrow) -->
+    <div class="dna-frame dna-frame--bare" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">04</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
     </div>
-    <div class="viewer-info">
-      <div>
-        <div class="slide-kicker" style="margin-bottom:8px;">İnteraktif 3D · 02</div>
-        <h2 class="slide-title" style="font-size: 34px;">CIL Liç Tankı</h2>
-        <p class="slide-subtitle" style="font-size: 14px; margin-top: 10px;">
-          Karbon adsorpsiyon eşliğinde siyanür liçi. Altın çözünür, eş zamanlı olarak
-          aktif karbon üzerine adsorbe olur.
-        </p>
-      </div>
 
-      <div class="spec-card">
-        <h3>Teknik Özellikler</h3>
-        <div class="spec-row"><span>Tank çapı</span><span>3 – 8 m</span></div>
-        <div class="spec-row"><span>Tank yüksekliği</span><span>3 – 10 m</span></div>
-        <div class="spec-row"><span>Motor gücü</span><span>7.5 – 55 kW</span></div>
-        <div class="spec-row"><span>pH</span><span>10 – 11</span></div>
-        <div class="spec-row"><span>Siyanür</span><span>200 – 500 ppm</span></div>
-        <div class="spec-row"><span>Liç süresi</span><span>24 – 48 saat</span></div>
-        <div class="spec-row"><span>Tank sayısı</span><span>6 – 8 adet</span></div>
-      </div>
+    <!-- Very subtle background texture — sezdiren ısı/altın gradient -->
+    <div class="r4-backdrop" aria-hidden="true"></div>
 
-      <div class="reaction-card">
-        <h3>Kimyasal Reaksiyon</h3>
-        <div class="reaction-eq">
-          4<span class="gold-text">Au</span> + 8NaCN + O₂ + 2H₂O<br/>
-          → 4Na[<span class="gold-text">Au</span>(CN)₂] + 4NaOH
+    <!-- ============== STEP 0 — Açılış cümlesi ============== -->
+    <div class="r4-layer r4-intro" data-show-on="0">
+      <span class="r4-intro__eyebrow">İki kademe · %90-95 kazanım</span>
+      <h2 class="r4-intro__line">
+        <span class="r4-intro__seg">Kafesi ısıyla kırıyoruz,</span>
+        <span class="r4-intro__seg r4-intro__seg--accent">altını siyanürle topluyoruz.</span>
+      </h2>
+    </div>
+
+    <!-- ============== STEP 1 — KAVURMA sahnesi ============== -->
+    <div class="r4-layer r4-scene r4-scene--roast" data-show-on="1">
+      <div class="r4-scene__photo">
+        <img src="assets/images/roasting.jpeg" alt="Kavurma fırını" loading="lazy"/>
+        <div class="r4-scene__veil" aria-hidden="true"></div>
+      </div>
+      <div class="r4-scene__panel">
+        <div class="r4-svgwrap r4-svgwrap--roast" aria-hidden="true">
+          <svg viewBox="0 0 140 64" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <radialGradient id="r4-au-roast" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fbe79a"/>
+                <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <g class="u-scene-heat" stroke="currentColor" fill="none" stroke-width="1.1" stroke-linecap="round" opacity="0.55">
+              <path class="u-heat u-heat--a" d="M44 56 Q42 44 46 36 Q50 28 46 20"/>
+              <path class="u-heat u-heat--b" d="M70 58 Q68 44 72 34 Q76 24 72 14"/>
+              <path class="u-heat u-heat--c" d="M96 56 Q94 44 98 36 Q102 28 98 20"/>
+            </g>
+            <g class="u-scene-cage" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon class="u-cage-frag u-cage-frag--l" points="22,40 14,32 22,24 30,24 30,40"/>
+              <polygon class="u-cage-frag u-cage-frag--r" points="118,40 126,32 118,24 110,24 110,40"/>
+              <line class="u-cage-frag u-cage-frag--t" x1="30" y1="24" x2="110" y2="24"/>
+              <line class="u-cage-frag u-cage-frag--b" x1="30" y1="40" x2="110" y2="40"/>
+            </g>
+            <circle class="u-au-dot" cx="70" cy="32" r="3.4" fill="url(#r4-au-roast)"/>
+            <circle class="u-au-core" cx="70" cy="32" r="1.6" fill="#f5d76e"/>
+          </svg>
+        </div>
+        <div class="r4-scene__info">
+          <span class="r4-scene__no">ADIM 01 · KAVURMA</span>
+          <span class="r4-scene__formula">FeS₂ + O₂ → Fe₂O₃ + SO₂</span>
+          <span class="r4-scene__params">500–650°C · O₂ akışı</span>
+          <p class="r4-scene__sub">Sülfür kafesi parçalanır, Au serbest kalır.</p>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ============ SLIDE 4: CIL LİÇ TANKI — GÖRSEL VERSİYON (alternative to 3D) ============ -->
-  <section class="slide cil-image-slide" data-slide="4">
-    <div class="cil-image-stage">
-      <img class="cil-hero-img" src="assets/images/cil-tanks.jpeg" alt="CIL Liç Tankları" />
-
-      <!-- Animated callout dots over key tank parts -->
-      <div class="cil-callout" style="top: 22%; left: 7%;">
-        <span class="cil-dot"></span>
-        <span class="cil-label">Feed Inlet · Slurry Giriş</span>
+    <!-- ============== STEP 2 — CIL LİÇİ sahnesi ============== -->
+    <div class="r4-layer r4-scene r4-scene--leach" data-show-on="2">
+      <div class="r4-scene__photo">
+        <img src="assets/images/cil-tanks.jpeg" alt="CIL liç tankları" loading="lazy"/>
+        <div class="r4-scene__veil" aria-hidden="true"></div>
       </div>
-      <div class="cil-callout" style="top: 30%; left: 50%;">
-        <span class="cil-dot"></span>
-        <span class="cil-label">Agitator · Karıştırıcı Motor</span>
-      </div>
-      <div class="cil-callout" style="top: 60%; left: 78%;">
-        <span class="cil-dot"></span>
-        <span class="cil-label">Discharge · PLS Çıkış</span>
-      </div>
-      <div class="cil-callout" style="top: 76%; left: 38%;">
-        <span class="cil-dot"></span>
-        <span class="cil-label">Aktif Karbon Yatağı</span>
-      </div>
-
-      <!-- Bottom label badge -->
-      <div class="cil-image-caption">
-        <span class="caption-tag">CIL LEACH BATTERY · 10 t/tank</span>
-        <span class="caption-source">Hikmet Çetin Gold — Konsept Render</span>
-      </div>
-    </div>
-
-    <div class="viewer-info">
-      <div>
-        <div class="slide-kicker" style="margin-bottom:8px;">TEKNİK ŞEMA · 03</div>
-        <h2 class="slide-title" style="font-size: 34px;">CIL Liç Tankı</h2>
-        <p class="slide-subtitle" style="font-size: 14px; margin-top: 10px;">
-          Karbon adsorpsiyon eşliğinde siyanür liçi. Altın çözünür, eş zamanlı olarak
-          aktif karbon üzerine adsorbe olur. Yukarıda tesisimizin konsept render'ı.
-        </p>
-      </div>
-
-      <div class="spec-card">
-        <h3>Teknik Özellikler</h3>
-        <div class="spec-row"><span>Tank çapı</span><span>3 – 8 m</span></div>
-        <div class="spec-row"><span>Tank yüksekliği</span><span>3 – 10 m</span></div>
-        <div class="spec-row"><span>Motor gücü</span><span>7.5 – 55 kW</span></div>
-        <div class="spec-row"><span>pH</span><span>10 – 11</span></div>
-        <div class="spec-row"><span>Siyanür</span><span>200 – 500 ppm</span></div>
-        <div class="spec-row"><span>Liç süresi</span><span>24 – 48 saat</span></div>
-        <div class="spec-row"><span>Tank sayısı</span><span>6 – 8 adet</span></div>
-      </div>
-
-      <div class="reaction-card">
-        <h3>Kimyasal Reaksiyon</h3>
-        <div class="reaction-eq">
-          4<span class="gold-text">Au</span> + 8NaCN + O₂ + 2H₂O<br/>
-          → 4Na[<span class="gold-text">Au</span>(CN)₂] + 4NaOH
+      <div class="r4-scene__panel">
+        <div class="r4-svgwrap r4-svgwrap--leach" aria-hidden="true">
+          <svg viewBox="0 0 140 64" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="r4-liquid-leach" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(212,175,55,0.06)"/>
+                <stop offset="100%" stop-color="rgba(212,175,55,0.18)"/>
+              </linearGradient>
+              <radialGradient id="r4-au-leach" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fbe79a"/>
+                <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <path class="u-tank" d="M30 14 L30 50 Q30 56 36 56 L88 56 Q94 56 94 50 L94 14"
+                  fill="url(#r4-liquid-leach)" stroke="currentColor" stroke-width="1.1"
+                  stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
+            <line x1="62" y1="6" x2="62" y2="18" stroke="currentColor" stroke-width="1.1" opacity="0.55"/>
+            <ellipse class="u-stirrer" cx="62" cy="20" rx="10" ry="2" fill="none"
+                     stroke="currentColor" stroke-width="1.1" opacity="0.65"/>
+            <g class="u-bubbles" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6">
+              <circle class="u-bubble u-bubble--1" cx="42" cy="48" r="2"/>
+              <circle class="u-bubble u-bubble--2" cx="54" cy="50" r="1.6"/>
+              <circle class="u-bubble u-bubble--3" cx="68" cy="48" r="2.2"/>
+              <circle class="u-bubble u-bubble--4" cx="80" cy="50" r="1.8"/>
+            </g>
+            <g class="u-gold-flow">
+              <circle class="u-gold u-gold--1" cx="44" cy="36" r="2.2" fill="url(#r4-au-leach)"/>
+              <circle class="u-gold u-gold--2" cx="58" cy="40" r="1.8" fill="url(#r4-au-leach)"/>
+              <circle class="u-gold u-gold--3" cx="74" cy="34" r="2.4" fill="url(#r4-au-leach)"/>
+            </g>
+            <rect class="u-carbon" x="104" y="22" width="14" height="34" rx="2"
+                  fill="rgba(255,255,255,0.04)" stroke="currentColor" stroke-width="1.1" opacity="0.7"/>
+            <line x1="108" y1="28" x2="114" y2="28" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
+            <line x1="108" y1="34" x2="114" y2="34" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
+            <line x1="108" y1="40" x2="114" y2="40" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
+            <line x1="108" y1="46" x2="114" y2="46" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
+          </svg>
+        </div>
+        <div class="r4-scene__info">
+          <span class="r4-scene__no">ADIM 02 · CIL LİÇİ</span>
+          <span class="r4-scene__formula">Au + 2CN⁻ + ½O₂ → Au(CN)₂⁻</span>
+          <span class="r4-scene__params">CN⁻ · pH 10-11</span>
+          <p class="r4-scene__sub">Au çözünür, aktif karbon onu emer.</p>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ============ SLIDE 5: PROCESS FLOW (5-step plant overview) ============ -->
-  <section class="slide process-slide" data-slide="5">
-    <div class="slide-header">
-      <div class="slide-kicker">PROSES AKIŞI · 04</div>
-      <h2 class="slide-title">Tesis Ekipmanları & Akış Şeması</h2>
-      <p class="slide-subtitle">
-        Sülfürlü cevherden saf altına — entegre 5 aşamalı proses zinciri.
-        Her aşama dünya standardı ekipman ile.
+    <!-- ============== STEP 3 — DORÉ çıktısı sahnesi ============== -->
+    <!-- NOT: Bu görsel ileride doré külçe fotosu ile değiştirilebilir.
+         data-source ile değiştirme hedefi işaretlendi. -->
+    <div class="r4-layer r4-scene r4-scene--gold" data-show-on="3">
+      <div class="r4-scene__photo">
+        <img src="assets/images/electrowinning.jpeg"
+             data-source="dore-bullion.jpeg"
+             alt="Doré külçe çıkışı" loading="lazy"/>
+        <div class="r4-scene__veil" aria-hidden="true"></div>
+      </div>
+      <div class="r4-scene__panel">
+        <div class="r4-svgwrap r4-svgwrap--gold" aria-hidden="true">
+          <svg viewBox="0 0 140 64" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="r4-bar" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"  stop-color="#fbe79a"/>
+                <stop offset="50%" stop-color="#d4af37"/>
+                <stop offset="100%" stop-color="#8a6f1c"/>
+              </linearGradient>
+              <linearGradient id="r4-bar-top" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fff1ba"/>
+                <stop offset="100%" stop-color="#e7c662"/>
+              </linearGradient>
+              <linearGradient id="r4-shine" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%"   stop-color="rgba(255,255,255,0)"/>
+                <stop offset="50%"  stop-color="rgba(255,255,255,0.85)"/>
+                <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+              </linearGradient>
+              <clipPath id="r4-bar-clip">
+                <path d="M30 38 L42 22 L98 22 L110 38 L110 56 L30 56 Z"/>
+              </clipPath>
+            </defs>
+            <g class="u-ingot">
+              <polygon points="42,22 98,22 110,38 30,38" fill="url(#r4-bar-top)" opacity="0.95"/>
+              <polygon points="30,38 110,38 110,56 30,56" fill="url(#r4-bar)"/>
+              <path d="M30 38 L42 22 L98 22 L110 38 L110 56 L30 56 Z"
+                    fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="0.8"/>
+              <path d="M30 38 L110 38" stroke="rgba(0,0,0,0.18)" stroke-width="0.8"/>
+              <text x="70" y="51" text-anchor="middle"
+                    font-family="JetBrains Mono, monospace" font-size="8"
+                    font-weight="600" fill="rgba(0,0,0,0.55)"
+                    letter-spacing="0.15em">Au · Ag</text>
+              <rect class="u-shine" x="-40" y="20" width="36" height="40"
+                    fill="url(#r4-shine)" clip-path="url(#r4-bar-clip)" opacity="0.55"/>
+            </g>
+            <g class="u-sparkles" fill="#fbe79a">
+              <circle class="u-spk u-spk--1" cx="22" cy="16" r="0.9"/>
+              <circle class="u-spk u-spk--2" cx="118" cy="14" r="1.1"/>
+              <circle class="u-spk u-spk--3" cx="58" cy="10" r="0.8"/>
+              <circle class="u-spk u-spk--4" cx="96" cy="8"  r="0.7"/>
+            </g>
+          </svg>
+        </div>
+        <div class="r4-scene__info">
+          <span class="r4-scene__no">ÇIKTI · DORÉ AU + AG</span>
+          <span class="r4-scene__formula r4-scene__formula--gold">%90–95 KAZANIM</span>
+          <span class="r4-scene__params">342 kg/yıl Au · 3.4 t Ag</span>
+          <p class="r4-scene__sub">Külçe (doré) olarak çıkış.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== STEP 4 — Klimaks: Genel kazanım ============== -->
+    <div class="r4-layer r4-climax" data-show-on="4">
+      <div class="r4-climax__steps" aria-hidden="true">
+        <div class="r4-climax__step">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 18 Q6 11 12 11 Q18 11 18 18 Z"/>
+            <path d="M9 8 Q9 5 12 5 Q15 5 15 8" opacity="0.7"/>
+            <path d="M3 21 L21 21"/>
+          </svg>
+          <span>Kavurma</span>
+        </div>
+        <span class="r4-climax__sep">→</span>
+        <div class="r4-climax__step">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+               stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="6" width="12" height="14" rx="2"/>
+            <line x1="12" y1="2" x2="12" y2="6"/>
+            <ellipse cx="12" cy="8" rx="4" ry="1" opacity="0.6"/>
+            <circle cx="9" cy="15" r="1"/>
+            <circle cx="14" cy="17" r="1"/>
+          </svg>
+          <span>CIL Liçi</span>
+        </div>
+        <span class="r4-climax__sep">→</span>
+        <div class="r4-climax__step r4-climax__step--gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="6,10 9,6 15,6 18,10 18,18 6,18" fill="rgba(245,215,110,0.15)"/>
+            <line x1="6" y1="10" x2="18" y2="10"/>
+          </svg>
+          <span>Doré</span>
+        </div>
+      </div>
+
+      <!-- Büyük donut ringi — mevcut .unlock-yield yapısı + climax scale -->
+      <div class="unlock-yield r4-climax__yield" role="img" aria-label="Genel kazanım: yüzde 90 ila 95">
+        <div class="unlock-yield__ring" style="--p:95;">
+          <div class="unlock-yield__center">
+            <span class="unlock-yield__num">%95</span>
+            <span class="unlock-yield__lbl">GENEL KAZANIM</span>
+          </div>
+          <div class="unlock-yield__tick" aria-hidden="true"></div>
+        </div>
+        <div class="unlock-yield__legend r4-climax__legend" aria-hidden="true">
+          <span><i style="background:var(--dna-gold)"></i>Kavurma payı</span>
+          <span><i style="background:var(--dna-gold-bright)"></i>CIL payı</span>
+        </div>
+      </div>
+
+      <p class="r4-climax__line">
+        İki adım. <strong>%95 kazanım.</strong> <em>En denenmiş kombinasyon.</em>
       </p>
     </div>
 
-    <div class="process-flow-container">
-      <div class="process-flow">
+  </section>
 
-        <article class="process-station">
-          <div class="station-image">
-            <div class="station-number">01</div>
-            <img src="assets/images/roasting.jpeg" alt="Kavurma Fırını" loading="lazy"/>
-          </div>
-          <div class="station-content">
-            <div class="station-title">Kavurma Fırını</div>
-            <div class="station-desc">
-              Akışkan yataklı reaktör. Sülfürü oksitler, altını serbest bırakır.
-            </div>
-            <div class="station-specs">
-              <span class="station-spec-tag">500–650 °C</span>
-              <span class="station-spec-tag">30–90 dk</span>
-              <span class="station-spec-tag">FeS₂ → Fe₂O₃</span>
-            </div>
-          </div>
-        </article>
+  <!-- ============================================================
+       SLIDE 05 — YÖNTEM SEÇİMİ (4 yöntem karşılaştırma matrisi)
+       Verim · Hız · CAPEX → Kavurma + CIL kazanan
+       ============================================================ -->
+  <!-- ============================================================
+       SLIDE 05 — YÖNTEM SEÇİMİ · ELEME TURNUVASI
+       6 adım: 0=soru, 1=Ultra, 2=BIOX, 3=POX, 4=Kavurma(KAZANAN), 5=Karşılaştırma
+       Pattern: scripts/slide5-reveal.js (slide3 ile aynı çerçeve)
+       ============================================================ -->
+  <section class="slide method-slide ms-slide" data-slide="5" data-step="0">
+    <div class="dna-frame dna-frame--bare" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">05</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+    </div>
 
-        <div class="process-arrow" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14M13 5l7 7-7 7"/>
-          </svg>
+    <header class="ms-head">
+      <h2 class="ms-head__title">4 yöntem değerlendirildi.</h2>
+      <p class="ms-head__sub">Verim · Hız · CAPEX · Olgunluk kriterleriyle</p>
+    </header>
+
+    <!-- Üst sticky şerit: 4 yöntem ismi (durum: nötr/değerlendiriliyor/elendi/kazanan) -->
+    <nav class="ms-strip" aria-label="Değerlendirilen yöntemler">
+      <div class="ms-tab" data-method="ultra">
+        <span class="ms-tab__num">01</span>
+        <span class="ms-tab__name">Ultra İnce Öğütme</span>
+        <span class="ms-tab__sub">10-20 μm</span>
+        <span class="ms-tab__status"></span>
+      </div>
+      <div class="ms-tab" data-method="biox">
+        <span class="ms-tab__num">02</span>
+        <span class="ms-tab__name">BIOX</span>
+        <span class="ms-tab__sub">40-45°C</span>
+        <span class="ms-tab__status"></span>
+      </div>
+      <div class="ms-tab" data-method="pox">
+        <span class="ms-tab__num">03</span>
+        <span class="ms-tab__name">POX</span>
+        <span class="ms-tab__sub">10-35 bar</span>
+        <span class="ms-tab__status"></span>
+      </div>
+      <div class="ms-tab" data-method="kavurma">
+        <span class="ms-tab__num">04</span>
+        <span class="ms-tab__name">Kavurma + CIL</span>
+        <span class="ms-tab__sub">Klasik + Liç</span>
+        <span class="ms-tab__status"></span>
+      </div>
+    </nav>
+
+    <!-- Sahne: adıma göre tek bir kart / karşılaştırma tablosu görünür -->
+    <div class="ms-stage">
+
+      <!-- ADIM 0: açılış sorusu -->
+      <div class="ms-question" data-show-on="0">
+        <span class="ms-question__lead">Hangisi</span>
+        <span class="ms-question__strong">NTE Pars Metal atığına</span>
+        <span class="ms-question__lead">uygun?</span>
+      </div>
+
+      <!-- ADIM 1: ULTRA İNCE ÖĞÜTME -->
+      <article class="ms-card" data-show-on="1" data-method="ultra">
+        <div class="ms-card__left">
+          <header class="ms-card__head">
+            <span class="ms-card__no">01 / 04 · DEĞERLENDİRİLİYOR</span>
+            <h3 class="ms-card__title">Ultra İnce Öğütme</h3>
+            <span class="ms-card__sub">Mekanik · 10-20 μm tane boyutu</span>
+          </header>
+          <div class="ms-card__metrics">
+            <div class="ms-metric ms-metric--mid">
+              <span class="ms-metric__lbl">Verim</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">%70-85</span>
+            </div>
+            <div class="ms-metric ms-metric--good">
+              <span class="ms-metric__lbl">Hız</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">Hızlı</span>
+            </div>
+            <div class="ms-metric ms-metric--mid">
+              <span class="ms-metric__lbl">CAPEX</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">Enerji yoğun</span>
+            </div>
+            <div class="ms-metric ms-metric--good">
+              <span class="ms-metric__lbl">Olgunluk</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">Yaygın</span>
+            </div>
+          </div>
+        </div>
+        <div class="ms-card__right">
+          <div>
+            <span class="ms-card__reason-lbl">Gerekçe</span>
+            <p class="ms-card__reason">
+              Hızlı ama altının <strong>%15-30'unu kaçırır</strong>.
+              10 g/t tenörümüz için fazla altın kaybı.
+            </p>
+          </div>
+          <footer class="ms-card__verdict ms-card__verdict--bad">
+            <span class="ms-card__verdict-mark">✕</span>
+            <span>Düşük verim</span>
+          </footer>
+        </div>
+      </article>
+
+      <!-- ADIM 2: BIOX -->
+      <article class="ms-card" data-show-on="2" data-method="biox">
+        <div class="ms-card__left">
+          <header class="ms-card__head">
+            <span class="ms-card__no">02 / 04 · DEĞERLENDİRİLİYOR</span>
+            <h3 class="ms-card__title">BIOX</h3>
+            <span class="ms-card__sub">Biyo-oksidasyon · 40-45°C</span>
+          </header>
+          <div class="ms-card__metrics">
+            <div class="ms-metric ms-metric--good">
+              <span class="ms-metric__lbl">Verim</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">%90-95</span>
+            </div>
+            <div class="ms-metric ms-metric--bad">
+              <span class="ms-metric__lbl">Hız</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--bad"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">3-5 gün</span>
+            </div>
+            <div class="ms-metric ms-metric--mid">
+              <span class="ms-metric__lbl">CAPEX</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">Orta</span>
+            </div>
+            <div class="ms-metric ms-metric--mid">
+              <span class="ms-metric__lbl">Olgunluk</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">Sınırlı</span>
+            </div>
+          </div>
+        </div>
+        <div class="ms-card__right">
+          <div>
+            <span class="ms-card__reason-lbl">Gerekçe</span>
+            <p class="ms-card__reason">
+              Verim iyi ama her parti <strong>3-5 gün</strong> sürer.
+              Geri ödeme süresi katlanır.
+            </p>
+          </div>
+          <footer class="ms-card__verdict ms-card__verdict--bad">
+            <span class="ms-card__verdict-mark">✕</span>
+            <span>Uzun çevrim</span>
+          </footer>
+        </div>
+      </article>
+
+      <!-- ADIM 3: POX -->
+      <article class="ms-card" data-show-on="3" data-method="pox">
+        <div class="ms-card__left">
+          <header class="ms-card__head">
+            <span class="ms-card__no">03 / 04 · DEĞERLENDİRİLİYOR</span>
+            <h3 class="ms-card__title">POX</h3>
+            <span class="ms-card__sub">Basınçlı Oksidasyon · 10-35 bar</span>
+          </header>
+          <div class="ms-card__metrics">
+            <div class="ms-metric ms-metric--good">
+              <span class="ms-metric__lbl">Verim</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+                <span class="ms-metric__pip is-on--good"></span>
+              </span>
+              <span class="ms-metric__val">%95-98</span>
+            </div>
+            <div class="ms-metric ms-metric--mid">
+              <span class="ms-metric__lbl">Hız</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">~2 saat</span>
+            </div>
+            <div class="ms-metric ms-metric--bad">
+              <span class="ms-metric__lbl">CAPEX</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--bad"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">Çok yüksek</span>
+            </div>
+            <div class="ms-metric ms-metric--mid">
+              <span class="ms-metric__lbl">Olgunluk</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip is-on--mid"></span>
+                <span class="ms-metric__pip"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">Niş</span>
+            </div>
+          </div>
+        </div>
+        <div class="ms-card__right">
+          <div>
+            <span class="ms-card__reason-lbl">Gerekçe</span>
+            <p class="ms-card__reason">
+              Teknik olarak <strong>en üstün verim</strong>, ama 10-35 bar otoklav
+              <strong>$30-50M CAPEX</strong> gerektirir. Yatırım talebimizi 5×'e çıkarır.
+            </p>
+          </div>
+          <footer class="ms-card__verdict ms-card__verdict--bad">
+            <span class="ms-card__verdict-mark">✕</span>
+            <span>CAPEX engeli</span>
+          </footer>
+        </div>
+      </article>
+
+      <!-- ADIM 4: KAVURMA + CIL · KAZANAN -->
+      <article class="ms-card ms-card--winner" data-show-on="4" data-method="kavurma">
+        <span class="ms-card__ribbon">★ Seçildi</span>
+        <div class="ms-card__left">
+          <header class="ms-card__head">
+            <span class="ms-card__no ms-card__no--win">04 / 04 · SEÇİLEN YÖNTEM</span>
+            <h3 class="ms-card__title">Kavurma + CIL</h3>
+            <span class="ms-card__sub">Klasik Termal + Karbon Liçi</span>
+          </header>
+          <div class="ms-card__metrics">
+            <div class="ms-metric ms-metric--good">
+              <span class="ms-metric__lbl">Verim</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">%90-95</span>
+            </div>
+            <div class="ms-metric ms-metric--good">
+              <span class="ms-metric__lbl">Hız</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+              </span>
+              <span class="ms-metric__val">30-90 dk</span>
+            </div>
+            <div class="ms-metric ms-metric--good">
+              <span class="ms-metric__lbl">CAPEX</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip"></span>
+              </span>
+              <span class="ms-metric__val">Düşük</span>
+            </div>
+            <div class="ms-metric ms-metric--good">
+              <span class="ms-metric__lbl">Olgunluk</span>
+              <span class="ms-metric__bar">
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+                <span class="ms-metric__pip is-on--gold"></span>
+              </span>
+              <span class="ms-metric__val">Endüstri std.</span>
+            </div>
+          </div>
+        </div>
+        <div class="ms-card__right">
+          <div>
+            <span class="ms-card__reason-lbl">Gerekçe</span>
+            <p class="ms-card__reason">
+              %90-95 verim, 30-90 dk çevrim, düşük CAPEX, endüstri standardı.
+              NTE Pars Metal atığındaki <strong>pirit + arsenopirit</strong> kombinasyonu için ideal.
+            </p>
+          </div>
+          <footer class="ms-card__verdict ms-card__verdict--good">
+            <svg class="ms-card__verdict-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 1 L10 6 L15.5 6.5 L11.3 10.2 L12.7 15.5 L8 12.6 L3.3 15.5 L4.7 10.2 L0.5 6.5 L6 6 Z"/>
+            </svg>
+            <span>En hızlı geri ödeme</span>
+          </footer>
+        </div>
+      </article>
+
+      <!-- ADIM 5: KARŞILAŞTIRMA TABLOSU -->
+      <div class="ms-compare" data-show-on="5">
+        <div class="ms-compare__caption">Şeffaf değerlendirme — 4 yöntem, 1 kazanan</div>
+        <div class="ms-compare__grid">
+
+          <article class="ms-mini" data-method="ultra">
+            <span class="ms-mini__no">01 / 04</span>
+            <span class="ms-mini__name">Ultra İnce Öğütme</span>
+            <span class="ms-mini__sub">10-20 μm</span>
+            <div class="ms-mini__rows">
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Verim</span><span class="ms-mini__row-val">%70-85</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Hız</span><span class="ms-mini__row-val">Hızlı</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">CAPEX</span><span class="ms-mini__row-val">Enerji yoğun</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Olgunluk</span><span class="ms-mini__row-val">Yaygın</span></div>
+            </div>
+            <div class="ms-mini__verdict">× Düşük verim</div>
+          </article>
+
+          <article class="ms-mini" data-method="biox">
+            <span class="ms-mini__no">02 / 04</span>
+            <span class="ms-mini__name">BIOX</span>
+            <span class="ms-mini__sub">40-45°C</span>
+            <div class="ms-mini__rows">
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Verim</span><span class="ms-mini__row-val">%90-95</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Hız</span><span class="ms-mini__row-val">3-5 gün</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">CAPEX</span><span class="ms-mini__row-val">Orta</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Olgunluk</span><span class="ms-mini__row-val">Sınırlı</span></div>
+            </div>
+            <div class="ms-mini__verdict">× Uzun çevrim</div>
+          </article>
+
+          <article class="ms-mini" data-method="pox">
+            <span class="ms-mini__no">03 / 04</span>
+            <span class="ms-mini__name">POX</span>
+            <span class="ms-mini__sub">10-35 bar</span>
+            <div class="ms-mini__rows">
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Verim</span><span class="ms-mini__row-val">%95-98</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Hız</span><span class="ms-mini__row-val">~2 saat</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">CAPEX</span><span class="ms-mini__row-val">Çok yüksek</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Olgunluk</span><span class="ms-mini__row-val">Niş</span></div>
+            </div>
+            <div class="ms-mini__verdict">× CAPEX engeli</div>
+          </article>
+
+          <article class="ms-mini is-winner" data-method="kavurma">
+            <span class="ms-mini__ribbon">★ Seçildi</span>
+            <span class="ms-mini__no">04 / 04</span>
+            <span class="ms-mini__name">Kavurma + CIL</span>
+            <span class="ms-mini__sub">Klasik + Liç</span>
+            <div class="ms-mini__rows">
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Verim</span><span class="ms-mini__row-val">%90-95</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Hız</span><span class="ms-mini__row-val">30-90 dk</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">CAPEX</span><span class="ms-mini__row-val">Düşük</span></div>
+              <div class="ms-mini__row"><span class="ms-mini__row-lbl">Olgunluk</span><span class="ms-mini__row-val">Endüstri std.</span></div>
+            </div>
+            <div class="ms-mini__verdict">✓ En hızlı geri ödeme</div>
+          </article>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 04 — SİNEMATİK HARİTA (6+7+8 birleşik)
+       3 zoom seviyesi: Dünya → Tethyan (rakipler) → Safadaşt (saha)
+       Tüm bilgi korundu: 4 kuşak · dünya madenleri · saha detayı
+       ============================================================ -->
+  <section class="slide map-slide cinematic-map-slide" data-slide="6" data-step="0">
+    <!-- Leaflet harita — full-bleed arka plan -->
+    <div id="map" class="cmap-bg"></div>
+
+    <!-- Okunabilirlik için soft vignette/gradient karartı -->
+    <div class="cmap-overlay" aria-hidden="true"></div>
+
+    <!-- dna-frame — en üst katman -->
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">06</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+      <span class="dna-eyebrow dna-frame__eyebrow">
+        <span class="dna-eyebrow__num">06</span>
+        <span>DÜNYA · JEOLOJİ · SAHA</span>
+      </span>
+    </div>
+
+    <!-- Başlık overlay — sol üst, harita üstüne biner -->
+    <header class="dna-slide-head dna-slide-head--compact cmap-head">
+      <h2 class="dna-A2 cmap-title" aria-live="polite">
+        <span class="cmap-title__line" data-step="0">
+          Altın belirli kuşaklarda <em class="dna-italic dna-accent">yoğunlaşır.</em>
+        </span>
+        <span class="cmap-title__line" data-step="1">
+          Aynı kuşakta <em class="dna-italic dna-accent">dünya devleri çalışıyor.</em>
+        </span>
+        <span class="cmap-title__line" data-step="2">
+          Rakipler milyarlarla. Biz <em class="dna-italic dna-accent">$10M atık tesisiyle</em> başlıyoruz.
+        </span>
+        <span class="cmap-title__line" data-step="3">
+          Sahamız: <em class="dna-italic dna-accent">Safadaşt, İran.</em>
+        </span>
+        <span class="cmap-title__line" data-step="4">
+          Aynı kuşak, <em class="dna-italic dna-accent">aynı jeoloji.</em>
+        </span>
+      </h2>
+    </header>
+
+    <div class="cinematic-map-container">
+
+      <!-- Sağ side panel — adıma göre cross-fade, harita üstüne biner -->
+      <aside class="map-info-panel cmap-panel">
+
+        <!-- STEP 0: DÜNYA · 4 KUŞAK -->
+        <div class="mip-section active" data-zoom-info="world">
+          <h4>4 ANA JEOLOJİK KUŞAK</h4>
+          <div class="belt-item highlight">
+            <span class="belt-dot" style="background:#d4af37"></span>
+            <div>
+              <strong>Tethyan Kuşağı</strong>
+              <span>Türkiye · İran · Pakistan · Çin</span>
+            </div>
+          </div>
+          <div class="belt-item">
+            <span class="belt-dot" style="background:#4fa3ff"></span>
+            <div>
+              <strong>Pacific Kuşağı</strong>
+              <span>ABD · Kanada · Peru · Şili</span>
+            </div>
+          </div>
+          <div class="belt-item">
+            <span class="belt-dot" style="background:#7aff8e"></span>
+            <div>
+              <strong>African Craton</strong>
+              <span>G. Afrika · Batı Afrika</span>
+            </div>
+          </div>
+          <div class="belt-item">
+            <span class="belt-dot" style="background:#c39bff"></span>
+            <div>
+              <strong>Eurasian Kuşağı</strong>
+              <span>Rusya · Kazakistan · Çin</span>
+            </div>
+          </div>
+          <div class="mip-legend-mines">
+            <strong>Dünyada aktif sülfürlü altın madenleri:</strong>
+            <span>Carlin Trend, Goldstrike, Kalgoorlie, Witwatersrand, Olimpiada, Muruntau, Jinfeng…</span>
+          </div>
         </div>
 
-        <article class="process-station">
-          <div class="station-image">
-            <div class="station-number">02</div>
-            <img src="assets/images/cil-tanks.jpeg" alt="CIL Liç Tankları" loading="lazy"/>
+        <!-- STEP 1: TETHYAN · KOMŞU RAKİPLER -->
+        <div class="mip-section" data-zoom-info="tethyan">
+          <h4>TETHYAN · KOMŞU RAKİPLER</h4>
+          <ul class="competitor-list">
+            <li>
+              <span class="cmp-flag">🇹🇷</span>
+              <div><strong>Öksüt</strong><span>SSR Mining</span></div>
+            </li>
+            <li>
+              <span class="cmp-flag">🇹🇷</span>
+              <div><strong>Çöpler</strong><span>SSR Mining · POX</span></div>
+            </li>
+            <li class="primary">
+              <span class="cmp-flag">★</span>
+              <div><strong>Hikmet Çetin Gold</strong><span>Safadaşt · $10M CAPEX</span></div>
+            </li>
+            <li>
+              <span class="cmp-flag">🇮🇷</span>
+              <div><strong>Zarshuran</strong><span>IMPASCO · İran'ın 1.'si</span></div>
+            </li>
+            <li>
+              <span class="cmp-flag">🇵🇰</span>
+              <div><strong>Reko Diq</strong><span>Barrick · Pakistan</span></div>
+            </li>
+          </ul>
+          <div class="competitor-note">
+            Rakipler <strong>$1–2 milyar+</strong> yatırım gerektiriyor.
+            Biz aynı kuşakta <strong>$10M atık tesisiyle</strong> başlıyoruz.
           </div>
-          <div class="station-content">
-            <div class="station-title">CIL Liç Tankları</div>
-            <div class="station-desc">
-              Siyanür ile altın çözünür, aynı anda aktif karbon üzerine adsorbe olur.
-            </div>
-            <div class="station-specs">
-              <span class="station-spec-tag">pH 10–11</span>
-              <span class="station-spec-tag">200–500 ppm CN⁻</span>
-              <span class="station-spec-tag">24–48 saat</span>
-            </div>
-          </div>
-        </article>
-
-        <div class="process-arrow" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14M13 5l7 7-7 7"/>
-          </svg>
         </div>
 
-        <article class="process-station">
-          <div class="station-image">
-            <div class="station-number">03</div>
-            <img src="assets/images/adsorption.jpeg" alt="Karbon Adsorpsiyon Kolonları" loading="lazy"/>
-          </div>
-          <div class="station-content">
-            <div class="station-title">Karbon Adsorpsiyon</div>
-            <div class="station-desc">
-              Yüklü PLS aktif karbon kolonlarından geçer. Altın karbon yüzeyine konsantre olur.
+        <!-- STEP 2: CAPEX KARŞILAŞTIRMA — slaytın klimaks anı -->
+        <div class="mip-section" data-zoom-info="capex">
+          <h4>CAPEX · TETHYAN KARŞILAŞTIRMA</h4>
+          <div class="capex-bar">
+            <div class="capex-bar__row">
+              <span class="capex-bar__name">Reko Diq</span>
+              <div class="capex-bar__track"><div class="capex-bar__fill" style="--w:100%"></div></div>
+              <span class="capex-bar__val">~$7B</span>
             </div>
-            <div class="station-specs">
-              <span class="station-spec-tag">4 kolon</span>
-              <span class="station-spec-tag">6–12 mesh</span>
-              <span class="station-spec-tag">%95+ kazanım</span>
+            <div class="capex-bar__row">
+              <span class="capex-bar__name">Çöpler</span>
+              <div class="capex-bar__track"><div class="capex-bar__fill" style="--w:28.6%"></div></div>
+              <span class="capex-bar__val">~$2B</span>
+            </div>
+            <div class="capex-bar__row">
+              <span class="capex-bar__name">Zarshuran</span>
+              <div class="capex-bar__track"><div class="capex-bar__fill" style="--w:14.3%"></div></div>
+              <span class="capex-bar__val">~$1B</span>
+            </div>
+            <div class="capex-bar__row">
+              <span class="capex-bar__name">Öksüt</span>
+              <div class="capex-bar__track"><div class="capex-bar__fill" style="--w:7.1%"></div></div>
+              <span class="capex-bar__val">~$500M</span>
+            </div>
+            <div class="capex-bar__row capex-bar__row--us">
+              <span class="capex-bar__name">★ NTE Pars</span>
+              <div class="capex-bar__track"><div class="capex-bar__fill capex-bar__fill--us" style="--w:0.14%"></div></div>
+              <span class="capex-bar__val">$10M</span>
             </div>
           </div>
-        </article>
-
-        <div class="process-arrow" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14M13 5l7 7-7 7"/>
-          </svg>
+          <div class="capex-bar__footer">
+            Rakamlar: kamuya açık şirket raporlarından tahmini.
+          </div>
         </div>
 
-        <article class="process-station">
-          <div class="station-image">
-            <div class="station-number">04</div>
-            <img src="assets/images/carbon-regen.jpeg" alt="Karbon Rejenerasyon" loading="lazy"/>
-          </div>
-          <div class="station-content">
-            <div class="station-title">Karbon Rejenerasyon</div>
-            <div class="station-desc">
-              Elution sonrası karbon 700°C'de yeniden aktive edilir — sürekli karbon döngüsü.
-            </div>
-            <div class="station-specs">
-              <span class="station-spec-tag">700 °C</span>
-              <span class="station-spec-tag">Sürekli akış</span>
-              <span class="station-spec-tag">%90+ aktivasyon</span>
-            </div>
-          </div>
-        </article>
-
-        <div class="process-arrow" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14M13 5l7 7-7 7"/>
-          </svg>
+        <!-- STEP 3: SAFADAŞT · SAHA DETAYI -->
+        <div class="mip-section" data-zoom-info="safadast">
+          <h4>SAFADAŞT — SAHA ÖZELLİKLERİ</h4>
+          <ul class="site-features compact">
+            <li>
+              <span class="sf-label">Koordinat</span>
+              <span class="sf-val">35.72° K · 50.83° D</span>
+            </li>
+            <li>
+              <span class="sf-label">Jeolojik Kuşak</span>
+              <span class="sf-val">Tethyan Metallogenic</span>
+            </li>
+            <li>
+              <span class="sf-label">Hammadde</span>
+              <span class="sf-val">Antimon (Sb₂O₃) atığı</span>
+            </li>
+            <li>
+              <span class="sf-label">Komşu Maden</span>
+              <span class="sf-val">Zarshuran (İran'ın 1.)</span>
+            </li>
+            <li>
+              <span class="sf-label">Bölge Tipi</span>
+              <span class="sf-val">Aktif madencilik bölgesi</span>
+            </li>
+          </ul>
         </div>
 
-        <article class="process-station">
-          <div class="station-image">
-            <div class="station-number">05</div>
-            <img src="assets/images/electrowinning.jpeg" alt="Electrowinning + Döküm" loading="lazy"/>
+        <!-- STEP 4: KAPANIŞ QUOTE -->
+        <div class="mip-section" data-zoom-info="quote">
+          <h4>AYNI KUŞAK · AYNI JEOLOJİ</h4>
+          <div class="site-quote site-quote--hero">
+            "Aynı jeolojik kuşakta Türkiye'de <strong>Öksüt &amp; Çöpler</strong>,
+            Pakistan'da <strong>Reko Diq</strong>, İran'da <strong>Zarshuran</strong> —
+            ve Safadaşt'ta <strong class="cmap-us">NTE PARS METAL</strong>."
           </div>
-          <div class="station-content">
-            <div class="station-title">Electrowinning + Döküm</div>
-            <div class="station-desc">
-              DC elektroliz hücresinde altın katoda çöker. Doré külçe olarak dökülür.
-            </div>
-            <div class="station-specs">
-              <span class="station-spec-tag">3V / 250A DC</span>
-              <span class="station-spec-tag">Au katot</span>
-              <span class="station-spec-tag">Doré külçe</span>
-            </div>
-          </div>
-        </article>
+        </div>
+      </aside>
+    </div>
+  </section>
 
+  <!-- ============================================================
+       SLIDE 07 — HAMMADDE FARKIMIZ (DNA bento + konsept rail)
+       ============================================================ -->
+  <!-- ============================================================
+       SLIDE 07 — HAMMADDE FARKIMIZ: ATIK (sinematik 5-adım)
+       0 → açılış sorusu (tam ekran atık görseli)
+       1 → klasik vs NTE karşılaştırma (görsel ölçek farkı)
+       2 → + gümüş bonusu (sağ sütuna pop-in)
+       3 → gelir akışı (10 g/t Au + 100 g/t Ag → $25M → $22M)
+       4 → ESG sahnesi (3 ikon)
+       Pattern: scripts/slide7-reveal.js (slide6-reveal.js ile aynı çerçeve)
+       ============================================================ -->
+  <section class="slide s7-slide" data-slide="7" data-step="0">
+    <div class="dna-frame dna-frame--bare" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">07</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+    </div>
+
+    <!-- Katman 1: Arka plan görseli (atık) -->
+    <!-- NOT: img src kolayca değiştirilebilir — kullanıcı sonradan
+         daha sinematik atık görseli üretecek (örn. tailings-hero.jpeg) -->
+    <div class="s7-bg" aria-hidden="true">
+      <div class="s7-bg__img"
+           data-source="tailings-hero.jpeg"
+           style="background-image:url('assets/images/refractory-problem.jpeg');"></div>
+      <div class="s7-bg__overlay"></div>
+      <div class="s7-bg__overlay s7-bg__overlay--esg"></div>
+    </div>
+
+    <!-- Katman 2: Üst satır (step başına farklı tek cümle) -->
+    <div class="s7-topline" aria-live="polite">
+      <p class="s7-topline__line" data-line="1">
+        Klasik madenler bunu cevher kabul eder.
+        <strong>Bizimki, onların atığı.</strong>
+      </p>
+      <p class="s7-topline__line" data-line="2">
+        Üstüne <strong>gümüş bonusu</strong> — doré külçede çıkış.
+      </p>
+      <p class="s7-topline__line" data-line="3">
+        Atık yığınından <strong>yıllık $22M net kâr.</strong>
+      </p>
+      <p class="s7-topline__line" data-line="4">
+        <em class="dna-italic">Modern ESG hikayesi:</em>
+        kirli atık, temiz altın.
+      </p>
+    </div>
+
+    <!-- Sahne 0: Açılış sorusu (tam ekran) -->
+    <div class="s7-stage s7-stage--question" data-stage="question">
+      <h2 class="s7-question">
+        Atık dediğin şey,
+        <em class="dna-italic dna-accent">ne kadar zengin?</em>
+      </h2>
+    </div>
+
+    <!-- Sahne 1+2: Klasik vs NTE karşılaştırma -->
+    <div class="s7-stage s7-stage--compare" data-stage="compare">
+      <div class="s7-compare">
+        <div class="s7-compare-col s7-compare-col--classic">
+          <span class="s7-compare-col__label">KLASİK ALTIN MADENİ</span>
+          <div class="s7-drop-wrap s7-drop-wrap--sm">
+            <svg class="s7-drop s7-drop--sm" viewBox="0 0 32 40" aria-hidden="true">
+              <path d="M16 2 C 8 14, 4 22, 4 28 a 12 12 0 0 0 24 0 c 0 -6 -4 -14 -12 -26 Z"
+                    fill="#5a5a5a" opacity="0.7"/>
+            </svg>
+          </div>
+          <div class="s7-compare-col__value">
+            0.5–2<span class="s7-compare-col__unit">g/t Au</span>
+          </div>
+          <p class="s7-compare-col__sub">ekonomik cevher kabul edilir</p>
+        </div>
+
+        <div class="s7-compare-col s7-compare-col--ours">
+          <span class="s7-compare-col__label">NTE PARS METAL · ATIK</span>
+          <div class="s7-drop-wrap s7-drop-wrap--xl">
+            <svg class="s7-drop s7-drop--xl" viewBox="0 0 32 40" aria-hidden="true">
+              <defs>
+                <linearGradient id="s7-drop-gold" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#fbe79a"/>
+                  <stop offset="55%" stop-color="#d4af37"/>
+                  <stop offset="100%" stop-color="#8a6a14"/>
+                </linearGradient>
+              </defs>
+              <path d="M16 2 C 8 14, 4 22, 4 28 a 12 12 0 0 0 24 0 c 0 -6 -4 -14 -12 -26 Z"
+                    fill="url(#s7-drop-gold)"/>
+            </svg>
+          </div>
+          <div class="s7-compare-col__value s7-gold">
+            10<span class="s7-compare-col__unit">g/t Au</span>
+          </div>
+          <p class="s7-compare-col__sub">5–20× daha zengin</p>
+
+          <!-- Gümüş bonusu (step 2'de görünür) -->
+          <div class="s7-silver">
+            <svg class="s7-drop s7-drop--ag" viewBox="0 0 32 40" aria-hidden="true">
+              <path d="M16 2 C 8 14, 4 22, 4 28 a 12 12 0 0 0 24 0 c 0 -6 -4 -14 -12 -26 Z"
+                    fill="#d8d8de"/>
+            </svg>
+            <span class="s7-silver__text">
+              + <strong>100 g/t Ag</strong>
+              <em class="s7-silver__sub">gümüş yan ürünü</em>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="process-kpis">
-      <div class="kpi">
-        <span class="kpi-value">%95–98</span>
-        <span class="kpi-label">Altın Kazanımı</span>
+    <!-- Sahne 3: Gelir akışı -->
+    <div class="s7-stage s7-stage--revenue" data-stage="revenue">
+      <div class="s7-rev">
+        <div class="s7-rev__row s7-rev__row--input">
+          <span class="s7-rev__chip">10 g/t Au</span>
+          <span class="s7-rev__plus">+</span>
+          <span class="s7-rev__chip">100 g/t Ag</span>
+        </div>
+        <span class="s7-rev__arrow" aria-hidden="true">↓</span>
+        <div class="s7-rev__row">
+          <div class="s7-rev__big">
+            ~$25<span class="s7-rev__unit">M</span>
+          </div>
+          <span class="s7-rev__label">yıllık gelir</span>
+        </div>
+        <span class="s7-rev__arrow" aria-hidden="true">↓</span>
+        <div class="s7-rev__row">
+          <div class="s7-rev__big s7-rev__big--final s7-gold">
+            ~$22<span class="s7-rev__unit">M</span>
+          </div>
+          <span class="s7-rev__label s7-rev__label--final">net kâr</span>
+        </div>
       </div>
-      <div class="kpi">
-        <span class="kpi-value">100 t/gün</span>
-        <span class="kpi-label">Tasarım Kapasitesi</span>
-      </div>
-      <div class="kpi">
-        <span class="kpi-value">24–48 sa</span>
-        <span class="kpi-label">Liç Süresi</span>
-      </div>
-      <div class="kpi">
-        <span class="kpi-value">DORÉ</span>
-        <span class="kpi-label">Çıktı Formu</span>
+    </div>
+
+    <!-- Sahne 4: ESG -->
+    <div class="s7-stage s7-stage--esg" data-stage="esg">
+      <div class="s7-esg">
+        <article class="s7-esg-card">
+          <svg class="s7-esg-card__icon" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M16 4 L22 12 L19 12 L19 18 L13 18 L13 12 L10 12 Z"
+                  fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M4 22 L10 30 L7 30 L7 26 L4 26 Z M28 22 L22 30 L25 30 L25 26 L28 26 Z"
+                  fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          <h3 class="s7-esg-card__title">ATIK DEĞERLENDİRME</h3>
+          <p class="s7-esg-card__desc">
+            Linear ekonomiyi kapatıyoruz — <strong>ölü atık, üretken kaynak.</strong>
+          </p>
+        </article>
+
+        <article class="s7-esg-card">
+          <svg class="s7-esg-card__icon" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M27 5 C 13 5 5 13 5 27 C 19 27 27 19 27 5 Z"
+                  fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M5 27 L20 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <h3 class="s7-esg-card__title">ÇEVRE REHABİLİTASYONU</h3>
+          <p class="s7-esg-card__desc">
+            Atık alanı <strong>işlenirken temizleniyor.</strong>
+          </p>
+        </article>
+
+        <article class="s7-esg-card">
+          <svg class="s7-esg-card__icon" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M9 16 L14 21 L23 11" fill="none" stroke="currentColor"
+                  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3 class="s7-esg-card__title">DÜŞÜK KARBON AYAK İZİ</h3>
+          <p class="s7-esg-card__desc">
+            Yeni saha açımı yok — <strong>ekipman atık üzerinde yerleşiyor.</strong>
+          </p>
+        </article>
       </div>
     </div>
   </section>
 
+  <!-- ============================================================
+       SLIDE 08 — TESİS & PROSES (DNA)
+       4 zone strip + 5 process station + KPI strip
+       ============================================================ -->
+  <section class="slide s8-slide" data-slide="8" data-step="0">
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">08</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+      <span class="dna-eyebrow dna-frame__eyebrow">
+        <span class="dna-eyebrow__num">08</span>
+        <span>TESİS ATLASI</span>
+      </span>
+    </div>
+
+    <!-- Üst tek satır -->
+    <header class="s8-topline">
+      <p class="s8-topline__line s8-topline__line--default">
+        Cevherden külçeye — <em>6 ünite</em>, <strong>48 saat</strong> altında.
+      </p>
+      <p class="s8-topline__line s8-topline__line--final">
+        6 ünite. 48 saat. <strong>%95 metal kazanımı.</strong>
+      </p>
+    </header>
+
+    <div class="s8-stage">
+
+      <!-- SOL: tesis atlası -->
+      <div class="s8-atlas">
+        <div class="s8-atlas__img" style="background-image: url('assets/images/plant-overview.jpeg');"></div>
+        <div class="s8-atlas__overlay"></div>
+        <span class="s8-atlas__title">TESİS GENEL GÖRÜNÜM · 6 ANA ÜNİTE</span>
+        <div class="s8-atlas__pins">
+          <div class="s8-pin" data-unit="1" style="top: 58%; left: 12%;">
+            <span class="s8-pin__num">01</span>
+            <span class="s8-pin__label">KAVURMA</span>
+          </div>
+          <div class="s8-pin" data-unit="2" style="top: 32%; left: 26%;">
+            <span class="s8-pin__num">02</span>
+            <span class="s8-pin__label">OKSİJEN</span>
+          </div>
+          <div class="s8-pin" data-unit="3" style="top: 64%; left: 42%;">
+            <span class="s8-pin__num">03</span>
+            <span class="s8-pin__label">CIL LİÇ</span>
+          </div>
+          <div class="s8-pin" data-unit="4" style="top: 48%; left: 58%;">
+            <span class="s8-pin__num">04</span>
+            <span class="s8-pin__label">ADSORPSİYON</span>
+          </div>
+          <div class="s8-pin" data-unit="5" style="top: 36%; left: 74%;">
+            <span class="s8-pin__num">05</span>
+            <span class="s8-pin__label">REJENERASYON</span>
+          </div>
+          <div class="s8-pin" data-unit="6" style="top: 62%; left: 88%;">
+            <span class="s8-pin__num">06</span>
+            <span class="s8-pin__label">ELECTROWINNING</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAĞ: sticky liste + mini viewer -->
+      <aside class="s8-side">
+
+        <!-- Ünite listesi -->
+        <ol class="s8-list">
+          <li class="s8-list__item" data-unit="1">
+            <span class="s8-list__num">01</span>
+            <span class="s8-list__name">Kavurma Fırını</span>
+            <span class="s8-list__sub">500–650 °C</span>
+          </li>
+          <li class="s8-list__item" data-unit="2">
+            <span class="s8-list__num">02</span>
+            <span class="s8-list__name">Oksijen Tesisi</span>
+            <span class="s8-list__sub">O₂ üretimi</span>
+          </li>
+          <li class="s8-list__item" data-unit="3">
+            <span class="s8-list__num">03</span>
+            <span class="s8-list__name">CIL Liç Tankı</span>
+            <span class="s8-list__sub">pH 10–11 · 24–48 sa</span>
+          </li>
+          <li class="s8-list__item" data-unit="4">
+            <span class="s8-list__num">04</span>
+            <span class="s8-list__name">Karbon Adsorpsiyon</span>
+            <span class="s8-list__sub">4 kolon</span>
+          </li>
+          <li class="s8-list__item" data-unit="5">
+            <span class="s8-list__num">05</span>
+            <span class="s8-list__name">Karbon Rejenerasyon</span>
+            <span class="s8-list__sub">700 °C</span>
+          </li>
+          <li class="s8-list__item" data-unit="6">
+            <span class="s8-list__num">06</span>
+            <span class="s8-list__name">Electrowinning + Doré</span>
+            <span class="s8-list__sub">3 V / 250 A</span>
+          </li>
+        </ol>
+
+        <!-- Mini viewer (3D canvas + thumbnail fallback + caption) -->
+        <div class="s8-mini">
+          <div class="s8-mini__hint">→ Sağ ok ile sıradaki üniteye geç</div>
+
+          <article class="s8-mini__card" data-unit="1">
+            <div class="s8-mini__viewer">
+              <img class="s8-mini__thumb" src="assets/images/roasting-exploded.jpeg" alt="Kavurma fırını" />
+              <canvas class="s8-mini__canvas" id="s8-canvas-roaster"></canvas>
+            </div>
+            <div class="s8-mini__caption">
+              <div class="s8-mini__line1">01 · Kavurma Fırını · 500–650 °C · Akışkan yataklı reaktör</div>
+              <div class="s8-mini__line2">Sülfür kafesini parçalar, altın serbest kalır.</div>
+            </div>
+          </article>
+
+          <article class="s8-mini__card" data-unit="2">
+            <div class="s8-mini__viewer">
+              <img class="s8-mini__thumb" src="assets/images/oxygen-plant.jpeg" alt="Oksijen tesisi" />
+              <canvas class="s8-mini__canvas" id="s8-canvas-oxygen"></canvas>
+            </div>
+            <div class="s8-mini__caption">
+              <div class="s8-mini__line1">02 · Oksijen Tesisi · O₂ üretimi</div>
+              <div class="s8-mini__line2">Kavurma ve CIL'in oksidan kaynağı.</div>
+            </div>
+          </article>
+
+          <article class="s8-mini__card" data-unit="3">
+            <div class="s8-mini__viewer">
+              <img class="s8-mini__thumb" src="assets/images/cil-tanks.jpeg" alt="CIL liç tankı" />
+              <canvas class="s8-mini__canvas" id="s8-canvas-cil"></canvas>
+            </div>
+            <div class="s8-mini__caption">
+              <div class="s8-mini__line1">03 · CIL Liç Tankı · pH 10–11 · 200–500 ppm CN⁻ · 24–48 sa</div>
+              <div class="s8-mini__line2">Au çözünür, aynı anda aktif karbona yüklenir.</div>
+            </div>
+          </article>
+
+          <article class="s8-mini__card" data-unit="4">
+            <div class="s8-mini__viewer">
+              <img class="s8-mini__thumb" src="assets/images/adsorption.jpeg" alt="Karbon adsorpsiyon" />
+              <canvas class="s8-mini__canvas" id="s8-canvas-ads"></canvas>
+            </div>
+            <div class="s8-mini__caption">
+              <div class="s8-mini__line1">04 · Karbon Adsorpsiyon · 4 kolon</div>
+              <div class="s8-mini__line2">Au aktif karbon yüzeyine konsantre olur.</div>
+            </div>
+          </article>
+
+          <article class="s8-mini__card" data-unit="5">
+            <div class="s8-mini__viewer">
+              <img class="s8-mini__thumb" src="assets/images/carbon-regen.jpeg" alt="Karbon rejenerasyon" />
+              <canvas class="s8-mini__canvas" id="s8-canvas-regen"></canvas>
+            </div>
+            <div class="s8-mini__caption">
+              <div class="s8-mini__line1">05 · Karbon Rejenerasyon · 700 °C</div>
+              <div class="s8-mini__line2">Sürekli karbon döngüsü — yeniden aktifleşir.</div>
+            </div>
+          </article>
+
+          <article class="s8-mini__card" data-unit="6">
+            <div class="s8-mini__viewer">
+              <img class="s8-mini__thumb" src="assets/images/electrowinning.jpeg" alt="Electrowinning" />
+              <canvas class="s8-mini__canvas" id="s8-canvas-ew"></canvas>
+            </div>
+            <div class="s8-mini__caption">
+              <div class="s8-mini__line1">06 · Electrowinning + Doré · 3 V / 250 A</div>
+              <div class="s8-mini__line2">Au katoda çöker, doré külçe dökülür.</div>
+            </div>
+          </article>
+
+          <!-- Final KPI overlay (step 7) -->
+          <div class="s8-final">
+            <div class="s8-final__stats">
+              <div class="s8-final__stat">
+                <span class="s8-final__val">%95</span>
+                <span class="s8-final__lbl">Metal Kazanımı</span>
+              </div>
+              <div class="s8-final__stat">
+                <span class="s8-final__val">100<sup>t/gün</sup></span>
+                <span class="s8-final__lbl">Tasarım</span>
+              </div>
+              <div class="s8-final__stat">
+                <span class="s8-final__val">36K<sup>t/yıl</sup></span>
+                <span class="s8-final__lbl">İşleme</span>
+              </div>
+              <div class="s8-final__stat">
+                <span class="s8-final__val">Doré</span>
+                <span class="s8-final__lbl">Au + Ag</span>
+              </div>
+            </div>
+            <p class="s8-final__bridge">Her ünite, sıradaki 6 slaytta detayda.</p>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 09 — KAVURMA FIRINI (DNA)
+       ============================================================ -->
+  <section class="slide equipment-slide" data-slide="9">
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">09</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+      <span class="dna-frame__corner dna-frame__corner--tl"></span>
+      <span class="dna-frame__corner dna-frame__corner--tr"></span>
+      <span class="dna-frame__corner dna-frame__corner--bl"></span>
+      <span class="dna-frame__corner dna-frame__corner--br"></span>
+      <span class="dna-eyebrow dna-frame__eyebrow">
+        <span class="dna-eyebrow__num">09</span>
+        <span>EKİPMAN · KAVURMA</span>
+      </span>
+    </div>
+
+    <div class="dna-eq">
+
+      <!-- SOL: 3D/2D viewer -->
+      <div class="dna-eq__viewer">
+        <div class="equipment-toggle">
+          <div class="toggle-controls">
+            <button class="toggle-btn active" data-pane="3d">
+              <span class="tb-icon">◉</span> 3D İNTERAKTİF
+            </button>
+            <button class="toggle-btn" data-pane="2d">
+              <span class="tb-icon">▦</span> GÖRSEL RENDER
+            </button>
+          </div>
+          <div class="toggle-content">
+            <div class="toggle-pane active" data-pane="3d">
+              <div class="viewer-stage">
+                <canvas id="three-canvas-roaster"></canvas>
+                <div class="viewer-hint">◉ Fareyle Döndürün · Tekerlekle Yakınlaştırın</div>
+              </div>
+            </div>
+            <div class="toggle-pane" data-pane="2d">
+              <div class="equipment-stage">
+                <img src="assets/images/roasting-exploded.jpeg" alt="Kavurma fırını detay görsel" />
+                <div class="eq-callout" style="top: 18%; left: 12%;">
+                  <span class="cil-dot"></span><span class="cil-label">Besleme Hopperı</span>
+                </div>
+                <div class="eq-callout" style="top: 45%; left: 8%;">
+                  <span class="cil-dot"></span><span class="cil-label">Distribütör Plaka</span>
+                </div>
+                <div class="eq-callout" style="top: 32%; right: 8%;">
+                  <span class="cil-dot"></span><span class="cil-label">Cyclone · Toz Ayırma</span>
+                </div>
+                <div class="eq-callout" style="bottom: 18%; left: 35%;">
+                  <span class="cil-dot"></span><span class="cil-label">Calcine Çıkışı (Fe₂O₃)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAĞ: kompakt başlık + bilgi -->
+      <aside class="dna-eq__info">
+        <header class="dna-eq__head dna-anim-blur">
+          <h2>Akışkan Yataklı <span class="dna-italic dna-accent">Kavurma Fırını</span></h2>
+          <p>Sülfür minerallerini oksitleyerek altını serbest bırakan ana reaktör.
+          Hava üflenerek partiküller akışkanlaştırılır — yüksek verimli oksidasyon.</p>
+        </header>
+
+        <div class="dna-spec">
+          <div class="dna-spec__head">
+            <span class="dna-spec__title">TEKNİK ÖZELLİKLER</span>
+            <span class="dna-spec__title" style="color:var(--dna-text-4);">06</span>
+          </div>
+          <div class="dna-spec__rows">
+            <div class="dna-spec__row"><span>Sıcaklık</span><span>500–650 °C</span></div>
+            <div class="dna-spec__row"><span>Süre (resid.)</span><span>30–90 dk</span></div>
+            <div class="dna-spec__row"><span>Fırın çapı</span><span>1.5–2.5 m</span></div>
+            <div class="dna-spec__row"><span>Hava akışı</span><span>1.0–1.5 m/s</span></div>
+            <div class="dna-spec__row"><span>Atmosfer</span><span>Hava / O₂</span></div>
+            <div class="dna-spec__row"><span>Kontrol</span><span>PLC + SCADA</span></div>
+          </div>
+        </div>
+
+        <div class="dna-reaction">
+          <span class="dna-reaction__title">REAKSİYON</span>
+          <div class="dna-reaction__eq">
+            4Fe<span class="gold">S</span>₂ + 11O₂<br/>
+            → 2Fe₂O₃ + 8<span class="gold">SO</span>₂ + ısı
+          </div>
+          <div class="dna-reaction__note">Arsenopirit için: FeAsS + O₂ → Fe₂O₃ + As₂O₃ + SO₂</div>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 10 — OKSİJEN ÜNİTESİ (DNA)
+       ============================================================ -->
+  <section class="slide equipment-slide" data-slide="10">
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">10</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+      <span class="dna-frame__corner dna-frame__corner--tl"></span>
+      <span class="dna-frame__corner dna-frame__corner--tr"></span>
+      <span class="dna-frame__corner dna-frame__corner--bl"></span>
+      <span class="dna-frame__corner dna-frame__corner--br"></span>
+      <span class="dna-eyebrow dna-frame__eyebrow">
+        <span class="dna-eyebrow__num">10</span>
+        <span>EKİPMAN · OKSİJEN</span>
+      </span>
+    </div>
+
+    <div class="dna-eq">
+
+      <div class="dna-eq__viewer">
+        <div class="equipment-toggle">
+          <div class="toggle-controls">
+            <button class="toggle-btn active" data-pane="3d">
+              <span class="tb-icon">◉</span> 3D İNTERAKTİF
+            </button>
+            <button class="toggle-btn" data-pane="2d">
+              <span class="tb-icon">▦</span> GÖRSEL RENDER
+            </button>
+          </div>
+          <div class="toggle-content">
+            <div class="toggle-pane active" data-pane="3d">
+              <div class="viewer-stage">
+                <canvas id="three-canvas-oxygen"></canvas>
+                <div class="viewer-hint">◉ Fareyle Döndürün · Tekerlekle Yakınlaştırın</div>
+              </div>
+            </div>
+            <div class="toggle-pane" data-pane="2d">
+              <div class="equipment-stage">
+                <img src="assets/images/oxygen-plant.jpeg" alt="Oksijen ünitesi" />
+                <div class="eq-callout" style="top: 25%; left: 10%;">
+                  <span class="cil-dot"></span><span class="cil-label">PSA Jeneratör Kuleleri</span>
+                </div>
+                <div class="eq-callout" style="top: 60%; right: 12%;">
+                  <span class="cil-dot"></span><span class="cil-label">Kompresör + Tampon Tank</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="dna-eq__info">
+        <header class="dna-eq__head dna-anim-blur">
+          <h2>Oksijen <span class="dna-italic dna-accent">Ünitesi</span></h2>
+          <p>Kavurma ve liç proseslerinde gerekli yüksek saflıktaki oksijeni
+          PSA jeneratörlerle üretir. Enerji verimli, sürekli akış.</p>
+        </header>
+
+        <div class="dna-spec">
+          <div class="dna-spec__head">
+            <span class="dna-spec__title">TEKNİK ÖZELLİKLER</span>
+            <span class="dna-spec__title" style="color:var(--dna-text-4);">07</span>
+          </div>
+          <div class="dna-spec__rows">
+            <div class="dna-spec__row"><span>O₂ saflığı</span><span>%93–95</span></div>
+            <div class="dna-spec__row"><span>Hat basıncı</span><span>5–8 bar</span></div>
+            <div class="dna-spec__row"><span>Teknoloji</span><span>PSA</span></div>
+            <div class="dna-spec__row"><span>Kapasite</span><span>100+ Nm³/sa</span></div>
+            <div class="dna-spec__row"><span>Besleme</span><span>Atmosferik hava</span></div>
+          </div>
+        </div>
+
+        <div class="dna-info-block">
+          <span class="dna-info-block__title">NEDEN PSA?</span>
+          <div class="dna-info-block__body">
+            Cryogenic O₂ tedarikine göre <strong>3× düşük OPEX</strong>.
+            Sürekli üretim, depolama gerektirmez. Modüler — kapasiteye göre genişler.
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 11 — CIL LİÇ TANKLARI (DNA · 3D + 2D toggle)
+       ============================================================ -->
+  <section class="slide equipment-slide" data-slide="11">
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">11</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+      <span class="dna-frame__corner dna-frame__corner--tl"></span>
+      <span class="dna-frame__corner dna-frame__corner--tr"></span>
+      <span class="dna-frame__corner dna-frame__corner--bl"></span>
+      <span class="dna-frame__corner dna-frame__corner--br"></span>
+      <span class="dna-eyebrow dna-frame__eyebrow">
+        <span class="dna-eyebrow__num">11</span>
+        <span>EKİPMAN · CIL</span>
+      </span>
+    </div>
+
+    <div class="dna-eq">
+
+      <div class="dna-eq__viewer">
+        <div class="equipment-toggle">
+          <div class="toggle-controls">
+            <button class="toggle-btn active" data-pane="3d">
+              <span class="tb-icon">◉</span> 3D İNTERAKTİF
+            </button>
+            <button class="toggle-btn" data-pane="2d">
+              <span class="tb-icon">▦</span> GÖRSEL RENDER
+            </button>
+          </div>
+          <div class="toggle-content">
+            <div class="toggle-pane active" data-pane="3d">
+              <div class="viewer-stage">
+                <canvas id="three-canvas"></canvas>
+                <div class="viewer-hint">◉ Fareyle Döndürün · Tekerlekle Yakınlaştırın</div>
+              </div>
+            </div>
+            <div class="toggle-pane" data-pane="2d">
+              <div class="cil-image-stage">
+                <img class="cil-hero-img" src="assets/images/cil-tanks.jpeg" alt="CIL Liç Tankları" />
+                <div class="cil-callout" style="top: 22%; left: 7%;">
+                  <span class="cil-dot"></span><span class="cil-label">Feed Inlet · Slurry</span>
+                </div>
+                <div class="cil-callout" style="top: 30%; left: 50%;">
+                  <span class="cil-dot"></span><span class="cil-label">Agitator · Motor</span>
+                </div>
+                <div class="cil-callout" style="top: 60%; left: 78%;">
+                  <span class="cil-dot"></span><span class="cil-label">Discharge · PLS Çıkış</span>
+                </div>
+                <div class="cil-callout" style="top: 76%; left: 38%;">
+                  <span class="cil-dot"></span><span class="cil-label">Aktif Karbon Yatağı</span>
+                </div>
+                <div class="cil-image-caption">
+                  <span class="caption-tag">CIL · 10 t/tank</span>
+                  <span class="caption-source">HCG — Konsept Render</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="dna-eq__info">
+        <header class="dna-eq__head dna-anim-blur">
+          <h2>CIL Liç <span class="dna-italic dna-accent">Tankları</span></h2>
+          <p>Siyanür ile altın çözündürülürken aynı anda aktif karbona adsorbe edilir.
+          Tesisimizin <strong>ana kazanım bloğu</strong>.</p>
+        </header>
+
+        <div class="dna-spec">
+          <div class="dna-spec__head">
+            <span class="dna-spec__title">TEKNİK ÖZELLİKLER</span>
+            <span class="dna-spec__title" style="color:var(--dna-text-4);">08</span>
+          </div>
+          <div class="dna-spec__rows">
+            <div class="dna-spec__row"><span>Tank çapı</span><span>3 – 8 m</span></div>
+            <div class="dna-spec__row"><span>Tank yüksekliği</span><span>3 – 10 m</span></div>
+            <div class="dna-spec__row"><span>Motor gücü</span><span>7.5 – 55 kW</span></div>
+            <div class="dna-spec__row"><span>pH</span><span>10 – 11</span></div>
+            <div class="dna-spec__row"><span>Siyanür</span><span>200 – 500 ppm</span></div>
+            <div class="dna-spec__row"><span>Liç süresi</span><span>24 – 48 sa</span></div>
+            <div class="dna-spec__row"><span>Tank sayısı</span><span>6 – 8 adet</span></div>
+          </div>
+        </div>
+
+        <div class="dna-reaction">
+          <span class="dna-reaction__title">KİMYASAL REAKSİYON</span>
+          <div class="dna-reaction__eq">
+            4<span class="gold">Au</span> + 8NaCN + O₂ + 2H₂O<br/>
+            → 4Na[<span class="gold">Au</span>(CN)₂] + 4NaOH
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 12 — KARBON ADSORPSİYON (DNA)
+       ============================================================ -->
+  <section class="slide equipment-slide" data-slide="12">
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">12</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+      <span class="dna-frame__corner dna-frame__corner--tl"></span>
+      <span class="dna-frame__corner dna-frame__corner--tr"></span>
+      <span class="dna-frame__corner dna-frame__corner--bl"></span>
+      <span class="dna-frame__corner dna-frame__corner--br"></span>
+      <span class="dna-eyebrow dna-frame__eyebrow">
+        <span class="dna-eyebrow__num">12</span>
+        <span>EKİPMAN · ADSORPSİYON</span>
+      </span>
+    </div>
+
+    <div class="dna-eq">
+
+      <div class="dna-eq__viewer">
+        <div class="equipment-toggle">
+          <div class="toggle-controls">
+            <button class="toggle-btn active" data-pane="3d">
+              <span class="tb-icon">◉</span> 3D İNTERAKTİF
+            </button>
+            <button class="toggle-btn" data-pane="2d">
+              <span class="tb-icon">▦</span> GÖRSEL RENDER
+            </button>
+          </div>
+          <div class="toggle-content">
+            <div class="toggle-pane active" data-pane="3d">
+              <div class="viewer-stage">
+                <canvas id="three-canvas-carbon-ads"></canvas>
+                <div class="viewer-hint">◉ Fareyle Döndürün · Tekerlekle Yakınlaştırın</div>
+              </div>
+            </div>
+            <div class="toggle-pane" data-pane="2d">
+              <div class="equipment-stage">
+                <img src="assets/images/adsorption.jpeg" alt="Karbon adsorpsiyon kolonları" />
+                <div class="eq-callout" style="top: 18%; left: 14%;">
+                  <span class="cil-dot"></span><span class="cil-label">C-201A · İlk Kolon</span>
+                </div>
+                <div class="eq-callout" style="top: 18%; left: 38%;">
+                  <span class="cil-dot"></span><span class="cil-label">C-201B</span>
+                </div>
+                <div class="eq-callout" style="top: 18%; left: 62%;">
+                  <span class="cil-dot"></span><span class="cil-label">C-201C</span>
+                </div>
+                <div class="eq-callout" style="top: 18%; left: 84%;">
+                  <span class="cil-dot"></span><span class="cil-label">C-201D · Polishing</span>
+                </div>
+                <div class="eq-callout" style="bottom: 18%; left: 30%;">
+                  <span class="cil-dot"></span><span class="cil-label">PLS Giriş / Raffinate Çıkış</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="dna-eq__info">
+        <header class="dna-eq__head dna-anim-blur">
+          <h2>Karbon Adsorpsiyon <span class="dna-italic dna-accent">Kolonları</span></h2>
+          <p>Yüklü PLS (Pregnant Leach Solution) sıralı 4 kolondan geçer.
+          Altın aktif karbon yüzeyine konsantre olur — <strong>kademeli yakalama</strong>.</p>
+        </header>
+
+        <div class="dna-spec">
+          <div class="dna-spec__head">
+            <span class="dna-spec__title">TEKNİK ÖZELLİKLER</span>
+            <span class="dna-spec__title" style="color:var(--dna-text-4);">09</span>
+          </div>
+          <div class="dna-spec__rows">
+            <div class="dna-spec__row"><span>Kolon sayısı</span><span>4 (seri)</span></div>
+            <div class="dna-spec__row"><span>Karbon tipi</span><span>6–12 mesh, koko</span></div>
+            <div class="dna-spec__row"><span>Kazanım</span><span>%99+ Au + Ag</span></div>
+            <div class="dna-spec__row"><span>Akış</span><span>Karşı-akım</span></div>
+            <div class="dna-spec__row"><span>Yükleme</span><span>~8.000 g Au/t karbon</span></div>
+          </div>
+        </div>
+
+        <div class="dna-info-block">
+          <span class="dna-info-block__title">ÇALIŞMA PRENSİBİ</span>
+          <div class="dna-info-block__body">
+            Altın siyanür kompleksi (Au(CN)₂⁻) aktif karbonun yüksek yüzey alanına
+            (1.000+ m²/g) yapışır. Saturasyon sonrası karbon <strong>elution</strong>'a alınır
+            ve Goldroom'da electrowinning ile metal altın kazanılır.
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 13 — KARBON REJENERASYON (DNA)
+       ============================================================ -->
+  <section class="slide equipment-slide" data-slide="13">
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">13</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+      <span class="dna-frame__corner dna-frame__corner--tl"></span>
+      <span class="dna-frame__corner dna-frame__corner--tr"></span>
+      <span class="dna-frame__corner dna-frame__corner--bl"></span>
+      <span class="dna-frame__corner dna-frame__corner--br"></span>
+      <span class="dna-eyebrow dna-frame__eyebrow">
+        <span class="dna-eyebrow__num">13</span>
+        <span>EKİPMAN · REJENERASYON</span>
+      </span>
+    </div>
+
+    <div class="dna-eq">
+
+      <div class="dna-eq__viewer">
+        <div class="equipment-toggle">
+          <div class="toggle-controls">
+            <button class="toggle-btn active" data-pane="3d">
+              <span class="tb-icon">◉</span> 3D İNTERAKTİF
+            </button>
+            <button class="toggle-btn" data-pane="2d">
+              <span class="tb-icon">▦</span> GÖRSEL RENDER
+            </button>
+          </div>
+          <div class="toggle-content">
+            <div class="toggle-pane active" data-pane="3d">
+              <div class="viewer-stage">
+                <canvas id="three-canvas-regen"></canvas>
+                <div class="viewer-hint">◉ Fareyle Döndürün · Tekerlekle Yakınlaştırın</div>
+              </div>
+            </div>
+            <div class="toggle-pane" data-pane="2d">
+              <div class="equipment-stage">
+                <img src="assets/images/carbon-regen.jpeg" alt="Karbon rejenerasyon" />
+                <div class="eq-callout" style="top: 22%; left: 12%;">
+                  <span class="cil-dot"></span><span class="cil-label">Rotary Kiln · 700 °C</span>
+                </div>
+                <div class="eq-callout" style="top: 45%; right: 14%;">
+                  <span class="cil-dot"></span><span class="cil-label">Soğutma & Eleme</span>
+                </div>
+                <div class="eq-callout" style="bottom: 22%; left: 38%;">
+                  <span class="cil-dot"></span><span class="cil-label">Elution → Goldroom</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="dna-eq__info">
+        <header class="dna-eq__head dna-anim-blur">
+          <h2>Karbon Rejenerasyon <span class="dna-italic dna-accent">Fırını</span></h2>
+          <p>Kullanılmış karbon 700°C'de termal aktivasyondan geçer.
+          Organik kirlilikler yanar, yüzey aktivitesi <strong>%90+ geri kazanılır</strong>.</p>
+        </header>
+
+        <div class="dna-spec">
+          <div class="dna-spec__head">
+            <span class="dna-spec__title">TEKNİK ÖZELLİKLER</span>
+            <span class="dna-spec__title" style="color:var(--dna-text-4);">10</span>
+          </div>
+          <div class="dna-spec__rows">
+            <div class="dna-spec__row"><span>Sıcaklık</span><span>650–750 °C</span></div>
+            <div class="dna-spec__row"><span>Süre</span><span>20–30 dk</span></div>
+            <div class="dna-spec__row"><span>Aktivasyon</span><span>%90+ geri kazanım</span></div>
+            <div class="dna-spec__row"><span>Çevrim</span><span>Sürekli</span></div>
+            <div class="dna-spec__row"><span>Atmosfer</span><span>Buhar / inert</span></div>
+          </div>
+        </div>
+
+        <div class="dna-info-block">
+          <span class="dna-info-block__title">EKONOMİK ETKİ</span>
+          <div class="dna-info-block__body">
+            Aktif karbon yüksek maliyetli sarf malzemesidir. Rejenerasyon ile
+            <strong>karbon ömrü 10–15 katına</strong> çıkar — OPEX'te kritik tasarruf kaynağıdır.
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 14 — ELECTROWINNING + DORÉ DÖKÜM (DNA · FİNAL)
+       ============================================================ -->
+  <section class="slide equipment-slide" data-slide="14">
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">14</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+      <span class="dna-frame__corner dna-frame__corner--tl"></span>
+      <span class="dna-frame__corner dna-frame__corner--tr"></span>
+      <span class="dna-frame__corner dna-frame__corner--bl"></span>
+      <span class="dna-frame__corner dna-frame__corner--br"></span>
+      <span class="dna-eyebrow dna-frame__eyebrow">
+        <span class="dna-eyebrow__num">14</span>
+        <span>EKİPMAN · FİNAL ADIM</span>
+      </span>
+    </div>
+
+    <div class="dna-eq">
+
+      <div class="dna-eq__viewer">
+        <div class="equipment-toggle">
+          <div class="toggle-controls">
+            <button class="toggle-btn active" data-pane="3d">
+              <span class="tb-icon">◉</span> 3D İNTERAKTİF
+            </button>
+            <button class="toggle-btn" data-pane="2d">
+              <span class="tb-icon">▦</span> GÖRSEL RENDER
+            </button>
+          </div>
+          <div class="toggle-content">
+            <div class="toggle-pane active" data-pane="3d">
+              <div class="viewer-stage">
+                <canvas id="three-canvas-ew"></canvas>
+                <div class="viewer-hint">◉ Fareyle Döndürün · Tekerlekle Yakınlaştırın</div>
+              </div>
+            </div>
+            <div class="toggle-pane" data-pane="2d">
+              <div class="equipment-stage">
+                <img src="assets/images/electrowinning.jpeg" alt="Electrowinning + Doré döküm" />
+                <div class="eq-callout" style="top: 18%; left: 10%;">
+                  <span class="cil-dot"></span><span class="cil-label">DC Güç Kaynağı</span>
+                </div>
+                <div class="eq-callout" style="top: 40%; left: 38%;">
+                  <span class="cil-dot"></span><span class="cil-label">8 Katot Hücresi</span>
+                </div>
+                <div class="eq-callout" style="top: 28%; right: 8%;">
+                  <span class="cil-dot"></span><span class="cil-label">Anot · Paslanmaz</span>
+                </div>
+                <div class="eq-callout" style="bottom: 16%; right: 22%;">
+                  <span class="cil-dot"></span><span class="cil-label">Doré Döküm Potası</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="dna-eq__info">
+        <header class="dna-eq__head dna-anim-blur">
+          <h2>Electrowinning + <span class="dna-italic dna-accent">Doré.</span></h2>
+          <p>Goldroom'da DC elektroliz ile altın katoda biriktirilir.
+          Sonra döküm potasında <strong>Doré külçe</strong> olarak nihai ürün elde edilir.</p>
+        </header>
+
+        <div class="dna-spec">
+          <div class="dna-spec__head">
+            <span class="dna-spec__title">TEKNİK ÖZELLİKLER</span>
+            <span class="dna-spec__title" style="color:var(--dna-text-4);">11</span>
+          </div>
+          <div class="dna-spec__rows">
+            <div class="dna-spec__row"><span>Voltaj</span><span>3 V DC</span></div>
+            <div class="dna-spec__row"><span>Akım</span><span>250 A</span></div>
+            <div class="dna-spec__row"><span>Katot</span><span>8 adet paslanmaz</span></div>
+            <div class="dna-spec__row"><span>Süre</span><span>24–48 sa</span></div>
+            <div class="dna-spec__row"><span>Saflık</span><span>%85–95 Doré</span></div>
+            <div class="dna-spec__row"><span>Çıkış</span><span>Au + Ag külçe</span></div>
+          </div>
+        </div>
+
+        <div class="dna-reaction">
+          <span class="dna-reaction__title">REAKSİYON</span>
+          <div class="dna-reaction__eq">
+            <span class="gold">Au</span>(CN)₂⁻ + e⁻<br/>
+            → <span class="gold">Au</span>↓ + 2CN⁻
+          </div>
+          <div class="dna-reaction__note">Gümüş eşzamanlı katoda çöker → Doré külçede Au + Ag birlikte.</div>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 15 — YATIRIM & GERİ DÖNÜŞ (DNA DASHBOARD)
+       ============================================================ -->
+  <section class="slide s15-slide" data-slide="15" data-step="0">
+    <div class="dna-frame dna-frame--bare" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">15</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+    </div>
+
+    <!-- Üst satır: step başına farklı tek cümle -->
+    <div class="s15-topline" aria-live="polite">
+      <p class="s15-topline__line" data-line="1">Önce <strong>masraf:</strong> tek seferlik CAPEX talebimiz.</p>
+      <p class="s15-topline__line" data-line="2">Şeffaf bütçe — <strong>her dolar belli.</strong></p>
+      <p class="s15-topline__line" data-line="3">Atık yığını <strong>yılda $25M</strong> ham gelir üretiyor.</p>
+      <p class="s15-topline__line" data-line="4">OPEX çıkınca → <strong>~$22M yıllık net kâr.</strong></p>
+      <p class="s15-topline__line" data-line="5"><strong>6 ay</strong> vs sektör 3–5 yıl — <em>6–10× daha hızlı geri ödeme.</em></p>
+      <p class="s15-topline__line" data-line="6">$10M ekersin — <em>12 yılda $264M biçersin.</em></p>
+      <p class="s15-topline__line" data-line="7">Şeffaf hesap, sağlam temel.</p>
+    </div>
+
+    <!-- Sahne 0: Açılış sorusu -->
+    <div class="s15-stage s15-stage--question" data-stage="question">
+      <h2 class="s15-question">
+        $10M koyarsan,
+        <em class="dna-italic dna-accent">ne kazanırsın?</em>
+      </h2>
+    </div>
+
+    <!-- Sahne 1: Devasa $10M -->
+    <div class="s15-stage s15-stage--capex" data-stage="capex">
+      <div class="s15-capex">
+        <span class="s15-capex__kicker">— Toplam yatırım</span>
+        <div class="s15-capex__value">$10<span class="s15-capex__unit">M</span></div>
+        <p class="s15-capex__sub">Tek seferlik CAPEX · USD</p>
+      </div>
+    </div>
+
+    <!-- Sahne 2: CAPEX pasta dağılımı -->
+    <div class="s15-stage s15-stage--pie" data-stage="pie">
+      <div class="s15-pie-stage">
+        <div class="s15-pie-lg">
+          <svg viewBox="0 0 200 200" class="s15-pie-svg" aria-hidden="true">
+            <circle cx="100" cy="100" r="70" fill="none" stroke="#142339" stroke-width="40"/>
+            <circle class="s15-pie-seg" data-seg="1" cx="100" cy="100" r="70" fill="none"
+                    stroke="#f5d76e" stroke-width="40"/>
+            <circle class="s15-pie-seg" data-seg="2" cx="100" cy="100" r="70" fill="none"
+                    stroke="#c97f4a" stroke-width="40" stroke-dashoffset="-175.8"/>
+            <circle class="s15-pie-seg" data-seg="3" cx="100" cy="100" r="70" fill="none"
+                    stroke="#7aa8c4" stroke-width="40" stroke-dashoffset="-285.74"/>
+            <circle class="s15-pie-seg" data-seg="4" cx="100" cy="100" r="70" fill="none"
+                    stroke="#9b9054" stroke-width="40" stroke-dashoffset="-351.71"/>
+          </svg>
+          <div class="s15-pie-lg__center">
+            <span class="s15-pie-lg__val">$10M</span>
+            <span class="s15-pie-lg__lbl">CAPEX</span>
+          </div>
+        </div>
+        <ul class="s15-pie-legend">
+          <li class="s15-pie-legend__item" data-seg="1">
+            <span class="s15-pie-legend__dot" style="background:#f5d76e"></span>
+            <div>
+              <strong>%40 · Ekipman — $4M</strong>
+              <span>Kavurma · CIL · EW · karbon</span>
+            </div>
+          </li>
+          <li class="s15-pie-legend__item" data-seg="2">
+            <span class="s15-pie-legend__dot" style="background:#c97f4a"></span>
+            <div>
+              <strong>%25 · İnşaat — $2.5M</strong>
+              <span>Temel · bina · altyapı</span>
+            </div>
+          </li>
+          <li class="s15-pie-legend__item" data-seg="3">
+            <span class="s15-pie-legend__dot" style="background:#7aa8c4"></span>
+            <div>
+              <strong>%15 · Mühendislik — $1.5M</strong>
+              <span>Tasarım · montaj · test</span>
+            </div>
+          </li>
+          <li class="s15-pie-legend__item" data-seg="4">
+            <span class="s15-pie-legend__dot" style="background:#9b9054"></span>
+            <div>
+              <strong>%20 · İşletme — $2M</strong>
+              <span>İlk operasyon · beklenmedik</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Sahne 3 + 4: Gelir bar + OPEX → Net kâr -->
+    <div class="s15-stage s15-stage--revenue" data-stage="revenue">
+      <div class="s15-rev">
+        <header class="s15-rev__head">
+          <span>YILLIK GELİR · NET KÂR HESABI</span>
+          <span class="s15-rev__head-note">10 g/t Au + 100 g/t Ag · 36.000 t/yıl</span>
+        </header>
+
+        <div class="s15-rev__row" data-row="au">
+          <span class="s15-rev__lbl">
+            <strong>Au</strong> · 342 kg/yıl <em>(~11.000 oz)</em>
+          </span>
+          <div class="s15-rev__bar" style="--rev-w: 80%; --rev-c1:#d4af37; --rev-c2:#f5d76e;"></div>
+          <span class="s15-rev__val">~$22M</span>
+        </div>
+
+        <div class="s15-rev__row" data-row="ag">
+          <span class="s15-rev__lbl">
+            <strong>Ag</strong> · 3.4 t/yıl <em>bonus ürün</em>
+          </span>
+          <div class="s15-rev__bar" style="--rev-w: 12%; --rev-c1:#9ab7c5; --rev-c2:#c7d5dd;"></div>
+          <span class="s15-rev__val">~$3.3M</span>
+        </div>
+
+        <div class="s15-rev__sub" data-row="sub">
+          <span>Gelir toplamı</span>
+          <strong>~$25.3M / yıl</strong>
+        </div>
+
+        <div class="s15-rev__row s15-rev__row--neg" data-row="opex">
+          <span class="s15-rev__lbl">
+            <strong>− OPEX</strong> <em>($80/t × 36.000 t)</em>
+          </span>
+          <div class="s15-rev__bar s15-rev__bar--neg" style="--rev-w: 11%;"></div>
+          <span class="s15-rev__val s15-rev__val--neg">−$2.9M</span>
+        </div>
+
+        <div class="s15-rev__total" data-row="total">
+          <span class="s15-rev__total-lbl">★ Yıllık net kâr</span>
+          <strong class="s15-rev__total-val">~$22M</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sahne 5 + 6: Kümülatif nakit akışı -->
+    <div class="s15-stage s15-stage--cashflow" data-stage="cashflow">
+      <div class="s15-cf">
+        <header class="s15-cf__head">
+          <span class="s15-cf__head-title">KÜMÜLATİF NET KÂR · YIL 0 → 12</span>
+          <span class="s15-cf__head-axis">$0 → $264M</span>
+        </header>
+
+        <div class="s15-cf__plot">
+          <!-- Y axis grid -->
+          <div class="s15-cf__y-grid" aria-hidden="true">
+            <span style="bottom: 100%">$264M</span>
+            <span style="bottom: 75.8%">$200M</span>
+            <span style="bottom: 37.9%">$100M</span>
+            <span class="s15-cf__y-grid--capex" style="bottom: 3.79%">$10M · CAPEX</span>
+            <span style="bottom: 0">$0</span>
+          </div>
+
+          <!-- $10M CAPEX dashed line -->
+          <div class="s15-cf__capex-line" aria-hidden="true"></div>
+
+          <!-- Diagonal area + line (full $264M / 144mo geometry) -->
+          <svg class="s15-cf__svg" viewBox="0 0 1440 480" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="s15-cf-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f5d76e" stop-opacity="0.55"/>
+                <stop offset="60%" stop-color="#d4af37" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <polygon points="0,480 1440,0 1440,480" fill="url(#s15-cf-grad)"/>
+            <line x1="0" y1="480" x2="1440" y2="0" stroke="#f5d76e" stroke-width="2.5"
+                  vector-effect="non-scaling-stroke"/>
+          </svg>
+
+          <!-- Mask (right side — shrinks as step advances) -->
+          <div class="s15-cf__mask" aria-hidden="true"></div>
+
+          <!-- Break-even marker (month ~6, x ≈ 4.17%) -->
+          <div class="s15-cf__breakeven">
+            <div class="s15-cf__breakeven-line"></div>
+            <div class="s15-cf__breakeven-label">★ 6 AY · BREAK-EVEN</div>
+            <div class="s15-cf__breakeven-dot"></div>
+          </div>
+
+          <!-- $264M / 12 yıl annotation (step 6) -->
+          <div class="s15-cf__lifecycle">
+            <span class="s15-cf__lifecycle-num">~$264<small>M</small></span>
+            <span class="s15-cf__lifecycle-lbl">12 yıl · kümülatif net kâr</span>
+          </div>
+
+          <!-- X axis labels -->
+          <div class="s15-cf__x-grid" aria-hidden="true">
+            <span style="left: 0%">Ay 0</span>
+            <span style="left: 4.17%">6 ay</span>
+            <span style="left: 16.67%">2 yıl</span>
+            <span style="left: 41.67%">5 yıl</span>
+            <span style="left: 66.67%">8 yıl</span>
+            <span style="left: 100%">12 yıl</span>
+          </div>
+        </div>
+
+        <!-- Sektör karşılaştırma (step 5+) + multiplier (step 6) -->
+        <footer class="s15-cf__footer">
+          <div class="s15-cf__sector" data-show="5">
+            <span class="s15-cf__sector-lbl">Sektör ortalaması · geri ödeme</span>
+            <div class="s15-cf__sector-bar">
+              <span class="s15-cf__sector-fill"></span>
+              <span class="s15-cf__sector-val">3–5 yıl (36–60 ay)</span>
+            </div>
+          </div>
+          <div class="s15-cf__multi" data-show="6">
+            <span class="s15-cf__multi-num">26<small>×</small></span>
+            <div class="s15-cf__multi-meta">
+              <span class="s15-cf__multi-eq">$10M → ~$264M</span>
+              <span class="s15-cf__multi-lbl">12 yıl lifecycle geri dönüş</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Sahne 7: Dashboard özet + duyarlılık -->
+    <div class="s15-stage s15-stage--dashboard" data-stage="dashboard">
+      <div class="s15-dash">
+        <!-- Üst: 4 KPI compact -->
+        <div class="s15-dash__kpis">
+          <div class="s15-dash__kpi">
+            <span class="s15-dash__kpi-lbl">Toplam yatırım</span>
+            <strong class="s15-dash__kpi-val">$10M</strong>
+            <span class="s15-dash__kpi-sub">CAPEX · USD</span>
+          </div>
+          <div class="s15-dash__kpi s15-dash__kpi--accent">
+            <span class="s15-dash__kpi-lbl">Yıllık net kâr</span>
+            <strong class="s15-dash__kpi-val">~$22M</strong>
+            <span class="s15-dash__kpi-sub">Gelir − OPEX</span>
+          </div>
+          <div class="s15-dash__kpi s15-dash__kpi--accent">
+            <span class="s15-dash__kpi-lbl">Geri ödeme</span>
+            <strong class="s15-dash__kpi-val">~6 ay</strong>
+            <span class="s15-dash__kpi-sub">Sektör: 3–5 yıl</span>
+          </div>
+          <div class="s15-dash__kpi s15-dash__kpi--star">
+            <span class="s15-dash__kpi-lbl">★ Lifecycle (12 yıl)</span>
+            <strong class="s15-dash__kpi-val">~$264M</strong>
+            <span class="s15-dash__kpi-sub">26× geri dönüş</span>
+          </div>
+        </div>
+
+        <!-- Orta: mini pasta + mini gelir bar -->
+        <div class="s15-dash__charts">
+          <div class="s15-dash__panel">
+            <span class="s15-dash__panel-title">CAPEX DAĞILIMI · $10M</span>
+            <div class="s15-dash__pie-row">
+              <div class="s15-dash__pie">
+                <svg viewBox="0 0 200 200" aria-hidden="true">
+                  <circle cx="100" cy="100" r="70" fill="none" stroke="#142339" stroke-width="40"/>
+                  <circle cx="100" cy="100" r="70" fill="none" stroke="#f5d76e" stroke-width="40"
+                          stroke-dasharray="175.8 439.8"/>
+                  <circle cx="100" cy="100" r="70" fill="none" stroke="#c97f4a" stroke-width="40"
+                          stroke-dasharray="109.9 439.8" stroke-dashoffset="-175.8"/>
+                  <circle cx="100" cy="100" r="70" fill="none" stroke="#7aa8c4" stroke-width="40"
+                          stroke-dasharray="65.97 439.8" stroke-dashoffset="-285.74"/>
+                  <circle cx="100" cy="100" r="70" fill="none" stroke="#9b9054" stroke-width="40"
+                          stroke-dasharray="87.96 439.8" stroke-dashoffset="-351.71"/>
+                </svg>
+              </div>
+              <ul class="s15-dash__pie-legend">
+                <li><span style="background:#f5d76e"></span>%40 Ekipman · $4M</li>
+                <li><span style="background:#c97f4a"></span>%25 İnşaat · $2.5M</li>
+                <li><span style="background:#7aa8c4"></span>%15 Mühendislik · $1.5M</li>
+                <li><span style="background:#9b9054"></span>%20 İşletme · $2M</li>
+              </ul>
+            </div>
+          </div>
+          <div class="s15-dash__panel">
+            <span class="s15-dash__panel-title">YILLIK GELİR · NET KÂR</span>
+            <div class="s15-dash__rev">
+              <div class="s15-dash__rev-row">
+                <span class="s15-dash__rev-lbl">Au · 342 kg</span>
+                <div class="s15-dash__rev-bar" style="--w:80%; --c1:#d4af37; --c2:#f5d76e"></div>
+                <span class="s15-dash__rev-val">~$22M</span>
+              </div>
+              <div class="s15-dash__rev-row">
+                <span class="s15-dash__rev-lbl">Ag · 3.4 t</span>
+                <div class="s15-dash__rev-bar" style="--w:12%; --c1:#9ab7c5; --c2:#c7d5dd"></div>
+                <span class="s15-dash__rev-val">~$3.3M</span>
+              </div>
+              <div class="s15-dash__rev-row s15-dash__rev-row--neg">
+                <span class="s15-dash__rev-lbl">− OPEX</span>
+                <div class="s15-dash__rev-bar s15-dash__rev-bar--neg" style="--w:11%"></div>
+                <span class="s15-dash__rev-val s15-dash__rev-val--neg">−$2.9M</span>
+              </div>
+              <div class="s15-dash__rev-total">
+                <span>★ Yıllık net kâr</span>
+                <strong>~$22M</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alt: teknik özet + sensitivity -->
+        <div class="s15-dash__bottom">
+          <div class="s15-dash__tech">
+            <span class="s15-dash__tech-title">TEKNİK & EKONOMİK ÖZET</span>
+            <div class="s15-dash__tech-grid">
+              <div><span>Cevher tenörü</span><strong>10 g/t Au + 100 g/t Ag</strong></div>
+              <div><span>Metal kazanımı</span><strong>%95</strong></div>
+              <div><span>Yıllık kapasite</span><strong>36.000 t/yıl</strong></div>
+              <div><span>Toplam tonaj</span><strong>432.000 t · 12 yıl</strong></div>
+              <div><span>OPEX</span><strong>$80/ton</strong></div>
+              <div><span>Tesis ömrü</span><strong>12 yıl</strong></div>
+            </div>
+          </div>
+
+          <div class="s15-dash__sens">
+            <span class="s15-dash__sens-title">DUYARLILIK · Au fiyatı</span>
+            <ul class="s15-dash__sens-list">
+              <li class="s15-dash__sens-row s15-dash__sens-row--low">
+                <span class="s15-dash__sens-px">Au $1.500/oz</span>
+                <span class="s15-dash__sens-net">~$17M/yıl</span>
+              </li>
+              <li class="s15-dash__sens-row s15-dash__sens-row--base">
+                <span class="s15-dash__sens-px">Au $2.000/oz <em>· baz</em></span>
+                <span class="s15-dash__sens-net">~$22M/yıl</span>
+              </li>
+              <li class="s15-dash__sens-row s15-dash__sens-row--high">
+                <span class="s15-dash__sens-px">Au $2.500/oz</span>
+                <span class="s15-dash__sens-net">~$28M/yıl</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="s15-dash__foot">
+          Hesaplar Au $2.000/oz · Ag $30/oz · OPEX $80/ton baz senaryo. Pazar koşullarına göre değişebilir.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 16 — KAPANIŞ (DNA)
+       ============================================================ -->
+  <section class="slide closing-slide" data-slide="16">
+    <div class="gold-flecks"></div>
+    <div class="dna-frame" aria-hidden="true">
+      <span class="dna-frame__page">
+        <span class="dna-frame__page-current">16</span>
+        <span class="dna-frame__page-divider"></span>
+        <span>16</span>
+      </span>
+      <span class="dna-frame__corner dna-frame__corner--tl"></span>
+      <span class="dna-frame__corner dna-frame__corner--tr"></span>
+      <span class="dna-frame__corner dna-frame__corner--bl"></span>
+      <span class="dna-frame__corner dna-frame__corner--br"></span>
+      <span class="dna-eyebrow dna-frame__eyebrow">
+        <span class="dna-eyebrow__num">16</span>
+        <span>KAPANIŞ · İLETİŞİM</span>
+      </span>
+    </div>
+
+    <div class="dna-closing">
+      <span class="dna-closing__kicker dna-anim-fade-up">YATIRIM FIRSATI · 2026</span>
+
+      <h1 class="dna-closing__title dna-anim-blur">TEŞEKKÜRLER</h1>
+
+      <span class="dna-closing__divider dna-anim-fade dna-delay-2"></span>
+
+      <div class="dna-closing__brand dna-anim-fade-up dna-delay-3">
+        <span class="dna-closing__brand-main">NTE PARS METAL</span>
+        <span class="dna-closing__brand-sub">Hikmet Çetin Gold projesi</span>
+      </div>
+
+      <div class="dna-closing__contact dna-stagger dna-delay-4">
+        <div class="dna-closing__cc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/>
+          </svg>
+          <span>[İletişim numarası]</span>
+        </div>
+        <div class="dna-closing__cc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2Z"/>
+            <path d="m22 6-10 7L2 6"/>
+          </svg>
+          <span>[E-posta]</span>
+        </div>
+        <div class="dna-closing__cc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/>
+          </svg>
+          <span>[Web — opsiyonel]</span>
+        </div>
+      </div>
+
+      <div class="dna-closing__foot dna-anim-fade dna-delay-5">
+        Tethyan kuşağında modern hidrometalurjik tesis · Antimon atığından Au + Ag kazanımı
+      </div>
+    </div>
+  </section>
 
 </div>
 
 <!-- Slide navigation -->
 <div class="nav-indicator" id="nav-indicator"></div>
 <div class="nav-hint">
-  <kbd>←</kbd> <kbd>→</kbd> ile gezin · <kbd>SPACE</kbd> ileri
+  <kbd>←</kbd> <kbd>→</kbd> ile gezin · <kbd>F</kbd> tam ekran
 </div>
 
-<!-- Libraries -->
+<!-- Leaflet (slide 7 — demo kalitesi dünya haritası) -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
+<!-- Importmap: yerel Three.js -->
 <script type="importmap">
 {
   "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    "three": "./vendor/three/three.module.js",
+    "three/addons/": "./vendor/three/addons/"
   }
 }
 </script>
 
-<script src="scripts/navigation.js"></script>
+<!-- App scripts -->
+<script src="scripts/loading-progress.js"></script>
+<script src="scripts/sw-register.js"></script>
+<script src="scripts/slide2-reveal.js?v=2"></script>
+<script src="scripts/slide3-reveal.js?v=1"></script>
+<script src="scripts/slide4-reveal.js?v=1"></script>
+<script src="scripts/slide5-reveal.js?v=1"></script>
+<script src="scripts/slide6-reveal.js?v=1"></script>
+<script src="scripts/slide7-reveal.js?v=1"></script>
+<script src="scripts/slide8-reveal.js?v=1"></script>
+<script src="scripts/slide15-reveal.js?v=1"></script>
+<script src="scripts/navigation.js?v=10"></script>
+<script src="scripts/equipment-toggle.js"></script>
 <script src="scripts/map-world.js"></script>
 <script type="module" src="scripts/three-cil-tank.js"></script>
+<script type="module" src="scripts/three-roaster.js"></script>
+<script type="module" src="scripts/three-oxygen.js"></script>
+<script type="module" src="scripts/three-carbon-adsorption.js"></script>
+<script type="module" src="scripts/three-carbon-regen.js"></script>
+<script type="module" src="scripts/three-electrowinning.js"></script>
 
 </body>
 </html>
