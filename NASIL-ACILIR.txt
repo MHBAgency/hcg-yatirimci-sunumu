@@ -1,34 +1,34 @@
 HİKMET ÇETİN GOLD — YATIRIMCI SUNUMU
 =====================================
 
-İndirdiğiniz ZIP dosyasını açtınız. Aşağıdaki üç yöntemden BİRİNİ kullanın.
+ZIP'i açtınız. Sunumu görmenin TEK ADIMI:
+
+   ▶ "index.html" dosyasına çift tıklayın.
+
+Tarayıcınız otomatik olarak online sunumu açacaktır:
+
+   https://hcg-yatirimci-sunumu.vercel.app/
 
 ────────────────────────────────────────
-YÖNTEM 1 — EN KOLAYI (önerilir)
+NEDEN ONLINE AÇILIYOR
 ────────────────────────────────────────
-Online sürüm her zaman en güncel kalır:
-
-   https://sunum.ntepars.com
-
-İnternet bağlantısı varken bu adresi açın. Tüm 3D sahneler ve
-animasyonlar burada eksiksiz çalışır.
-
-────────────────────────────────────────
-YÖNTEM 2 — UYGULAMA OLARAK KURUN (offline)
-────────────────────────────────────────
-1. Yukarıdaki adresi Google Chrome veya Microsoft Edge'de açın
-2. Adres çubuğunun sağında küçük bir "Yükle" / "+" ikonu çıkar
-3. Tıkla → "Kur" → masaüstüne uygulama olarak iner
-4. Bir kez kurduktan sonra internet olmasa da açılır
+Sunumdaki 3D sahneler ve animasyonlar modern tarayıcı
+güvenlik kuralları gereği yalnızca "https://" üzerinden
+çalışır. Bu klasörden doğrudan açıldığında bazı sahneler
+yüklenmeyebilir. Online sürüm her zaman en güncel ve
+tam fonksiyoneldir.
 
 ────────────────────────────────────────
-YÖNTEM 3 — BU KLASÖRÜ DOĞRUDAN AÇIN
+ÇEVRİMDIŞI KULLANIM (opsiyonel)
 ────────────────────────────────────────
-"index.html" dosyasına çift tıklayın.
+Internet bağlantısı olmadan sunumu açmak istiyorsanız:
 
-NOT: Bu yöntemde tarayıcı güvenlik kısıtlaması nedeniyle bazı
-3D sahneler yüklenmeyebilir. Tam deneyim için Yöntem 1 veya 2'yi
-kullanmanızı öneririz.
+   1. Yukarıdaki adresi Google Chrome veya Microsoft Edge'de
+      açın.
+   2. Adres çubuğunun sağındaki "Yükle" / "+" ikonuna tıklayın.
+   3. "Kur" seçeneğine onay verin → masaüstüne uygulama
+      olarak iner.
+   4. Bir kez kurduktan sonra internet olmasa da açılır.
 
 ────────────────────────────────────────
 İLETİŞİM
